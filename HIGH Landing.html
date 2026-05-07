@@ -1,0 +1,1772 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HIGH — Studio Höllental</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=neue-montreal@400,500,300,700,800&display=swap">
+<style>
+  /* ============================================================
+     HIGH — Landing Page
+     Studio Höllental
+     ------------------------------------------------------------
+     Type:     Helvetica Neue (display + UI), Instrument Serif (italic accent), JetBrains Mono (meta)
+     Palette:  ink #0a0a0a · bone #f3f1ec · mid #6e6e6c · line #1c1c1c · signal oklch(0.62 0.22 27)
+     ============================================================ */
+
+  :root{
+    --ink:       #000000;
+    --ink-2:     #050505;
+    --line:      #161616;
+    --line-2:    #202020;
+    --bone:      #ffffff;
+    --bone-dim:  #ffffff;
+    --mid:       #ffffff;
+    --mid-2:     #ffffff;
+    --signal:    #ffffff;
+    --brass:     #ffffff;
+
+    --grid-gutter: 24px;
+    --page-pad:    clamp(20px, 4vw, 56px);
+
+    --fs-meta:   11px;
+    --display:   "Neue Montreal", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    --serif:     "Instrument Serif", "Times New Roman", serif;
+    --mono:      "JetBrains Mono", ui-monospace, monospace;
+  }
+
+  *{ box-sizing: border-box; }
+  html, body { margin:0; padding:0; }
+  html { background: var(--ink); }
+  body{
+    background: var(--ink);
+    color: var(--bone);
+    font-family: var(--display);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    line-height: 1.4;
+    overflow-x: hidden;
+  }
+  ::selection{ background: #ffffff; color: #000000; }
+
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+  /* Layout primitives ---------------------------------------- */
+  .shell{
+    padding-inline: var(--page-pad);
+    max-width: 1680px;
+    margin-inline: auto;
+  }
+  .grid12{
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--grid-gutter);
+  }
+
+  .meta, .eyebrow{
+    font-family: var(--display);
+    font-size: var(--fs-meta);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mid-2);
+    font-weight: 400;
+  }
+  .signal{ color: var(--bone); }
+  .rule{ border: 0; border-top: 1px solid var(--line); margin: 0; }
+
+  /* ============================================================
+     NAV
+     ============================================================ */
+  .nav{
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 50;
+    padding: 22px var(--page-pad);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 24px;
+    mix-blend-mode: difference; /* keeps logo readable across light/dark sections */
+    color: var(--bone);
+  }
+  .nav .left{ display: flex; gap: 28px; align-items: center; }
+  .nav .right{ display: flex; gap: 28px; justify-content: flex-end; align-items: center; }
+  .wordmark{
+    display: flex;
+    align-items: center;
+  }
+  .wordmark img{
+    height: 18px;
+    width: auto;
+    display: block;
+    filter: invert(1);
+  }
+  .navlink{
+    font-family: var(--display);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+  .navlink:hover{ opacity: 1; }
+  .nav .cta-pill{
+    font-family: var(--display);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid currentColor;
+    padding: 8px 14px;
+    border-radius: 0;
+  }
+
+  /* ============================================================
+     HERO  — scroll-driven cabinet rotation + word reel
+     ============================================================ */
+  .hero{
+    position: relative;
+    height: 600vh; /* scroll runway */
+  }
+  .hero-stage{
+    position: sticky; top: 0;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .hero-left{
+    position: absolute;
+    left: var(--page-pad);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: clamp(16px, 1.6vw, 28px);
+    text-align: left;
+    z-index: 2;
+    pointer-events: none;
+    height: clamp(48px, 7.5vw, 132px);
+  }
+  .hero-meta-top{ display: none; }
+  .hero-meta-top .dotline{ width: 28px; height: 1px; background: var(--mid); }
+
+  .hero-prefix{
+    font-size: clamp(40px, 7vw, 120px);
+    font-weight: 300;
+    letter-spacing: 0.015em;
+    line-height: 1;
+    color: var(--bone);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+  .hero-prefix .ellipsis{ display: none; }
+
+  .hero-reel{
+    position: relative;
+    height: clamp(48px, 7.5vw, 132px);
+    min-width: clamp(280px, 32vw, 640px);
+    overflow: visible;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .hero-word{
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    font-size: clamp(40px, 7vw, 120px);
+    font-weight: 300;
+    letter-spacing: 0.015em;
+    line-height: 1;
+    color: var(--bone);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    will-change: filter, opacity;
+    opacity: 0;
+    filter: blur(18px);
+    transition: opacity 600ms cubic-bezier(.2,.6,.2,1), filter 700ms cubic-bezier(.2,.6,.2,1);
+    white-space: nowrap;
+  }
+  .hero-word.is-active{ opacity: 1; filter: blur(0); }
+  .hero-word.is-past{ opacity: 0; filter: blur(18px); }
+
+  .hero-word .accent{
+    font-family: var(--display);
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-foot{ display: none; }
+  .scroll-bar{
+    position: relative;
+    width: 120px; height: 1px;
+    background: var(--line-2);
+  }
+  .scroll-bar::after{
+    content: "";
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: var(--p, 0%);
+    background: var(--bone);
+    transition: width 200ms linear;
+  }
+
+  .hero-progress{
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 1px;
+    width: 0%;
+    background: #ffffff;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  /* Background video stage */
+  .hero-right{
+    position: absolute;
+    inset: 0;
+    background: #000000;
+    overflow: hidden;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero-video{
+    width: min(170vw, 156vh);
+    height: min(170vw, 156vh);
+    max-width: none;
+    object-fit: contain;
+    will-change: transform;
+    transform-origin: center center;
+    opacity: 1;
+  }
+  .hero-right::before{
+    /* faint architectural grid */
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px) 0 0/80px 100%,
+      linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px) 0 0/100% 80px;
+    mask-image: radial-gradient(ellipse 70% 80% at 50% 60%, #000 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 80% at 50% 60%, #000 30%, transparent 80%);
+    pointer-events: none;
+  }
+
+  .cabinet-scene{
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    perspective: 2200px;
+  }
+  .cabinet-rot{
+    transform-style: preserve-3d;
+    transform: rotateY(var(--ry, 0deg)) rotateX(-2deg);
+    will-change: transform;
+    transition: transform 60ms linear;
+  }
+
+  /* CSS cabinet — minimalist, brass interior, black grid doors */
+  .cabinet{
+    --w: clamp(220px, 26vw, 380px);
+    --h: clamp(440px, 52vw, 720px);
+    --d: clamp(70px, 8vw, 120px);
+    width: var(--w);
+    height: var(--h);
+    position: relative;
+    transform-style: preserve-3d;
+  }
+  .cab-face{
+    position: absolute; inset: 0;
+    transform-style: preserve-3d;
+  }
+  /* Front face — door grid */
+  .cab-front{
+    background: linear-gradient(180deg, #1a1a18 0%, #15151400 50%), #101010;
+    border: 1px solid #1f1f1d;
+    transform: translateZ(calc(var(--d) / 2));
+    overflow: hidden;
+  }
+  .door-grid{
+    position: absolute; inset: 8px;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(14, 1fr);
+    gap: 1px;
+    background: #0d0d0c;
+  }
+  .cell{
+    background: linear-gradient(180deg, #1d1d1b 0%, #161614 100%);
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,0.02),
+      inset 0 -8px 14px rgba(0,0,0,0.5);
+    position: relative;
+  }
+  .cell::after{
+    content:"";
+    position: absolute; right: 8%; top: 50%;
+    width: 8%; height: 1px;
+    background: rgba(255,255,255,0.18);
+    transform: translateY(-50%);
+  }
+  /* Brass interior cutout (open shelf upper-right) */
+  .compartment{
+    position: absolute;
+    top: 12%; right: 6%;
+    width: 36%; height: 22%;
+    background:
+      linear-gradient(180deg, oklch(0.42 0.07 68) 0%, oklch(0.28 0.05 60) 60%, oklch(0.18 0.03 60) 100%);
+    box-shadow:
+      inset 0 0 0 1px rgba(255,220,160,0.18),
+      inset 0 -16px 28px rgba(0,0,0,0.55),
+      0 0 28px rgba(255,180,100,0.12);
+    overflow: hidden;
+  }
+  .compartment::before{
+    /* warm light glow from above */
+    content:"";
+    position: absolute; top: 0; left: 10%; right: 10%; height: 8px;
+    background: oklch(0.92 0.12 80);
+    filter: blur(6px);
+    opacity: 0.7;
+  }
+  .bottle{
+    position: absolute; bottom: 8%;
+    width: 16%; height: 70%;
+    background: linear-gradient(180deg, oklch(0.32 0.04 70) 0%, oklch(0.18 0.02 70) 100%);
+    border-radius: 2px 2px 1px 1px;
+    box-shadow: inset -2px 0 0 rgba(255,255,255,0.06), 0 4px 8px rgba(0,0,0,0.6);
+  }
+  .bottle.b1{ left: 18%; }
+  .bottle.b2{ left: 38%; height: 78%; }
+  .bottle.b3{ left: 58%; height: 64%; }
+  .bottle.b4{ left: 76%; height: 72%; width: 12%; }
+
+  /* Side faces */
+  .cab-side{
+    width: var(--d);
+    height: 100%;
+    top: 0;
+    background: linear-gradient(90deg, #0c0c0b 0%, #15151300 100%), #0e0e0d;
+    border: 1px solid #1a1a18;
+  }
+  .cab-left{
+    left: 0;
+    transform: translateX(calc(var(--d) / -2)) rotateY(-90deg);
+    transform-origin: right center;
+  }
+  .cab-right{
+    right: 0;
+    transform: translateX(calc(var(--d) / 2)) rotateY(90deg);
+    transform-origin: left center;
+  }
+  /* Top */
+  .cab-top{
+    width: 100%;
+    height: var(--d);
+    top: 0;
+    background: linear-gradient(180deg, #1a1a18 0%, #0a0a09 100%);
+    transform: translateY(calc(var(--d) / -2)) rotateX(90deg);
+    transform-origin: bottom center;
+    border: 1px solid #1f1f1d;
+  }
+  /* Plinth/base — slim metal feet */
+  .cab-base{
+    position: absolute;
+    bottom: -36px; left: 6%; right: 6%;
+    height: 36px;
+    transform-style: preserve-3d;
+  }
+  .foot{
+    position: absolute;
+    bottom: 0;
+    width: 8px;
+    height: 36px;
+    background: linear-gradient(180deg, #28281f 0%, #15150f 100%);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.04);
+  }
+  .foot.l{ left: 4%; }
+  .foot.r{ right: 4%; }
+
+  /* Floor reflection / light pool */
+  .floor-pool{
+    position: absolute;
+    bottom: 6%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 60px;
+    background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,255,255,0.06) 0%, transparent 70%);
+    filter: blur(6px);
+    pointer-events: none;
+  }
+
+  /* Cabinet meta callouts */
+  .cab-callout{
+    position: absolute;
+    color: var(--mid-2);
+    font-family: var(--display);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: flex; gap: 10px; align-items: center;
+    pointer-events: none;
+  }
+  .cab-callout .tick{ width: 24px; height: 1px; background: var(--mid); }
+  .cab-callout.tl{ top: 18%; left: 6%; }
+  .cab-callout.bl{ bottom: 22%; left: 6%; }
+  .cab-callout.tr{ top: 14%; right: 6%; flex-direction: row-reverse; }
+  .cab-callout.tr .tick{ background: var(--bone); }
+
+  /* ============================================================
+     INTRO
+     ============================================================ */
+  .intro{
+    padding: clamp(120px, 16vw, 220px) 0 clamp(120px, 16vw, 200px);
+    border-top: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .intro-video{
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+  .intro::after{
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(
+      to right,
+      rgba(0,0,0,0.10) 0%,
+      rgba(0,0,0,0.30) 40%,
+      rgba(0,0,0,0.72) 62%,
+      rgba(0,0,0,0.86) 100%
+    );
+    z-index: 1;
+    pointer-events: none;
+  }
+  .intro .grid12{
+    align-items: start;
+    row-gap: 48px;
+    position: relative;
+    z-index: 2;
+  }
+  .intro .col-label{ grid-column: 7 / span 6; }
+  .intro .col-body{ grid-column: 7 / span 6; }
+  .intro h2{
+    font-size: clamp(36px, 4.5vw, 76px);
+    font-weight: 200;
+    letter-spacing: 0.025em;
+    line-height: 1.02;
+    margin: 0 0 0.6em;
+    color: var(--bone);
+    text-wrap: pretty;
+  }
+  .intro h2 .em{
+    font-family: var(--display);
+    font-style: normal;
+    font-weight: 400;
+  }
+  .intro p{
+    font-size: clamp(15px, 1.2vw, 19px);
+    color: var(--bone-dim);
+    max-width: 56ch;
+    line-height: 1.55;
+    margin: 0 0 1em;
+  }
+  .intro .label-stack{
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .intro .label-stack .num{ color: var(--bone); font-size: 12px; }
+
+  /* ============================================================
+     USP / DETAIL GRID
+     ============================================================ */
+  .usp{
+    background: var(--ink);
+    border-top: 1px solid var(--line);
+    padding: clamp(80px, 10vw, 140px) 0 clamp(80px, 10vw, 140px);
+  }
+  .usp-head{
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--grid-gutter);
+    padding-bottom: 80px;
+  }
+  .usp-head .lhs{ grid-column: 1 / span 6; }
+  .usp-head .rhs{ grid-column: 8 / span 4; align-self: end; }
+  .usp-head h3{
+    font-size: clamp(28px, 3vw, 48px);
+    font-weight: 200;
+    letter-spacing: 0.03em;
+    margin: 16px 0 0;
+    line-height: 1.05;
+  }
+  .usp-head h3 .em{ font-family: var(--display); font-style: normal; font-weight: 400; }
+  .usp-head .rhs p{
+    color: var(--bone-dim); font-size: 14px; line-height: 1.6; margin: 0;
+  }
+
+  .usp-grid{
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: minmax(280px, auto);
+    gap: 10px;
+    background: var(--line);
+    border-block: 10px solid var(--line);
+  }
+  .usp-cell{
+    background: var(--ink);
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 360px;
+    position: relative;
+    overflow: hidden;
+  }
+  .usp-cell .label{
+    display: flex; gap: 14px; align-items: center;
+    color: var(--mid-2);
+  }
+  .usp-cell .label .num{ color: var(--bone); }
+  .usp-cell h4{
+    font-size: clamp(20px, 1.6vw, 26px);
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    margin: 0 0 12px;
+    color: var(--bone);
+  }
+  .usp-cell p{
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--bone-dim);
+    margin: 0;
+    max-width: 38ch;
+  }
+
+  .usp-cell .image-slot-wrap{
+    position: relative;
+    margin: -32px -32px 24px;
+    aspect-ratio: 4 / 3;
+    background: #0d0d0c;
+    border-bottom: 1px solid var(--line);
+  }
+  .usp-cell image-slot{
+    width: 100%; height: 100%;
+  }
+
+  /* layout: 4-up wide, with one tall feature on the left */
+  .usp-cell.feature{ grid-column: span 6; grid-row: span 2; min-height: 720px; }
+  .usp-cell.tall{ grid-column: span 3; grid-row: span 2; }
+  .usp-cell.std{ grid-column: span 3; }
+  .usp-cell.wide{ grid-column: span 6; }
+
+  /* Material/texture placeholder */
+  .placeholder{
+    position: absolute; inset: 0;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        rgba(255,255,255,0.02) 0 2px,
+        transparent 2px 18px
+      ),
+      linear-gradient(180deg, #161614 0%, #0c0c0b 100%);
+  }
+  .placeholder .label-pl{
+    position: absolute; left: 16px; bottom: 14px;
+    font-family: var(--display);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+  .placeholder .frame{
+    position: absolute; inset: 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  /* ============================================================
+     QUOTE BANNER
+     ============================================================ */
+  .quote-banner{
+    padding: clamp(80px, 10vw, 140px) 0;
+    border-top: 1px solid var(--line);
+  }
+  .quote-banner .grid12{ align-items: end; }
+  .quote-banner .lhs{ grid-column: 1 / span 1; }
+  .quote-banner .body{ grid-column: 2 / span 9; }
+  .quote-banner h3{
+    font-size: clamp(40px, 5.5vw, 96px);
+    font-weight: 200;
+    letter-spacing: 0.02em;
+    line-height: 1.0;
+    margin: 0;
+    color: var(--bone);
+    text-wrap: balance;
+  }
+  .quote-banner h3 .em{ font-family: var(--display); font-style: normal; font-weight: 400; }
+
+  /* ============================================================
+     COLORREEL  — scroll-driven colour walk
+     ============================================================ */
+  .colorreel{
+    position: relative;
+    height: 400vh;
+    border-top: 1px solid var(--line);
+  }
+  .colorreel-stage{
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    background: #000;
+  }
+  .colorreel-video{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    will-change: transform;
+  }
+  .colorreel-caption{
+    position: absolute;
+    bottom: clamp(40px, 5vw, 72px);
+    left: var(--page-pad);
+    right: var(--page-pad);
+    z-index: 2;
+    pointer-events: none;
+    max-width: 1680px;
+    margin-inline: auto;
+  }
+  .colorreel-caption .meta{
+    display: block;
+    margin-bottom: 14px;
+    color: rgba(255,255,255,0.55);
+  }
+  .colorreel-caption h3{
+    font-size: clamp(36px, 4.2vw, 68px);
+    font-weight: 200;
+    letter-spacing: 0.025em;
+    line-height: 1.02;
+    margin: 0;
+    color: #fff;
+    text-wrap: balance;
+    max-width: 18ch;
+  }
+  .colorreel-caption h3 .em{
+    font-family: var(--display);
+    font-style: normal;
+    font-weight: 400;
+  }
+  .colorreel-progress{
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 1px;
+    width: 0%;
+    background: rgba(255,255,255,0.4);
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  /* ============================================================
+     TESTIMONIALS
+     ============================================================ */
+  .testi{
+    padding: clamp(100px, 12vw, 160px) 0 clamp(80px, 10vw, 140px);
+    border-top: 1px solid var(--line);
+  }
+  .testi-head{
+    display: grid; grid-template-columns: repeat(12, 1fr); column-gap: var(--grid-gutter);
+    margin-bottom: 80px;
+  }
+  .testi-head .lhs{ grid-column: 1 / span 3; }
+  .testi-head .rhs{ grid-column: 5 / span 6; }
+  .testi-head h3{
+    font-size: clamp(36px, 4.2vw, 68px);
+    font-weight: 200;
+    letter-spacing: 0.025em;
+    margin: 16px 0 0;
+    line-height: 1.02;
+  }
+  .testi-head h3 .em{ font-family: var(--display); font-style: normal; font-weight: 400; }
+
+  .testi-row{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border-block: 1px solid var(--line);
+  }
+  .testi-card{
+    background: var(--ink);
+    padding: 36px 32px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    min-height: 520px;
+  }
+  .testi-portrait{
+    aspect-ratio: 4/5;
+    background: #0d0d0c;
+    position: relative;
+    overflow: hidden;
+  }
+  .testi-portrait image-slot{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .testi-quote{
+    font-size: clamp(17px, 1.3vw, 21px);
+    font-weight: 300;
+    line-height: 1.4;
+    letter-spacing: -0.005em;
+    color: var(--bone);
+    margin: 0;
+    text-wrap: pretty;
+  }
+  .testi-quote::before{
+    content: "„";
+    color: var(--bone);
+    margin-right: 4px;
+  }
+  .testi-quote::after{ content: "."; }
+  .testi-meta{
+    display: flex; flex-direction: column; gap: 4px;
+    margin-top: auto;
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
+  }
+  .testi-meta .name{
+    font-size: 14px;
+    color: var(--bone);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .testi-meta .role{
+    font-family: var(--display);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mid-2);
+  }
+
+  /* ============================================================
+     CTA
+     ============================================================ */
+  .cta{
+    padding: clamp(120px, 16vw, 220px) 0 clamp(120px, 14vw, 180px);
+    border-top: 1px solid var(--line);
+    text-align: left;
+    position: relative;
+  }
+  .cta .grid12{ row-gap: 48px; align-items: start; }
+  .cta .lhs{ grid-column: 1 / span 3; }
+  .cta .body{ grid-column: 4 / span 8; }
+  .cta h3{
+    font-size: clamp(44px, 6.4vw, 124px);
+    font-weight: 200;
+    letter-spacing: 0.015em;
+    line-height: 0.96;
+    margin: 0 0 0.4em;
+    color: var(--bone);
+    text-wrap: balance;
+  }
+  .cta h3 .em{ font-family: var(--display); font-style: normal; font-weight: 400; }
+  .cta p{
+    color: var(--bone-dim);
+    max-width: 56ch;
+    font-size: clamp(15px, 1.2vw, 18px);
+    margin: 0 0 56px;
+  }
+  .cta-button{
+    display: inline-flex;
+    align-items: center;
+    gap: 24px;
+    padding: 22px 28px 22px 32px;
+    border: 1px solid var(--bone);
+    color: var(--bone);
+    font-family: var(--display);
+    font-size: clamp(15px, 1.1vw, 18px);
+    font-weight: 300;
+    letter-spacing: -0.005em;
+    border-radius: 0;
+    transition: background 280ms ease, color 280ms ease, padding 280ms ease;
+  }
+  .cta-button:hover{
+    background: var(--bone);
+    color: var(--ink);
+    border-color: var(--bone);
+    padding-right: 36px;
+  }
+  .cta-button .arrow{
+    width: 28px; height: 28px;
+    border-radius: 0;
+    background: var(--bone);
+    color: var(--ink);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    transition: transform 280ms ease;
+  }
+  .cta-button:hover .arrow{ transform: translateX(4px); background: var(--ink); color: var(--bone); }
+  .cta-button:hover .arrow{ background: #000; color: #fff; }
+
+  /* ============================================================
+     LIFELINE VIDEO
+     ============================================================ */
+  .lifeline{
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background: #000;
+  }
+  .lifeline-video{
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ============================================================
+     FOOTER
+     ============================================================ */
+  footer{
+    position: relative;
+    border-top: 1px solid var(--line);
+    padding: 56px var(--page-pad) 28px;
+    background-image:
+      linear-gradient(180deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.86) 60%, rgba(0,0,0,0.92) 100%),
+      url("assets/footer_wald.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    isolation: isolate;
+  }
+  .foot-grid{
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--grid-gutter);
+    row-gap: 48px;
+    align-items: end;
+  }
+  .foot-mark{
+    grid-column: 1 / span 5;
+    display: flex;
+    align-items: flex-start;
+  }
+  .foot-mark img{
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: invert(1);
+  }
+  .foot-cols{
+    grid-column: 7 / span 6;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .foot-col h5{
+    font-family: var(--display);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid-2);
+    margin: 0 0 18px;
+    font-weight: 400;
+  }
+  .foot-col ul{
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .foot-col li{ font-size: 14px; color: var(--bone); font-weight: 300; }
+  .foot-col a:hover{ opacity: 0.6; }
+
+  .foot-base{
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    color: var(--mid-2);
+    font-family: var(--display);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 900px){
+    :root{ --grid-gutter: 12px; }
+    .nav{ padding: 16px var(--page-pad); }
+    .nav .left .navlink:not(:first-child){ display: none; }
+    .nav .right .navlink{ display: none; }
+
+    .hero{ height: 480vh; }
+    .hero-left{
+      flex-direction: column;
+      align-items: flex-start;
+      height: auto;
+      gap: 0;
+    }
+    .hero-prefix{
+      font-size: clamp(28px, 7vw, 48px);
+      height: auto;
+    }
+    .hero-reel{
+      height: clamp(36px, 8.5vw, 60px);
+      min-width: 0;
+      width: calc(100vw - var(--page-pad) * 2 - 8px);
+    }
+    .hero-word{
+      font-size: clamp(28px, 7vw, 48px);
+    }
+    .hero-foot{ display: none; }
+    .cab-callout{ display: none; }
+
+    .intro .col-label, .intro .col-body{ grid-column: 1 / -1; }
+    .intro h2{ font-size: 32px; }
+
+    .usp-head .lhs, .usp-head .rhs{ grid-column: 1 / -1; }
+    .usp-cell.feature, .usp-cell.tall, .usp-cell.std, .usp-cell.wide{
+      grid-column: 1 / -1; grid-row: auto; min-height: 360px;
+    }
+    .usp-cell.feature{ min-height: 480px; }
+
+    .quote-banner .lhs{ grid-column: 1 / -1; }
+    .quote-banner .body{ grid-column: 1 / -1; }
+    .quote-banner h3{ font-size: 40px; }
+
+    .testi-head .lhs, .testi-head .rhs{ grid-column: 1 / -1; }
+    .testi-row{ grid-template-columns: 1fr; }
+
+    .cta .lhs, .cta .body{ grid-column: 1 / -1; }
+    .cta h3{ font-size: 44px; }
+
+    .foot-mark{ grid-column: 1 / -1; font-size: 80px; }
+    .foot-cols{ grid-column: 1 / -1; grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .hero-word, .cabinet-rot, .cta-button, .cta-button .arrow{ transition: none !important; }
+  }
+
+  /* ============================================================
+     ENTRANCE ANIMATIONS
+     ============================================================ */
+
+  /* Hero prefix ("Du willst") – blur-in on load */
+  .hero-prefix{
+    opacity: 0;
+    filter: blur(18px);
+    transition: opacity 800ms cubic-bezier(.2,.6,.2,1), filter 900ms cubic-bezier(.2,.6,.2,1);
+  }
+  .hero-prefix.is-visible{
+    opacity: 1;
+    filter: blur(0);
+  }
+
+  /* Intro section – each text element fades+lifts in */
+  .intro-anim{
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(16px);
+    transition: opacity 700ms cubic-bezier(.2,.6,.2,1),
+                filter 700ms cubic-bezier(.2,.6,.2,1),
+                transform 700ms cubic-bezier(.2,.6,.2,1);
+  }
+  .intro-anim.is-visible{
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+
+  /* Quote banner – individual word animations */
+  .qa-word{
+    display: inline-block;
+    opacity: 0;
+  }
+  .qa-beides{
+    display: inline-block;
+    white-space: nowrap;
+  }
+  .qa-bei, .qa-des{
+    display: inline-block;
+    opacity: 0;
+  }
+  .qa-from-left  { transform: translateX(-70px); transition: opacity 600ms cubic-bezier(.2,.6,.2,1), transform 650ms cubic-bezier(.2,.6,.2,1); }
+  .qa-from-top   { transform: translateY(-56px); transition: opacity 600ms cubic-bezier(.2,.6,.2,1), transform 650ms cubic-bezier(.2,.6,.2,1); }
+  .qa-from-bottom{ transform: translateY(56px);  transition: opacity 600ms cubic-bezier(.2,.6,.2,1), transform 650ms cubic-bezier(.2,.6,.2,1); }
+  .qa-fade       { transition: opacity 550ms cubic-bezier(.2,.6,.2,1); }
+  .qa-scale      { transform: scale(5); transform-origin: center center; transition: opacity 700ms cubic-bezier(.2,.6,.2,1), transform 900ms cubic-bezier(.15,.7,.2,1); }
+  .qa-word.revealed, .qa-bei.revealed, .qa-des.revealed{
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Sieben counter – number swap pulse */
+  #siebenCounter{
+    display: inline-block;
+    transition: opacity 120ms ease;
+  }
+  #siebenCounter.counting{
+    opacity: 0.4;
+  }
+
+  /* ============================================================
+     COLOR CHOOSER
+     ============================================================ */
+  .colors{
+    padding: clamp(100px, 12vw, 160px) 0 clamp(100px, 12vw, 160px);
+    border-top: 1px solid var(--line);
+    background: var(--mod-bg, #000);
+    color: var(--mod-on, #fff);
+    transition: background 700ms cubic-bezier(.2,.6,.2,1), color 700ms ease;
+  }
+  .colors-head{
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--grid-gutter);
+    margin-bottom: 80px;
+    align-items: end;
+  }
+  .colors-head .lhs{ grid-column: 1 / span 7; }
+  .colors-head .rhs{ grid-column: 9 / span 4; }
+  .colors-head h3{
+    font-size: clamp(36px, 4.2vw, 68px);
+    font-weight: 200;
+    letter-spacing: 0.025em;
+    margin: 16px 0 0;
+    line-height: 1.02;
+  }
+  .colors-head h3 .em{ font-family: var(--display); font-style: normal; font-weight: 400; }
+  .colors-head .rhs p{
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    opacity: 0.7;
+    max-width: 38ch;
+  }
+
+  .swatches{
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0;
+    border: 1px solid currentColor;
+    background: transparent;
+  }
+  .swatch{
+    background: var(--mod-bg, #000);
+    color: inherit;
+    border: 0;
+    border-right: 1px solid currentColor;
+    padding: 0;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    transition: background 500ms ease;
+  }
+  .swatch:last-child{ border-right: 0; }
+  .sw-fill{
+    display: block;
+    aspect-ratio: 4 / 5;
+    width: 100%;
+    transition: filter 300ms ease, transform 500ms cubic-bezier(.2,.6,.2,1);
+  }
+  .swatch:hover .sw-fill{ filter: brightness(1.08); }
+  .swatch.is-active .sw-fill{ box-shadow: inset 0 0 0 2px currentColor; }
+  .sw-meta{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px 22px 22px;
+  }
+  .sw-rule{
+    width: 28px; height: 1px; background: currentColor; opacity: 0.5;
+    display: block;
+  }
+  .sw-num{
+    font-family: var(--display);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+  .sw-name{
+    font-size: clamp(18px, 1.4vw, 22px);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .swatch.is-active .sw-num,
+  .swatch.is-active .sw-rule{ opacity: 1; }
+
+  .colors-foot{
+    display: flex;
+    justify-content: space-between;
+    padding-top: 24px;
+    opacity: 0.7;
+  }
+
+  @media (max-width: 900px){
+    .colors-head .lhs, .colors-head .rhs{ grid-column: 1 / -1; }
+    .swatches{ grid-template-columns: repeat(2, 1fr); }
+    .swatch{ border-right: 1px solid currentColor; border-bottom: 1px solid currentColor; }
+    .swatch:nth-child(2n){ border-right: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     NAV
+============================================================ -->
+<nav class="nav" aria-label="Hauptnavigation">
+  <div class="left">
+    <a href="#" class="wordmark" data-screen-label="Wordmark"><img src="assets/hoellental_logo_black.svg" alt="höllental."></a>
+  </div>
+  <div></div>
+  <div class="right">
+    <a href="#high" class="navlink">HIGH</a>
+    <a href="#system" class="navlink">System</a>
+    <a href="#stimmen" class="navlink">Stimmen</a>
+    <a href="#kontakt" class="navlink cta-pill">Analyse</a>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HERO
+============================================================ -->
+<section class="hero" id="high" data-screen-label="01 Hero">
+  <div class="hero-stage">
+    <!-- Background: hero video -->
+    <div class="hero-right" aria-hidden="true">
+      <video class="hero-video" id="heroVideo" src="assets/hero01.mp4" muted playsinline preload="auto"></video>
+    </div>
+
+    <div class="hero-progress" id="heroProgress"></div>
+
+    <!-- Foreground: word reel, centered -->
+    <div class="hero-left">
+      <div class="hero-meta-top">
+        <span class="meta">№ 001 · Studio Höllental</span>
+        <span class="dotline"></span>
+        <span class="meta">Möbelstück HIGH</span>
+      </div>
+
+      <div class="hero-prefix">Du willst</div>
+
+      <div class="hero-reel" id="reel" aria-live="polite">
+        <div class="hero-word" data-i="0">Fokus.</div>
+        <div class="hero-word" data-i="1">Präzision.</div>
+        <div class="hero-word" data-i="2">Kontrolle.</div>
+        <div class="hero-word" data-i="3">Ruhe.</div>
+        <div class="hero-word" data-i="4">Entscheidungsfreude.</div>
+        <div class="hero-word" data-i="5">Leistungsfähigkeit.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     INTRO
+============================================================ -->
+<section class="intro" id="system" data-screen-label="02 Intro">
+  <video class="intro-video" src="assets/s2l.mp4" autoplay muted loop playsinline preload="auto"></video>
+  <div class="shell grid12">
+    <div class="col-label label-stack">
+      <span class="meta">№ 02 — Über</span>
+      <span class="meta signal">Ein System, kein Möbelstück</span>
+    </div>
+    <div class="col-body">
+      <h2 class="intro-anim">HIGH ist die Architektur eines Tages, an dem alles <span class="em">stimmen</span> muss.</h2>
+      <p class="intro-anim" style="transition-delay:150ms">Manche Arbeitstage enden mit einem Abschluss. Andere mit einer Entscheidung, die niemand sonst treffen wollte. HIGH ist für beides gemacht — ein Möbelstück für Räume, in denen Verantwortung getragen, nicht delegiert wird.</p>
+      <p class="intro-anim" style="transition-delay:300ms">Wir bauen für Klarheit. Für die ruhigen Minuten zwischen Sitzungen, für die ersten Stunden des Tages, für den letzten Gedanken am Abend. HIGH ordnet, ohne zu diktieren. Es ist Werkzeug, Ritual und Statement zugleich.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     USP / DETAIL GRID
+============================================================ -->
+<section class="usp">
+  <div class="shell">
+    <div class="usp-head">
+      <div class="lhs">
+        <span class="meta">№ 03 — Detail</span>
+        <h3>Sechs Entscheidungen, die <span class="em">alles</span> tragen.</h3>
+      </div>
+      <div class="rhs">
+        <p>Jedes Detail an HIGH ist eine Antwort auf eine konkrete Frage des Arbeitsalltags. Nichts ist dekorativ. Alles dient — leise, präzise, materialgerecht.</p>
+      </div>
+    </div>
+
+    <div class="usp-grid">
+      <!-- Feature -->
+      <article class="usp-cell feature">
+        <div class="image-slot-wrap">
+          <image-slot id="usp-feature" placeholder="HIGH · Studioaufnahme" shape="rect" src="assets/usp-01.jpg"></image-slot>
+        </div>
+        <div>
+          <div class="label"><span class="meta num">01</span><span class="meta">Architektur</span></div>
+          <h4>Vertikale Ordnung. Horizontale Ruhe.</h4>
+          <p>192 cm Höhe. Eiche schwarz, massiv. Türfront aus 84 präzisionsgefrästen Kassetten. Die Geometrie folgt einem 6er-Raster — die gleiche Strenge, mit der ein Tag sich strukturieren lässt.</p>
+        </div>
+      </article>
+
+      <!-- Tall -->
+      <article class="usp-cell tall">
+        <div class="image-slot-wrap" style="aspect-ratio: 3/4;">
+          <image-slot id="usp-spirits" placeholder="Spirituosenfach · Detail" shape="rect" src="assets/usp-02.jpg"></image-slot>
+        </div>
+        <div>
+          <div class="label"><span class="meta num">02</span><span class="meta">Spirituosen</span></div>
+          <h4>Integrierter Bar-Bereich</h4>
+          <p>Für Tage, an denen der Kopf schwerer ist als der Kalender. Dezent integriert, hochwertig inszeniert, jederzeit griffbereit.</p>
+        </div>
+      </article>
+
+      <!-- Tall -->
+      <article class="usp-cell tall">
+        <div class="image-slot-wrap" style="aspect-ratio: 3/4;">
+          <image-slot id="usp-humidor" placeholder="Humidor · Innenleben" shape="rect" src="assets/usp-03.jpg"></image-slot>
+        </div>
+        <div>
+          <div class="label"><span class="meta num">03</span><span class="meta">Humidor</span></div>
+          <h4>Für Abschlüsse, die Bestand haben</h4>
+          <p>Spanisches Zedernholz. Klimakontrolliert. Für Meilensteine, die nicht nebenbei passieren sollten — Genuss als Ritual, nicht als Geste.</p>
+        </div>
+      </article>
+
+      <!-- Wide -->
+      <article class="usp-cell wide">
+        <div class="image-slot-wrap" style="aspect-ratio: 16/9;">
+          <image-slot id="usp-work" placeholder="Arbeitsfläche · Material" shape="rect"></image-slot>
+        </div>
+        <div>
+          <div class="label"><span class="meta num">04</span><span class="meta">Arbeitsplatz</span></div>
+          <h4>HIGH &amp; WORK — Konzentration mit Haltung</h4>
+          <p>Funktion, Materialität und Atmosphäre als ein Möbelstück. Konzentriertes Arbeiten und persönliche Rituale in einer einzigen Architektur.</p>
+        </div>
+      </article>
+
+      <!-- Std -->
+      <article class="usp-cell std">
+        <div>
+          <div class="label"><span class="meta num">05</span><span class="meta">Material</span></div>
+          <h4>Eiche, Messing, Filz</h4>
+          <p>Drei Materialien. Keine Kompromisse. Jede Oberfläche ist von Hand finalisiert.</p>
+        </div>
+        <div class="placeholder" style="position: relative; height: 160px; margin: 24px -32px -32px;">
+          <div class="frame"></div>
+          <span class="label-pl">— Materialprobe</span>
+        </div>
+      </article>
+
+      <!-- Std -->
+      <article class="usp-cell std">
+        <div>
+          <div class="label"><span class="meta num">06</span><span class="meta">Manufaktur</span></div>
+          <h4>Made in Höllental</h4>
+          <p>Jedes Stück trägt eine Seriennummer. Jedes Stück ist ein Einzelstück. Lieferzeit 14 Wochen.</p>
+        </div>
+        <div class="placeholder" style="position: relative; height: 160px; margin: 24px -32px -32px;">
+          <div class="frame"></div>
+          <span class="label-pl">— Werkstattaufnahme</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     QUOTE BANNER
+============================================================ -->
+<section class="quote-banner">
+  <div class="shell grid12">
+    <div class="lhs"><span class="meta">№ 04</span></div>
+    <div class="body">
+      <h3 class="quote-animated">
+        <span class="qa-word qa-from-left"  data-qorder="0">Zwischen</span>&nbsp;<span class="qa-word qa-from-top"   data-qorder="1">Druck</span>&nbsp;<span class="qa-word qa-fade"      data-qorder="2">und</span>&nbsp;<span class="qa-word qa-scale em" data-qorder="3">Triumph</span>&nbsp;<span class="qa-word qa-fade"      data-qorder="4">—</span>&nbsp;<span class="qa-word qa-fade"      data-qorder="5">ein</span>&nbsp;<span class="qa-word qa-fade"      data-qorder="6">Möbelstück,</span>&nbsp;<span class="qa-word qa-fade"      data-qorder="7">das</span>&nbsp;<span class="qa-beides"             data-qorder="8"><span class="qa-bei qa-from-top">bei</span><span class="qa-des qa-from-bottom">des</span></span>&nbsp;<span class="qa-word qa-fade"      data-qorder="9">aushält.</span>
+      </h3>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     COLORREEL
+============================================================ -->
+<section class="colorreel" id="kollektion" data-screen-label="04 Kollektion">
+  <div class="colorreel-stage">
+    <video class="colorreel-video" id="colorReelVideo"
+           src="assets/cho.mp4" muted playsinline preload="auto"></video>
+    <div class="colorreel-caption">
+      <span class="meta">№ 04 — Kollektion</span>
+      <h3><span id="siebenCounter">Sieben</span> Oberflächen. <span class="em">Jede eine eigene Stimmung.</span></h3>
+    </div>
+    <div class="colorreel-progress" id="colorReelProgress"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     COLOR CHOOSER
+============================================================ -->
+<section class="colors" id="farben" data-screen-label="05 Farben">
+  <div class="shell">
+    <div class="colors-head">
+      <div class="lhs">
+        <span class="meta">№ 04 — Material</span>
+        <h3>Sieben <span class="em">Oberflächen</span>. Eine Entscheidung.</h3>
+      </div>
+      <div class="rhs">
+        <p>Jeder Farbton ist eine eigene Stimmung. Wählen Sie die Oberfläche, mit der HIGH in Ihrem Raum stehen soll.</p>
+      </div>
+    </div>
+
+    <div class="swatches" role="tablist" aria-label="Farbauswahl">
+      <button type="button" class="swatch is-active" role="tab" aria-selected="true"
+              data-color="#3a2e22" data-on="#f3f1ec">
+        <span class="sw-fill" style="background:#3a2e22"></span>
+        <span class="sw-meta">
+          <span class="sw-rule"></span>
+          <span class="sw-num">01</span>
+          <span class="sw-name">Earth</span>
+        </span>
+      </button>
+      <button type="button" class="swatch" role="tab" aria-selected="false"
+              data-color="#b8a994" data-on="#1a1a1a">
+        <span class="sw-fill" style="background:#b8a994"></span>
+        <span class="sw-meta">
+          <span class="sw-rule"></span>
+          <span class="sw-num">02</span>
+          <span class="sw-name">Dust</span>
+        </span>
+      </button>
+      <button type="button" class="swatch" role="tab" aria-selected="false"
+              data-color="#0e0e0e" data-on="#f3f1ec">
+        <span class="sw-fill" style="background:#0e0e0e"></span>
+        <span class="sw-meta">
+          <span class="sw-rule"></span>
+          <span class="sw-num">03</span>
+          <span class="sw-name">Shadow</span>
+        </span>
+      </button>
+      <button type="button" class="swatch" role="tab" aria-selected="false"
+              data-color="#1d2d3a" data-on="#f3f1ec">
+        <span class="sw-fill" style="background:#1d2d3a"></span>
+        <span class="sw-meta">
+          <span class="sw-rule"></span>
+          <span class="sw-num">04</span>
+          <span class="sw-name">Ocean</span>
+        </span>
+      </button>
+      <button type="button" class="swatch" role="tab" aria-selected="false"
+              data-color="#2f3a2a" data-on="#f3f1ec">
+        <span class="sw-fill" style="background:#2f3a2a"></span>
+        <span class="sw-meta">
+          <span class="sw-rule"></span>
+          <span class="sw-num">05</span>
+          <span class="sw-name">Plant</span>
+        </span>
+      </button>
+      <button type="button" class="swatch" role="tab" aria-selected="false"
+              data-color="#7a7873" data-on="#1a1a1a">
+        <span class="sw-fill" style="background:#7a7873"></span>
+        <span class="sw-meta">
+          <span class="sw-rule"></span>
+          <span class="sw-num">06</span>
+          <span class="sw-name">Stone</span>
+        </span>
+      </button>
+      <button type="button" class="swatch" role="tab" aria-selected="false"
+              data-color="#3b2418" data-on="#f3f1ec">
+        <span class="sw-fill" style="background:#3b2418"></span>
+        <span class="sw-meta">
+          <span class="sw-rule"></span>
+          <span class="sw-num">07</span>
+          <span class="sw-name">Chocolate</span>
+        </span>
+      </button>
+    </div>
+
+    <div class="colors-foot">
+      <span class="meta current-meta">Aktuell — <span id="currentName">Earth</span></span>
+      <span class="meta">HIGH · Edition I</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TESTIMONIALS
+============================================================ -->
+<section class="testi" id="stimmen" data-screen-label="05 Stimmen">
+  <div class="shell">
+    <div class="testi-head">
+      <div class="lhs">
+        <span class="meta">№ 05 — Stimmen</span>
+      </div>
+      <div class="rhs">
+        <h3>Unternehmer, die <span class="em">Verantwortung</span> tragen.</h3>
+      </div>
+    </div>
+
+    <div class="testi-row">
+      <article class="testi-card">
+        <div class="testi-portrait">
+          <image-slot id="t1" placeholder="Porträt — Dr. Anselm Vogt" shape="rect" src="assets/ceo1.png"></image-slot>
+        </div>
+        <p class="testi-quote">HIGH steht in meinem Büro wie eine Linie, an der man Tage ausrichtet — ich öffne es nicht oft, aber es ordnet alles, was um ihn herum geschieht</p>
+        <div class="testi-meta">
+          <span class="name">Dr. Anselm Vogt</span>
+          <span class="role">CEO · Vogt Industriebeteiligungen</span>
+        </div>
+      </article>
+
+      <article class="testi-card">
+        <div class="testi-portrait">
+          <image-slot id="t2" placeholder="Porträt — Marlene Berger" shape="rect" src="assets/ceo2.png"></image-slot>
+        </div>
+        <p class="testi-quote">Ein Möbelstück, das mich zwingt, langsamer zu werden. Nach dem Closing einer Übernahme habe ich zum ersten Mal seit Wochen wieder zwei Minuten still gestanden</p>
+        <div class="testi-meta">
+          <span class="name">Marlene Berger</span>
+          <span class="role">Geschäftsführerin · Berger &amp; Reith</span>
+        </div>
+      </article>
+
+      <article class="testi-card">
+        <div class="testi-portrait">
+          <image-slot id="t3" placeholder="Porträt — Friedrich Kaltenbach" shape="rect" src="assets/ceo3.png"></image-slot>
+        </div>
+        <p class="testi-quote">Wir kaufen kein Möbel — wir kaufen einen Platz im Raum, der nichts beweisen muss. HIGH ist die teuerste, leiseste Entscheidung in unserem Vorstandsbüro</p>
+        <div class="testi-meta">
+          <span class="name">Friedrich Kaltenbach</span>
+          <span class="role">Vorstand · Kaltenbach Privatbankiers</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CTA
+============================================================ -->
+<section class="cta" id="kontakt" data-screen-label="06 CTA">
+  <div class="shell grid12">
+    <div class="lhs label-stack">
+      <span class="meta">№ 06 — Analyse</span>
+      <span class="meta signal">Persönlich · Diskret</span>
+    </div>
+    <div class="body">
+      <h3>Bevor wir bauen, <span class="em">verstehen</span> wir Ihren Tag.</h3>
+      <p>Eine HIGH-Konfiguration beginnt mit einem 60-minütigen Analysetermin — vor Ort, in Ihrem Büro, oder an einem ruhigen Ort Ihrer Wahl. Wir sehen, was Sie tun. Wir hören, was Sie brauchen. Erst danach reden wir über Material, Maße und Termin.</p>
+      <a href="#" class="cta-button">
+        Jetzt Analysetermin vereinbaren
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     LIFELINE
+============================================================ -->
+<section class="lifeline">
+  <video class="lifeline-video" src="assets/lifeline.mp4" autoplay muted loop playsinline preload="auto"></video>
+</section>
+
+<!-- ============================================================
+     FOOTER
+============================================================ -->
+<footer data-screen-label="07 Footer">
+  <div class="foot-grid">
+    <div class="foot-mark"><img src="assets/hoellental_logo_black.svg" alt="höllental."></div>
+    <div class="foot-cols">
+      <div class="foot-col">
+        <h5>Studio</h5>
+        <ul>
+          <li><a href="#">Manifest</a></li>
+          <li><a href="#">Werkstatt</a></li>
+          <li><a href="#">Material</a></li>
+          <li><a href="#">Presse</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Stücke</h5>
+        <ul>
+          <li><a href="#">HIGH</a></li>
+          <li><a href="#">HIGH &amp; WORK</a></li>
+          <li><a href="#">Edition №2</a></li>
+          <li><a href="#">Auftragsarbeit</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Kontakt</h5>
+        <ul>
+          <li><a href="mailto:studio@hoellental.com">studio@hoellental.com</a></li>
+          <li><a href="#">+49 7551 — 000 000</a></li>
+          <li><a href="#">Termin buchen</a></li>
+          <li><a href="#">Standort</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="foot-base">
+    <span>© 2026 Studio Höllental Manufaktur</span>
+    <span>Möbelstück HIGH · Edition I · № 001 / 144</span>
+    <span><a href="#">Impressum</a> · <a href="#">Datenschutz</a></span>
+  </div>
+</footer>
+
+<!-- ============================================================
+     SCRIPTS
+============================================================ -->
+<script src="image-slot.js"></script>
+<script>
+  // -- Hero video setup -----------------------------------------
+  (function setupHeroVideo(){
+    const v = document.getElementById('heroVideo');
+    if(!v) return;
+    const onReady = () => { try { v.pause(); } catch(e) {} };
+    if(v.readyState >= 1) onReady();
+    else v.addEventListener('loadedmetadata', onReady, { once: true });
+  })();
+
+  // -- Hero scroll engine ---------------------------------------
+  (function heroScroll(){
+    const hero = document.querySelector('.hero');
+    const reel = document.getElementById('reel');
+    const words = [...reel.querySelectorAll('.hero-word')];
+    const bar = document.getElementById('heroProgress');
+    if(!hero) return;
+
+    let lastIdx = -1;
+
+    function onScroll(){
+      const rect = hero.getBoundingClientRect();
+      const total = hero.offsetHeight - window.innerHeight;
+      const passed = Math.min(Math.max(-rect.top, 0), total);
+      const t = total > 0 ? passed / total : 0; // 0..1
+
+      if(bar) bar.style.width = (t * 100) + '%';
+
+      // Cabinet rotation: 0 → 360° across hero
+      // Drive video timeline by scroll progress instead of autoplay
+      const v = document.getElementById('heroVideo');
+      if (v && v.duration && isFinite(v.duration)) {
+        const target = Math.max(0, Math.min(v.duration - 0.05, t * v.duration));
+        if (Math.abs(v.currentTime - target) > 0.03) {
+          try { v.currentTime = target; } catch(e) {}
+        }
+      }
+
+      // Word index — hold each word for an even slice
+      const n = words.length;
+      const idx = Math.min(n - 1, Math.floor(t * n));
+      if(idx !== lastIdx){
+        words.forEach((w, i) => {
+          w.classList.toggle('is-active', i === idx);
+          w.classList.toggle('is-past',   i  <  idx);
+        });
+        lastIdx = idx;
+      }
+    }
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if(!ticking){
+        requestAnimationFrame(() => { onScroll(); ticking = false; });
+        ticking = true;
+      }
+    }, { passive: true });
+    onScroll();
+  })();
+
+  // -- Color chooser --------------------------------------------
+  (function colorChooser(){
+    const sec = document.querySelector('.colors');
+    if(!sec) return;
+    const swatches = sec.querySelectorAll('.swatch');
+    const nameOut = document.getElementById('currentName');
+    function applyColor(s){
+      const bg = s.dataset.color;
+      const on = s.dataset.on || '#fff';
+      sec.style.setProperty('--mod-bg', bg);
+      sec.style.setProperty('--mod-on', on);
+      if(nameOut) nameOut.textContent = s.querySelector('.sw-name').textContent;
+    }
+    swatches.forEach(s => {
+      s.addEventListener('click', () => {
+        swatches.forEach(o => { o.classList.remove('is-active'); o.setAttribute('aria-selected','false'); });
+        s.classList.add('is-active'); s.setAttribute('aria-selected','true');
+        applyColor(s);
+      });
+    });
+    const active = sec.querySelector('.swatch.is-active');
+    if(active) applyColor(active);
+  })();
+
+  // -- Colorreel scroll engine ----------------------------------
+  (function colorReelScroll(){
+    const section = document.getElementById('kollektion');
+    const v       = document.getElementById('colorReelVideo');
+    const bar     = document.getElementById('colorReelProgress');
+    if(!section || !v) return;
+
+    function seek(){
+      if(!v.duration || !isFinite(v.duration)) return;
+      const rect   = section.getBoundingClientRect();
+      const total  = section.offsetHeight - window.innerHeight;
+      const passed = Math.min(Math.max(-rect.top, 0), total);
+      const t      = total > 0 ? passed / total : 0;
+
+      if(bar) bar.style.width = (t * 100) + '%';
+
+      const target = Math.max(0, Math.min(v.duration - 0.05, t * v.duration));
+      if(Math.abs(v.currentTime - target) > 0.03){
+        try { v.currentTime = target; } catch(e){}
+      }
+    }
+
+    // Force metadata fetch regardless of viewport position, then snap to
+    // current scroll position so the first frame is correct on page load.
+    v.load();
+    v.addEventListener('canplay', () => { try { v.pause(); } catch(e){} seek(); }, { once: true });
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if(!ticking){
+        requestAnimationFrame(() => { seek(); ticking = false; });
+        ticking = true;
+      }
+    }, { passive: true });
+    seek();
+  })();
+
+  // -- Hero prefix + first word entrance ---------------------------
+  (function heroEntrance(){
+    const prefix = document.querySelector('.hero-prefix');
+    const words  = document.querySelectorAll('.hero-word');
+    if(!prefix) return;
+    // "Du willst" blurs in after 200ms
+    setTimeout(() => { prefix.classList.add('is-visible'); }, 200);
+    // First word "Fokus" appears 700ms later
+    setTimeout(() => {
+      words.forEach((w, i) => {
+        w.classList.toggle('is-active', i === 0);
+        w.classList.remove('is-past');
+      });
+    }, 900);
+  })();
+
+  // -- Intro text fade-in ------------------------------------------
+  (function introAnimate(){
+    const els = document.querySelectorAll('.intro-anim');
+    if(!els.length) return;
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if(e.isIntersecting){
+          e.target.classList.add('is-visible');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    els.forEach(el => obs.observe(el));
+  })();
+
+  // -- Quote banner word-by-word -----------------------------------
+  (function quoteBanner(){
+    const section = document.querySelector('.quote-animated');
+    if(!section) return;
+    const words   = section.querySelectorAll('[data-qorder]');
+    const bei     = section.querySelector('.qa-bei');
+    const des     = section.querySelector('.qa-des');
+
+    const obs = new IntersectionObserver((entries) => {
+      if(!entries[0].isIntersecting) return;
+      obs.disconnect();
+      words.forEach(el => {
+        const order = parseInt(el.dataset.qorder);
+        const delay = order * 140;
+        if(el.classList.contains('qa-beides')){
+          setTimeout(() => {
+            if(bei) bei.classList.add('revealed');
+            if(des) des.classList.add('revealed');
+          }, delay);
+        } else {
+          setTimeout(() => el.classList.add('revealed'), delay);
+        }
+      });
+    }, { threshold: 0.4 });
+
+    obs.observe(section.closest('.quote-banner') || section);
+  })();
+
+  // -- Sieben counter ----------------------------------------------
+  (function siebenCount(){
+    const el      = document.getElementById('siebenCounter');
+    const section = document.getElementById('kollektion');
+    if(!el || !section) return;
+    const nums = ['Eins','Zwei','Drei','Vier','Fünf','Sechs','Sieben'];
+    let fired = false;
+
+    function runCounter(){
+      if(fired) return;
+      fired = true;
+      let i = 0;
+      function step(){
+        el.classList.add('counting');
+        setTimeout(() => {
+          el.textContent = nums[i];
+          el.classList.remove('counting');
+          i++;
+          if(i < nums.length) setTimeout(step, 140);
+        }, 80);
+      }
+      step();
+    }
+
+    // Trigger as soon as the sticky stage scrolls into view (t > 0)
+    window.addEventListener('scroll', function check(){
+      const rect  = section.getBoundingClientRect();
+      const total = section.offsetHeight - window.innerHeight;
+      const t     = total > 0 ? Math.min(Math.max(-rect.top, 0), total) / total : 0;
+      if(t > 0.01){
+        window.removeEventListener('scroll', check);
+        runCounter();
+      }
+    }, { passive: true });
+
+    // Also fire immediately if page loads mid-section
+    const rect  = section.getBoundingClientRect();
+    const total = section.offsetHeight - window.innerHeight;
+    const t0    = total > 0 ? Math.min(Math.max(-rect.top, 0), total) / total : 0;
+    if(t0 > 0.01) runCounter();
+  })();
+</script>
+
+</body>
+</html>
