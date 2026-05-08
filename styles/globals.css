@@ -662,6 +662,17 @@
     font-style: normal;
     font-weight: 400;
   }
+  .colorreel-colorname{
+    font-size: clamp(48px, 7vw, 110px);
+    font-weight: 200;
+    letter-spacing: 0.04em;
+    color: rgba(255,255,255,0.18);
+    line-height: 1;
+    margin-top: 8px;
+    pointer-events: none;
+    text-transform: uppercase;
+  }
+
   .colorreel-progress{
     position: absolute;
     bottom: 0; left: 0;

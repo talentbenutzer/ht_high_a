@@ -90,7 +90,11 @@ export default function LandingPage() {
       const section = document.getElementById('kollektion')
       const v       = document.getElementById('colorReelVideo')
       const bar     = document.getElementById('colorReelProgress')
+      const nameEl  = document.getElementById('colorReelName')
       if (!section || !v) return
+
+      const colors = ['Chocolate','Dust','Earth','Ocean','Plant','Shadow','Stone']
+      let lastColorIdx = -1
 
       function seek() {
         if (!v.duration || !isFinite(v.duration)) return
@@ -100,6 +104,13 @@ export default function LandingPage() {
         const t      = total > 0 ? passed / total : 0
 
         if (bar) bar.style.width = (t * 100) + '%'
+
+        const colorIdx = Math.min(colors.length - 1, Math.floor(t * colors.length))
+        if (nameEl && colorIdx !== lastColorIdx) {
+          nameEl.textContent = colors[colorIdx]
+          lastColorIdx = colorIdx
+        }
+
         const target = Math.max(0, Math.min(v.duration - 0.05, t * v.duration))
         if (Math.abs(v.currentTime - target) > 0.03) {
           try { v.currentTime = target } catch (e) {}
@@ -170,101 +181,6 @@ export default function LandingPage() {
       obs.observe(section.closest('.quote-banner') || section)
     })()
 
-    // ── Sieben counter ────────────────────────────────────────────
-    ;(function siebenCount() {
-      const el      = document.getElementById('siebenCounter')
-      const section = document.getElementById('kollektion')
-      if (!el || !section) return
-      const nums = ['Eins','Zwei','Drei','Vier','Fünf','Sechs','Sieben']
-      let fired = false
-
-      function runCounter() {
-        if (fired) return
-        fired = true
-        let i = 0
-        function step() {
-          el.classList.add('counting')
-          setTimeout(() => {
-            el.textContent = nums[i]
-            el.classList.remove('counting')
-            i++
-            if (i < nums.length) setTimeout(step, 140)
-          }, 80)
-        }
-        step()
-      }
-
-      window.addEventListener('scroll', function check() {
-        const rect  = section.getBoundingClientRect()
-        const total = section.offsetHeight - window.innerHeight
-        const t     = total > 0 ? Math.min(Math.max(-rect.top, 0), total) / total : 0
-        if (t > 0.01) { window.removeEventListener('scroll', check); runCounter() }
-      }, { passive: true })
-
-      const rect  = section.getBoundingClientRect()
-      const total = section.offsetHeight - window.innerHeight
-      if (total > 0 && Math.min(Math.max(-rect.top, 0), total) / total > 0.01) runCounter()
-    })()
-
-    // ── Licht button — forward / reverse playback ─────────────────
-    ;(function lichtInteraction() {
-      const btn   = document.getElementById('lichtBtn')
-      const video = document.getElementById('lichtVideo')
-      if (!btn || !video) return
-
-      const initVideo = () => { try { video.pause(); video.currentTime = 0 } catch (e) {} }
-      if (video.readyState >= 1) initVideo()
-      else video.addEventListener('loadedmetadata', initVideo, { once: true })
-
-      const label = btn.querySelector('.btn-label')
-      let state = 'off'
-      let rafId = null
-
-      function cancelReverse() {
-        if (rafId) { cancelAnimationFrame(rafId); rafId = null }
-      }
-
-      function playForward() {
-        cancelReverse()
-        state = 'playing-on'
-        btn.disabled = true
-        video.playbackRate = 1
-        video.play()
-        video.addEventListener('ended', () => {
-          video.pause()
-          state = 'on'
-          label.textContent = 'Licht aus'
-          btn.classList.add('is-on')
-          btn.disabled = false
-        }, { once: true })
-      }
-
-      function playReverse() {
-        cancelReverse()
-        state = 'playing-off'
-        btn.disabled = true
-        video.pause()
-        const step = () => {
-          video.currentTime = Math.max(0, video.currentTime - 0.033)
-          if (video.currentTime > 0.01) {
-            rafId = requestAnimationFrame(step)
-          } else {
-            video.currentTime = 0
-            state = 'off'
-            label.textContent = 'Licht an'
-            btn.classList.remove('is-on')
-            btn.disabled = false
-            rafId = null
-          }
-        }
-        rafId = requestAnimationFrame(step)
-      }
-
-      btn.addEventListener('click', () => {
-        if (state === 'off') { playForward(); return }
-        if (state === 'on')  { playReverse(); return }
-      })
-    })()
   }, [])
 
   return (
@@ -311,15 +227,12 @@ export default function LandingPage() {
               <span className="meta">Möbelstück HIGH</span>
             </div>
 
-            <div className="hero-prefix">Du willst</div>
+            <div className="hero-prefix">Du möchtest</div>
 
             <div className="hero-reel" id="reel" aria-live="polite">
-              <div className="hero-word" data-i="0">Fokus.</div>
-              <div className="hero-word" data-i="1">Präzision.</div>
-              <div className="hero-word" data-i="2">Kontrolle.</div>
-              <div className="hero-word" data-i="3">Ruhe.</div>
-              <div className="hero-word" data-i="4">Entscheidungsfreude.</div>
-              <div className="hero-word" data-i="5">Leistungsfähigkeit.</div>
+              <div className="hero-word" data-i="0">Klarheit.</div>
+              <div className="hero-word" data-i="1">Dynamik.</div>
+              <div className="hero-word" data-i="2">Fokus.</div>
             </div>
           </div>
         </div>
@@ -354,91 +267,15 @@ export default function LandingPage() {
         <div className="shell">
           <div className="usp-head">
             <div className="lhs">
-              <span className="meta">№ 03 — Detail</span>
-              <h3>Sechs Entscheidungen, die <span className="em">alles</span> tragen.</h3>
-            </div>
-            <div className="rhs">
-              <p>Jedes Detail an HIGH ist eine Antwort auf eine konkrete Frage des Arbeitsalltags.
-                Nichts ist dekorativ. Alles dient — leise, präzise, materialgerecht.</p>
+              <span className="meta">№ 03 — Das Stück</span>
+              <h3>Jedes Stück. <span className="em">Ein Einzelstück.</span></h3>
             </div>
           </div>
 
           <div className="usp-grid">
-            {/* Feature */}
-            <article className="usp-cell feature">
-              <div className="image-slot-wrap">
-                <image-slot id="usp-feature" placeholder="HIGH · Studioaufnahme" shape="rect" src="/images/usp-01.jpg" />
-              </div>
-              <div>
-                <div className="label"><span className="meta num">01</span><span className="meta">Architektur</span></div>
-                <h4>Vertikale Ordnung. Horizontale Ruhe.</h4>
-                <p>192 cm Höhe. Eiche schwarz, massiv. Türfront aus 84 präzisionsgefrästen Kassetten.
-                  Die Geometrie folgt einem 6er-Raster — die gleiche Strenge, mit der ein Tag sich strukturieren lässt.</p>
-              </div>
-            </article>
-
-            {/* Tall */}
-            <article className="usp-cell tall">
-              <div className="image-slot-wrap" style={{ aspectRatio: '3/4' }}>
-                <image-slot id="usp-spirits" placeholder="Spirituosenfach · Detail" shape="rect" src="/images/usp-02.jpg" />
-              </div>
-              <div>
-                <div className="label"><span className="meta num">02</span><span className="meta">Spirituosen</span></div>
-                <h4>Integrierter Bar-Bereich</h4>
-                <p>Für Tage, an denen der Kopf schwerer ist als der Kalender.
-                  Dezent integriert, hochwertig inszeniert, jederzeit griffbereit.</p>
-              </div>
-            </article>
-
-            {/* Tall */}
-            <article className="usp-cell tall">
-              <div className="image-slot-wrap" style={{ aspectRatio: '3/4' }}>
-                <image-slot id="usp-humidor" placeholder="Humidor · Innenleben" shape="rect" src="/images/usp-03.jpg" />
-              </div>
-              <div>
-                <div className="label"><span className="meta num">03</span><span className="meta">Humidor</span></div>
-                <h4>Für Abschlüsse, die Bestand haben</h4>
-                <p>Spanisches Zedernholz. Klimakontrolliert. Für Meilensteine, die nicht nebenbei passieren sollten —
-                  Genuss als Ritual, nicht als Geste.</p>
-              </div>
-            </article>
-
-            {/* Wide */}
-            <article className="usp-cell wide">
-              <div className="image-slot-wrap" style={{ aspectRatio: '16/9' }}>
-                <image-slot id="usp-work" placeholder="Arbeitsfläche · Material" shape="rect" />
-              </div>
-              <div>
-                <div className="label"><span className="meta num">04</span><span className="meta">Arbeitsplatz</span></div>
-                <h4>HIGH &amp; WORK — Konzentration mit Haltung</h4>
-                <p>Funktion, Materialität und Atmosphäre als ein Möbelstück.
-                  Konzentriertes Arbeiten und persönliche Rituale in einer einzigen Architektur.</p>
-              </div>
-            </article>
-
-            {/* Std */}
-            <article className="usp-cell std">
-              <div>
-                <div className="label"><span className="meta num">05</span><span className="meta">Material</span></div>
-                <h4>Eiche, Messing, Filz</h4>
-                <p>Drei Materialien. Keine Kompromisse. Jede Oberfläche ist von Hand finalisiert.</p>
-              </div>
-              <div className="placeholder" style={{ position: 'relative', height: '160px', margin: '24px -32px -32px' }}>
-                <div className="frame"></div>
-                <span className="label-pl">— Materialprobe</span>
-              </div>
-            </article>
-
-            {/* Std */}
-            <article className="usp-cell std">
-              <div>
-                <div className="label"><span className="meta num">06</span><span className="meta">Manufaktur</span></div>
-                <h4>Made in Höllental</h4>
-                <p>Jedes Stück trägt eine Seriennummer. Jedes Stück ist ein Einzelstück. Lieferzeit 14 Wochen.</p>
-              </div>
-              <div className="placeholder" style={{ position: 'relative', height: '160px', margin: '24px -32px -32px' }}>
-                <div className="frame"></div>
-                <span className="label-pl">— Werkstattaufnahme</span>
+            <article className="usp-cell" style={{ gridColumn: '1 / -1', minHeight: '80vh' }}>
+              <div className="image-slot-wrap" style={{ flex: 1, minHeight: 0 }}>
+                <image-slot id="usp-feature" placeholder="HIGH · Zürich" shape="rect" src="/images/usp-01.jpg" />
               </div>
             </article>
           </div>
@@ -482,14 +319,15 @@ export default function LandingPage() {
           />
           <div className="colorreel-caption">
             <span className="meta">№ 04 — Kollektion</span>
-            <h3><span id="siebenCounter">Sieben</span> Oberflächen. <span className="em">Jede eine eigene Stimmung.</span></h3>
+            <h3>Sieben Oberflächen. <span className="em">Jede eine eigene Stimmung.</span></h3>
+            <div className="colorreel-colorname" id="colorReelName">Chocolate</div>
           </div>
           <div className="colorreel-progress" id="colorReelProgress"></div>
         </div>
       </section>
 
       {/* COLOR CHOOSER */}
-      <section className="colors" id="farben" data-screen-label="05 Farben">
+      <section className="colors" id="farben" data-screen-label="05 Farben" style={{ display: 'none' }}>
         <div className="shell">
           <div className="colors-head">
             <div className="lhs">
@@ -574,33 +412,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* LICHT */}
-      <section className="licht" id="licht" data-screen-label="05 Licht">
-        <video
-          className="licht-video"
-          id="lichtVideo"
-          src="/videos/licht.mp4"
-          muted
-          playsInline
-          preload="auto"
-        />
-        <div className="licht-overlay" />
-        <div className="licht-content">
-          <span className="meta">№ 05 — Atmosphäre</span>
-          <h2>Warmweißes Licht.<br />Fünf Zonen. <span className="em">Ein Moment.</span></h2>
-          <p>
-            Das Innenlicht von HIGH ist kein Accessoire — es ist Haltung. Warmweißes Licht,
-            dimmbar auf drei Stufen, erhellt präzise, was zählt: den Humidor, die Spirituosen,
-            die Ablage für das Notizbuch. Kein Scheinwerfer — sondern Atmosphäre, die einen
-            Raum neu definiert und einen Abend eröffnet.
-          </p>
-          <button className="licht-btn" id="lichtBtn" type="button">
-            <span className="btn-icon" />
-            <span className="btn-label">Licht an</span>
-          </button>
-        </div>
-      </section>
-
       {/* TESTIMONIALS */}
       <section className="testi" id="stimmen" data-screen-label="05 Stimmen">
         <div className="shell">
@@ -664,15 +475,15 @@ export default function LandingPage() {
         <div className="shell grid12">
           <div className="lhs label-stack">
             <span className="meta">№ 06 — Analyse</span>
-            <span className="meta signal">Persönlich · Diskret</span>
+            <span className="meta signal">Persönlich</span>
           </div>
           <div className="body">
-            <h3>Bevor wir bauen, <span className="em">verstehen</span> wir Ihren Tag.</h3>
+            <h3>Mit Sicherheit die beste <span className="em">Entscheidung</span> des Tages</h3>
             <p>Eine HIGH-Konfiguration beginnt mit einem 60-minütigen Analysetermin — vor Ort, in Ihrem Büro,
               oder an einem ruhigen Ort Ihrer Wahl. Wir sehen, was Sie tun. Wir hören, was Sie brauchen.
               Erst danach reden wir über Material, Maße und Termin.</p>
             <a href="#" className="cta-button">
-              Jetzt Analysetermin vereinbaren
+              Next Level Now
               <span className="arrow" aria-hidden="true">→</span>
             </a>
           </div>
