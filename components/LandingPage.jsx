@@ -205,6 +205,66 @@ export default function LandingPage() {
       const total = section.offsetHeight - window.innerHeight
       if (total > 0 && Math.min(Math.max(-rect.top, 0), total) / total > 0.01) runCounter()
     })()
+
+    // ── Licht button — forward / reverse playback ─────────────────
+    ;(function lichtInteraction() {
+      const btn   = document.getElementById('lichtBtn')
+      const video = document.getElementById('lichtVideo')
+      if (!btn || !video) return
+
+      const initVideo = () => { try { video.pause(); video.currentTime = 0 } catch (e) {} }
+      if (video.readyState >= 1) initVideo()
+      else video.addEventListener('loadedmetadata', initVideo, { once: true })
+
+      const label = btn.querySelector('.btn-label')
+      let state = 'off'
+      let rafId = null
+
+      function cancelReverse() {
+        if (rafId) { cancelAnimationFrame(rafId); rafId = null }
+      }
+
+      function playForward() {
+        cancelReverse()
+        state = 'playing-on'
+        btn.disabled = true
+        video.playbackRate = 1
+        video.play()
+        video.addEventListener('ended', () => {
+          video.pause()
+          state = 'on'
+          label.textContent = 'Licht aus'
+          btn.classList.add('is-on')
+          btn.disabled = false
+        }, { once: true })
+      }
+
+      function playReverse() {
+        cancelReverse()
+        state = 'playing-off'
+        btn.disabled = true
+        video.pause()
+        const step = () => {
+          video.currentTime = Math.max(0, video.currentTime - 0.033)
+          if (video.currentTime > 0.01) {
+            rafId = requestAnimationFrame(step)
+          } else {
+            video.currentTime = 0
+            state = 'off'
+            label.textContent = 'Licht an'
+            btn.classList.remove('is-on')
+            btn.disabled = false
+            rafId = null
+          }
+        }
+        rafId = requestAnimationFrame(step)
+      }
+
+      btn.addEventListener('click', () => {
+        if (state === 'off') { playForward(); return }
+        if (state === 'on')  { playReverse(); return }
+      })
+    })()
   }, [])
 
   return (
@@ -511,6 +571,33 @@ export default function LandingPage() {
             <span className="meta current-meta">Aktuell — <span id="currentName">Earth</span></span>
             <span className="meta">HIGH · Edition I</span>
           </div>
+        </div>
+      </section>
+
+      {/* LICHT */}
+      <section className="licht" id="licht" data-screen-label="05 Licht">
+        <video
+          className="licht-video"
+          id="lichtVideo"
+          src="/videos/licht.mp4"
+          muted
+          playsInline
+          preload="auto"
+        />
+        <div className="licht-overlay" />
+        <div className="licht-content">
+          <span className="meta">№ 05 — Atmosphäre</span>
+          <h2>Warmweißes Licht.<br />Fünf Zonen. <span className="em">Ein Moment.</span></h2>
+          <p>
+            Das Innenlicht von HIGH ist kein Accessoire — es ist Haltung. Warmweißes Licht,
+            dimmbar auf drei Stufen, erhellt präzise, was zählt: den Humidor, die Spirituosen,
+            die Ablage für das Notizbuch. Kein Scheinwerfer — sondern Atmosphäre, die einen
+            Raum neu definiert und einen Abend eröffnet.
+          </p>
+          <button className="licht-btn" id="lichtBtn" type="button">
+            <span className="btn-icon" />
+            <span className="btn-label">Licht an</span>
+          </button>
         </div>
       </section>
 
