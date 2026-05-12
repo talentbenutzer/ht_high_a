@@ -252,8 +252,8 @@ export default function LandingPage() {
         const data = await response.json();
 
         if (response.ok && data.success) {
-          setIsSuccess(true);
-          setFormData({ name: '', email: '', phone: '', timeline: 'Noch offen', message: '', website: '' });
+          sessionStorage.setItem('contactData', JSON.stringify(formData));
+          window.location.href = '/success';
         } else {
           setSubmitError(data.error || 'Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es später erneut oder schreiben Sie direkt an info@hoellental.studio.');
         }
