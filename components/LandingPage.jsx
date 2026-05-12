@@ -578,7 +578,7 @@ export default function LandingPage() {
                   <img src="/images/timo_horl.png" alt="Timo Horl" />
                 </div>
                 <div className="testi-company-badge">
-                  <span className="badge-name">Horl</span>
+                  <span className="badge-name">Horl 1993 GmbH</span>
                 </div>
               </div>
               <div className="testi-quote-icon">“</div>
@@ -588,7 +588,7 @@ export default function LandingPage() {
               </p>
               <div className="testi-meta">
                 <span className="name">Timo Horl</span>
-                <span className="role">Founder, Horl</span>
+                <span className="role">Founder, Horl 1993 GmbH</span>
                 <span className="location">Weltweit erfolgreiches Premiumbrand</span>
               </div>
             </article>

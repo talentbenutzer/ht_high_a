@@ -107,19 +107,28 @@ export default function SuccessPage() {
                 </div>
               )}
             </div>
-            
+          </div>
+
+          {/* Bottom Left Button */}
+          <div style={{ 
+            position: 'absolute', 
+            left: 'var(--page-pad)', 
+            bottom: 'var(--page-pad)', 
+            zIndex: 3 
+          }}>
             <button 
               style={{ 
-                marginTop: '24px', 
                 fontSize: '12px',
                 color: 'var(--bone)',
                 textDecoration: 'none',
-                background: 'none',
-                border: 'none',
+                background: 'rgba(20, 20, 19, 0.4)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                border: '1px solid var(--line)',
                 cursor: 'pointer',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em',
-                padding: 0
+                padding: '12px 24px',
               }}
               onClick={() => {
                 sessionStorage.removeItem('contactData');
