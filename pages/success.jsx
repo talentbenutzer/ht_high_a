@@ -118,17 +118,17 @@ export default function SuccessPage() {
           }}>
             <button 
               style={{ 
-                fontSize: '12px',
+                fontSize: '14px',
                 color: 'var(--bone)',
                 textDecoration: 'none',
                 background: 'rgba(20, 20, 19, 0.4)',
                 backdropFilter: 'blur(10px)',
                 WebkitBackdropFilter: 'blur(10px)',
-                border: '1px solid var(--line)',
+                border: '1px solid var(--bone)',
                 cursor: 'pointer',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em',
-                padding: '12px 24px',
+                padding: '16px 32px',
               }}
               onClick={() => {
                 sessionStorage.removeItem('contactData');
