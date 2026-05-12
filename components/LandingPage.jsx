@@ -1,188 +1,242 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Script from 'next/script'
 
 const LIFELINE_VIDEO_URL = '/videos/lifeline.mp4'
 
+const getCurrentDateTime = () => {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+  return now.toISOString().slice(0, 16);
+};
+
 export default function LandingPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: ''
+  })
+  const [errors, setErrors] = useState({})
+
   useEffect(() => {
     // Respect prefers-reduced-motion
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-    // ── Hero video setup ──────────────────────────────────────────
-    ;(function setupHeroVideo() {
-      const v = document.getElementById('heroVideo')
-      if (!v) return
-      const onReady = () => { try { v.pause() } catch (e) {} }
-      if (v.readyState >= 1) onReady()
-      else v.addEventListener('loadedmetadata', onReady, { once: true })
-    })()
-
-    // ── Hero scroll engine ────────────────────────────────────────
-    ;(function heroScroll() {
-      const hero = document.querySelector('.hero')
-      const reel = document.getElementById('reel')
-      if (!hero || !reel) return
-      const words = [...reel.querySelectorAll('.hero-word')]
-      const bar   = document.getElementById('heroProgress')
-      let lastIdx = -1
-
-      function onScroll() {
-        const rect   = hero.getBoundingClientRect()
-        const total  = hero.offsetHeight - window.innerHeight
-        const passed = Math.min(Math.max(-rect.top, 0), total)
-        const t      = total > 0 ? passed / total : 0
-
-        if (bar) bar.style.width = (t * 100) + '%'
-
+      // ── Hero video setup ──────────────────────────────────────────
+      ; (function setupHeroVideo() {
         const v = document.getElementById('heroVideo')
-        if (v && v.duration && isFinite(v.duration)) {
-          const target = Math.max(0, Math.min(v.duration - 0.05, t * v.duration))
-          if (Math.abs(v.currentTime - target) > 0.03) {
-            try { v.currentTime = target } catch (e) {}
+        if (!v) return
+        const onReady = () => { try { v.pause() } catch (e) { } }
+        if (v.readyState >= 1) onReady()
+        else v.addEventListener('loadedmetadata', onReady, { once: true })
+      })()
+
+      // ── Hero scroll engine ────────────────────────────────────────
+      ; (function heroScroll() {
+        const hero = document.querySelector('.hero')
+        const reel = document.getElementById('reel')
+        if (!hero || !reel) return
+        const words = [...reel.querySelectorAll('.hero-word')]
+        const bar = document.getElementById('heroProgress')
+        let lastIdx = -1
+
+        function onScroll() {
+          const rect = hero.getBoundingClientRect()
+          const total = hero.offsetHeight - window.innerHeight
+          const passed = Math.min(Math.max(-rect.top, 0), total)
+          const t = total > 0 ? passed / total : 0
+
+          if (bar) bar.style.width = (t * 100) + '%'
+
+          const v = document.getElementById('heroVideo')
+          if (v && v.duration && isFinite(v.duration)) {
+            const target = Math.max(0, Math.min(v.duration - 0.05, t * 2 * v.duration))
+            if (Math.abs(v.currentTime - target) > 0.03) {
+              try { v.currentTime = target } catch (e) { }
+            }
+          }
+
+          const n = words.length
+          const idx = Math.min(n - 1, Math.floor(t * 2 * n))
+          if (idx !== lastIdx) {
+            words.forEach((w, i) => {
+              w.classList.toggle('is-active', i === idx)
+              w.classList.toggle('is-past', i < idx)
+            })
+            lastIdx = idx
           }
         }
 
-        const n   = words.length
-        const idx = Math.min(n - 1, Math.floor(t * n))
-        if (idx !== lastIdx) {
-          words.forEach((w, i) => {
-            w.classList.toggle('is-active', i === idx)
-            w.classList.toggle('is-past',   i  <  idx)
+        let ticking = false
+        window.addEventListener('scroll', () => {
+          if (!ticking) {
+            requestAnimationFrame(() => { onScroll(); ticking = false })
+            ticking = true
+          }
+        }, { passive: true })
+        onScroll()
+      })()
+
+      // ── Color chooser ─────────────────────────────────────────────
+      ; (function colorChooser() {
+        const sec = document.querySelector('.colors')
+        if (!sec) return
+        const swatches = sec.querySelectorAll('.swatch')
+        const nameOut = document.getElementById('currentName')
+        function applyColor(s) {
+          sec.style.setProperty('--mod-bg', s.dataset.color)
+          sec.style.setProperty('--mod-on', s.dataset.on || '#fff')
+          if (nameOut) nameOut.textContent = s.querySelector('.sw-name').textContent
+        }
+        swatches.forEach(s => {
+          s.addEventListener('click', () => {
+            swatches.forEach(o => { o.classList.remove('is-active'); o.setAttribute('aria-selected', 'false') })
+            s.classList.add('is-active'); s.setAttribute('aria-selected', 'true')
+            applyColor(s)
           })
-          lastIdx = idx
-        }
-      }
-
-      let ticking = false
-      window.addEventListener('scroll', () => {
-        if (!ticking) {
-          requestAnimationFrame(() => { onScroll(); ticking = false })
-          ticking = true
-        }
-      }, { passive: true })
-      onScroll()
-    })()
-
-    // ── Color chooser ─────────────────────────────────────────────
-    ;(function colorChooser() {
-      const sec = document.querySelector('.colors')
-      if (!sec) return
-      const swatches = sec.querySelectorAll('.swatch')
-      const nameOut  = document.getElementById('currentName')
-      function applyColor(s) {
-        sec.style.setProperty('--mod-bg', s.dataset.color)
-        sec.style.setProperty('--mod-on', s.dataset.on || '#fff')
-        if (nameOut) nameOut.textContent = s.querySelector('.sw-name').textContent
-      }
-      swatches.forEach(s => {
-        s.addEventListener('click', () => {
-          swatches.forEach(o => { o.classList.remove('is-active'); o.setAttribute('aria-selected', 'false') })
-          s.classList.add('is-active'); s.setAttribute('aria-selected', 'true')
-          applyColor(s)
         })
-      })
-      const active = sec.querySelector('.swatch.is-active')
-      if (active) applyColor(active)
-    })()
+        const active = sec.querySelector('.swatch.is-active')
+        if (active) applyColor(active)
+      })()
 
-    // ── Colorreel scroll engine ───────────────────────────────────
-    ;(function colorReelScroll() {
-      const section = document.getElementById('kollektion')
-      const v       = document.getElementById('colorReelVideo')
-      const bar     = document.getElementById('colorReelProgress')
-      const nameEl  = document.getElementById('colorReelName')
-      if (!section || !v) return
+      // ── Colorreel scroll engine ───────────────────────────────────
+      ; (function colorReelScroll() {
+        const section = document.getElementById('kollektion')
+        const v = document.getElementById('colorReelVideo')
+        const bar = document.getElementById('colorReelProgress')
+        const nameEl = document.getElementById('colorReelName')
+        if (!section || !v) return
 
-      const colors = ['Chocolate','Dust','Earth','Ocean','Plant','Shadow','Stone']
-      let lastColorIdx = -1
+        const colors = ['Chocolate', 'Dust', 'Earth', 'Ocean', 'Plant', 'Shadow', 'Sand']
+        let lastColorIdx = -1
 
-      function seek() {
-        if (!v.duration || !isFinite(v.duration)) return
-        const rect   = section.getBoundingClientRect()
-        const total  = section.offsetHeight - window.innerHeight
-        const passed = Math.min(Math.max(-rect.top, 0), total)
-        const t      = total > 0 ? passed / total : 0
+        function seek() {
+          if (!v.duration || !isFinite(v.duration)) return
+          const rect = section.getBoundingClientRect()
+          const total = section.offsetHeight - window.innerHeight
+          const passed = Math.min(Math.max(-rect.top, 0), total)
+          const t = total > 0 ? passed / total : 0
 
-        if (bar) bar.style.width = (t * 100) + '%'
+          if (bar) bar.style.width = (t * 100) + '%'
 
-        const colorIdx = Math.min(colors.length - 1, Math.floor(t * colors.length))
-        if (nameEl && colorIdx !== lastColorIdx) {
-          nameEl.textContent = colors[colorIdx]
-          lastColorIdx = colorIdx
+          const colorIdx = Math.min(colors.length - 1, Math.floor(t * colors.length))
+          if (nameEl && colorIdx !== lastColorIdx) {
+            nameEl.textContent = colors[colorIdx]
+            lastColorIdx = colorIdx
+          }
+
+          const target = Math.max(0, Math.min(v.duration - 0.05, t * v.duration))
+          if (Math.abs(v.currentTime - target) > 0.03) {
+            try { v.currentTime = target } catch (e) { }
+          }
         }
 
-        const target = Math.max(0, Math.min(v.duration - 0.05, t * v.duration))
-        if (Math.abs(v.currentTime - target) > 0.03) {
-          try { v.currentTime = target } catch (e) {}
-        }
-      }
+        v.load()
+        v.addEventListener('canplay', () => { try { v.pause() } catch (e) { } seek() }, { once: true })
 
-      v.load()
-      v.addEventListener('canplay', () => { try { v.pause() } catch (e) {} seek() }, { once: true })
-
-      let ticking = false
-      window.addEventListener('scroll', () => {
-        if (!ticking) {
-          requestAnimationFrame(() => { seek(); ticking = false })
-          ticking = true
-        }
-      }, { passive: true })
-      seek()
-    })()
+        let ticking = false
+        window.addEventListener('scroll', () => {
+          if (!ticking) {
+            requestAnimationFrame(() => { seek(); ticking = false })
+            ticking = true
+          }
+        }, { passive: true })
+        seek()
+      })()
 
     if (prefersReducedMotion) return
 
-    // ── Hero entrance (skip if reduced-motion) ────────────────────
-    ;(function heroEntrance() {
-      const prefix = document.querySelector('.hero-prefix')
-      const words  = document.querySelectorAll('.hero-word')
-      if (!prefix) return
-      setTimeout(() => { prefix.classList.add('is-visible') }, 200)
-      setTimeout(() => {
-        words.forEach((w, i) => {
-          w.classList.toggle('is-active', i === 0)
-          w.classList.remove('is-past')
-        })
-      }, 900)
-    })()
+      // ── Hero entrance (skip if reduced-motion) ────────────────────
+      ; (function heroEntrance() {
+        const prefix = document.querySelector('.hero-prefix')
+        const words = document.querySelectorAll('.hero-word')
+        if (!prefix) return
+        setTimeout(() => { prefix.classList.add('is-visible') }, 200)
+        setTimeout(() => {
+          words.forEach((w, i) => {
+            w.classList.toggle('is-active', i === 0)
+            w.classList.remove('is-past')
+          })
+        }, 900)
+      })()
 
-    // ── Intro text fade-in ────────────────────────────────────────
-    ;(function introAnimate() {
-      const els = document.querySelectorAll('.intro-anim')
-      if (!els.length) return
-      const obs = new IntersectionObserver(entries => {
-        entries.forEach(e => {
-          if (e.isIntersecting) { e.target.classList.add('is-visible'); obs.unobserve(e.target) }
-        })
-      }, { threshold: 0.15 })
-      els.forEach(el => obs.observe(el))
-    })()
+      // ── Intro text fade-in ────────────────────────────────────────
+      ; (function introAnimate() {
+        const els = document.querySelectorAll('.intro-anim')
+        if (!els.length) return
+        const obs = new IntersectionObserver(entries => {
+          entries.forEach(e => {
+            if (e.isIntersecting) { e.target.classList.add('is-visible'); obs.unobserve(e.target) }
+          })
+        }, { threshold: 0.15 })
+        els.forEach(el => obs.observe(el))
+      })()
 
-    // ── Quote banner word-by-word ─────────────────────────────────
-    ;(function quoteBanner() {
-      const section = document.querySelector('.quote-animated')
-      if (!section) return
-      const words = section.querySelectorAll('[data-qorder]')
-      const bei   = section.querySelector('.qa-bei')
-      const des   = section.querySelector('.qa-des')
+      // ── Quote banner word-by-word ─────────────────────────────────
+      ; (function quoteBanner() {
+        const section = document.querySelector('.quote-animated')
+        if (!section) return
+        const words = section.querySelectorAll('[data-qorder]')
+        const bei = section.querySelector('.qa-bei')
+        const des = section.querySelector('.qa-des')
 
-      const obs = new IntersectionObserver(entries => {
-        if (!entries[0].isIntersecting) return
-        obs.disconnect()
-        words.forEach(el => {
-          const delay = parseInt(el.dataset.qorder) * 140
-          if (el.classList.contains('qa-beides')) {
-            setTimeout(() => { if (bei) bei.classList.add('revealed'); if (des) des.classList.add('revealed') }, delay)
-          } else {
-            setTimeout(() => el.classList.add('revealed'), delay)
-          }
-        })
-      }, { threshold: 0.4 })
-      obs.observe(section.closest('.quote-banner') || section)
-    })()
+        const obs = new IntersectionObserver(entries => {
+          if (!entries[0].isIntersecting) return
+          obs.disconnect()
+          words.forEach(el => {
+            const delay = parseInt(el.dataset.qorder) * 140
+            if (el.classList.contains('qa-beides')) {
+              setTimeout(() => { if (bei) bei.classList.add('revealed'); if (des) des.classList.add('revealed') }, delay)
+            } else {
+              setTimeout(() => el.classList.add('revealed'), delay)
+            }
+          })
+        }, { threshold: 0.4 })
+        obs.observe(section.closest('.quote-banner') || section)
+      })()
+
+
 
   }, [])
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        setIsModalOpen(false)
+        setIsSuccess(false)
+        setErrors({})
+      }
+    }
+    if (isModalOpen) {
+      window.addEventListener('keydown', handleEscape)
+    }
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [isModalOpen])
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newErrors = {};
+    
+    if (!formData.name.trim()) {
+      newErrors.name = 'Bitte geben Sie Ihren Namen ein.';
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'Bitte geben Sie Ihre E-Mail-Adresse ein.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Bitte geben Sie eine gültige E-Mail-Adresse ein.';
+    }
+    
+    setErrors(newErrors);
+    
+    if (Object.keys(newErrors).length === 0) {
+      // Simulation of successful submit
+      // Hier kann später ein echter Versanddienst angebunden werden,
+      // z.B. Formspree, Resend, EmailJS, Supabase oder eine eigene API-Route.
+      setIsSuccess(true);
+    }
+  };
   return (
     <>
       {/* Load custom web component after page render */}
@@ -197,10 +251,11 @@ export default function LandingPage() {
         </div>
         <div></div>
         <div className="right">
-          <a href="#high"     className="navlink">HIGH</a>
-          <a href="#system"   className="navlink">System</a>
-          <a href="#stimmen"  className="navlink">Stimmen</a>
-          <a href="#kontakt"  className="navlink cta-pill">Analyse</a>
+          <a href="#high" className="navlink">HIGH</a>
+          <a href="#system" className="navlink">Fokus</a>
+          <a href="#kollektion" className="navlink">Kollektion</a>
+          <a href="#stimmen" className="navlink">Stimmen</a>
+          <a href="#kontakt" className="navlink cta-pill">Analyse</a>
         </div>
       </nav>
 
@@ -211,7 +266,7 @@ export default function LandingPage() {
             <video
               className="hero-video"
               id="heroVideo"
-              src="/videos/hero01.mp4"
+              src="/videos/33.mp4"
               muted
               playsInline
               preload="auto"
@@ -240,23 +295,21 @@ export default function LandingPage() {
 
       {/* INTRO */}
       <section className="intro" id="system" data-screen-label="02 Intro">
-        <video className="intro-video" src="/videos/s2l.mp4" autoPlay muted loop playsInline preload="auto" />
+        <video className="intro-video" src="/videos/p1.mp4" autoPlay muted loop playsInline preload="auto" />
         <div className="shell grid12">
           <div className="col-label label-stack">
             <span className="meta">№ 02 — Über</span>
-            <span className="meta signal">Ein System, kein Möbelstück</span>
+            <span className="meta signal">Entstanden im Schwarzwald. Entwickelt für Fokus.</span>
           </div>
           <div className="col-body">
             <h2 className="intro-anim">
-              HIGH ist die Architektur eines Tages, an dem alles <span className="em">stimmen</span> muss.
+              Das Interior-Piece ist die Architektur eines Tages, an dem alles <span className="em">stimmen</span> muss.
             </h2>
             <p className="intro-anim" style={{ transitionDelay: '150ms' }}>
-              Manche Arbeitstage enden mit einem Abschluss. Andere mit einer Entscheidung, die niemand sonst treffen wollte.
-              HIGH ist für beides gemacht — ein Möbelstück für Räume, in denen Verantwortung getragen, nicht delegiert wird.
+              Manche Arbeitstage enden mit einem Abschluss. Andere mit einer Entscheidung, die Verantwortung verlangt. HIGH ist für beides gemacht — ein Möbelstück für Räume, in denen Verantwortung getragen und bewusst übernommen wird.
             </p>
             <p className="intro-anim" style={{ transitionDelay: '300ms' }}>
-              Wir bauen für Klarheit. Für die ruhigen Minuten zwischen Sitzungen, für die ersten Stunden des Tages,
-              für den letzten Gedanken am Abend. HIGH ordnet, ohne zu diktieren. Es ist Werkzeug, Ritual und Statement zugleich.
+              Wir bauen für Klarheit. Für die ruhigen Minuten zwischen Sitzungen, für die ersten Stunden des Tages, für den letzten Gedanken am Abend. Es ist Werkzeug, Ritual und Statement zugleich.
             </p>
           </div>
         </div>
@@ -272,11 +325,52 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="usp-grid">
-            <article className="usp-cell" style={{ gridColumn: '1 / -1', minHeight: '80vh' }}>
-              <div className="image-slot-wrap" style={{ flex: 1, minHeight: 0 }}>
-                <image-slot id="usp-feature" placeholder="HIGH · Zürich" shape="rect" src="/images/usp-01.jpg" />
+        </div> {/* Close previous shell */}
+
+        {/* Full width image section */}
+        <div style={{ width: '100%', position: 'relative', height: '80vh', marginBottom: '80px' }}>
+          <div className="image-slot-wrap" style={{ width: '100%', height: '100%', borderBottom: '1px solid var(--line)', borderTop: '1px solid var(--line)' }}>
+            <image-slot id="usp-feature" placeholder="HIGH · Zürich" shape="rect" src="/images/usp-01.jpg" style={{ width: '100%', height: '100%', display: 'block' }} />
+          </div>
+          <div className="shell" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+            <div className="usp-overlay-text" style={{ position: 'absolute', left: 'var(--page-pad)', top: '60px', maxWidth: '600px', pointerEvents: 'auto' }}>
+              <p style={{ color: 'var(--bone-dim)', fontSize: 'clamp(15px, 1.2vw, 18px)', lineHeight: '1.6', marginBottom: '16px' }}>
+                Ihre Umgebung beeinflusst Entscheidungen - jeden Tag.
+              </p>
+              <h3 style={{ fontSize: 'clamp(32px, 4vw, 56px)', color: 'var(--bone)', fontWeight: '300', lineHeight: '1.1' }}>Material, Ruhe und Präzision stehen im Mittelpunkt</h3>
+            </div>
+          </div>
+        </div>
+
+        <div className="shell"> {/* Open new shell */}
+
+          <div className="usp-text-block" style={{ marginTop: '80px', marginBottom: '40px', maxWidth: '800px' }}>
+            <p style={{ fontSize: '20px', lineHeight: '1.6', color: 'var(--bone)', fontWeight: '300' }}>
+              Das Highboard vereint durchdachte Funktionalität mit höchstem gestalterischem Anspruch. Seine samtige, pflegeleichte Oberfläche schafft visuelle Ruhe und überzeugt in der Haptik. Zwei Türen mit Tip-on Beschlag öffnen den Blick auf ein durchdachtes Innenleben aus Schubladen, sensorischer Innenbeleuchtung und optionalen Erweiterungen wie einem Weindegustationsset oder einem Humidor mit Wasserbetäubelung.
+            </p>
+          </div>
+
+          <div className="usp-grid" style={{ marginTop: '40px' }}>
+            <article className="usp-cell" style={{ gridColumn: 'span 4' }}>
+              <div className="image-slot-wrap" style={{ width: '100%', aspectRatio: '4/3', marginBottom: '20px' }}>
+                <image-slot placeholder="Samtige Oberfläche" shape="rect" style={{ width: '100%', height: '100%', display: 'block' }} />
               </div>
+              <h4>Samtige Oberfläche</h4>
+              <p style={{ minHeight: '3em' }}>Schafft visuelle Ruhe und überzeugt in der Haptik.</p>
+            </article>
+            <article className="usp-cell" style={{ gridColumn: 'span 4' }}>
+              <div className="image-slot-wrap" style={{ width: '100%', aspectRatio: '4/3', marginBottom: '20px' }}>
+                <image-slot placeholder="Tip-on & Beleuchtung" shape="rect" style={{ width: '100%', height: '100%', display: 'block' }} />
+              </div>
+              <h4>Tip-on & Licht</h4>
+              <p style={{ minHeight: '3em' }}>Sensorische Innenbeleuchtung und durchdachte Schubladen.</p>
+            </article>
+            <article className="usp-cell" style={{ gridColumn: 'span 4' }}>
+              <div className="image-slot-wrap" style={{ width: '100%', aspectRatio: '4/3', marginBottom: '20px' }}>
+                <image-slot placeholder="Erweiterungen" shape="rect" style={{ width: '100%', height: '100%', display: 'block' }} />
+              </div>
+              <h4>Exklusive Optionen</h4>
+              <p style={{ minHeight: '3em' }}>Weindegustationsset oder Humidor mit Wasserbetäubelung.</p>
             </article>
           </div>
         </div>
@@ -288,19 +382,19 @@ export default function LandingPage() {
           <div className="lhs"><span className="meta">№ 04</span></div>
           <div className="body">
             <h3 className="quote-animated">
-              <span className="qa-word qa-from-left"  data-qorder="0">Zwischen</span>&nbsp;
-              <span className="qa-word qa-from-top"   data-qorder="1">Druck</span>&nbsp;
-              <span className="qa-word qa-fade"       data-qorder="2">und</span>&nbsp;
-              <span className="qa-word qa-scale em"   data-qorder="3">Triumph</span>&nbsp;
-              <span className="qa-word qa-fade"       data-qorder="4">—</span>&nbsp;
-              <span className="qa-word qa-fade"       data-qorder="5">ein</span>&nbsp;
-              <span className="qa-word qa-fade"       data-qorder="6">Möbelstück,</span>&nbsp;
-              <span className="qa-word qa-fade"       data-qorder="7">das</span>&nbsp;
-              <span className="qa-beides"             data-qorder="8">
+              <span className="qa-word qa-from-left" data-qorder="0">Zwischen</span>&nbsp;
+              <span className="qa-word qa-from-top" data-qorder="1">Druck</span>&nbsp;
+              <span className="qa-word qa-fade" data-qorder="2">und</span>&nbsp;
+              <span className="qa-word qa-scale em" data-qorder="3">Triumph</span>&nbsp;
+              <span className="qa-word qa-fade" data-qorder="4">—</span>&nbsp;
+              <span className="qa-word qa-fade" data-qorder="5">ein</span>&nbsp;
+              <span className="qa-word qa-fade" data-qorder="6">Möbelstück,</span>&nbsp;
+              <span className="qa-word qa-fade" data-qorder="7">das</span>&nbsp;
+              <span className="qa-beides" data-qorder="8">
                 <span className="qa-bei qa-from-top">bei</span>
                 <span className="qa-des qa-from-bottom">des</span>
               </span>&nbsp;
-              <span className="qa-word qa-fade"       data-qorder="9">aushält.</span>
+              <span className="qa-word qa-fade" data-qorder="9">aushält.</span>
             </h3>
           </div>
         </div>
@@ -341,7 +435,7 @@ export default function LandingPage() {
 
           <div className="swatches" role="tablist" aria-label="Farbauswahl">
             <button type="button" className="swatch is-active" role="tab" aria-selected="true"
-                    data-color="#3a2e22" data-on="#f3f1ec">
+              data-color="#3a2e22" data-on="#f3f1ec">
               <span className="sw-fill" style={{ background: '#3a2e22' }}></span>
               <span className="sw-meta">
                 <span className="sw-rule"></span>
@@ -350,7 +444,7 @@ export default function LandingPage() {
               </span>
             </button>
             <button type="button" className="swatch" role="tab" aria-selected="false"
-                    data-color="#b8a994" data-on="#1a1a1a">
+              data-color="#b8a994" data-on="#1a1a1a">
               <span className="sw-fill" style={{ background: '#b8a994' }}></span>
               <span className="sw-meta">
                 <span className="sw-rule"></span>
@@ -359,7 +453,7 @@ export default function LandingPage() {
               </span>
             </button>
             <button type="button" className="swatch" role="tab" aria-selected="false"
-                    data-color="#0e0e0e" data-on="#f3f1ec">
+              data-color="#0e0e0e" data-on="#f3f1ec">
               <span className="sw-fill" style={{ background: '#0e0e0e' }}></span>
               <span className="sw-meta">
                 <span className="sw-rule"></span>
@@ -368,7 +462,7 @@ export default function LandingPage() {
               </span>
             </button>
             <button type="button" className="swatch" role="tab" aria-selected="false"
-                    data-color="#1d2d3a" data-on="#f3f1ec">
+              data-color="#1d2d3a" data-on="#f3f1ec">
               <span className="sw-fill" style={{ background: '#1d2d3a' }}></span>
               <span className="sw-meta">
                 <span className="sw-rule"></span>
@@ -377,7 +471,7 @@ export default function LandingPage() {
               </span>
             </button>
             <button type="button" className="swatch" role="tab" aria-selected="false"
-                    data-color="#2f3a2a" data-on="#f3f1ec">
+              data-color="#2f3a2a" data-on="#f3f1ec">
               <span className="sw-fill" style={{ background: '#2f3a2a' }}></span>
               <span className="sw-meta">
                 <span className="sw-rule"></span>
@@ -386,16 +480,16 @@ export default function LandingPage() {
               </span>
             </button>
             <button type="button" className="swatch" role="tab" aria-selected="false"
-                    data-color="#7a7873" data-on="#1a1a1a">
+              data-color="#7a7873" data-on="#1a1a1a">
               <span className="sw-fill" style={{ background: '#7a7873' }}></span>
               <span className="sw-meta">
                 <span className="sw-rule"></span>
                 <span className="sw-num">06</span>
-                <span className="sw-name">Stone</span>
+                <span className="sw-name">Sand</span>
               </span>
             </button>
             <button type="button" className="swatch" role="tab" aria-selected="false"
-                    data-color="#3b2418" data-on="#f3f1ec">
+              data-color="#3b2418" data-on="#f3f1ec">
               <span className="sw-fill" style={{ background: '#3b2418' }}></span>
               <span className="sw-meta">
                 <span className="sw-rule"></span>
@@ -415,55 +509,78 @@ export default function LandingPage() {
       {/* TESTIMONIALS */}
       <section className="testi" id="stimmen" data-screen-label="05 Stimmen">
         <div className="shell">
-          <div className="testi-head">
-            <div className="lhs">
-              <span className="meta">№ 05 — Stimmen</span>
+          <div className="testi-header-new">
+            <div className="testi-title-wrap">
+              <span className="testi-sub">STIMMEN</span>
+              <h2 className="testi-title">Unternehmer, die <span className="text-muted">Verantwortung</span> tragen.</h2>
             </div>
-            <div className="rhs">
-              <h3>Unternehmer, die <span className="em">Verantwortung</span> tragen.</h3>
+            <div className="testi-nav">
+              <button className="testi-nav-btn prev" aria-label="Previous">←</button>
+              <button className="testi-nav-btn next" aria-label="Next">→</button>
             </div>
           </div>
 
           <div className="testi-row">
             <article className="testi-card">
-              <div className="testi-portrait">
-                <image-slot id="t1" placeholder="Porträt — Dr. Anselm Vogt" shape="rect" src="/images/ceo1.jpg" />
+              <div className="testi-card-top">
+                <div className="testi-avatar">
+                  <img src="/images/sascha_gehring.png" alt="Sascha Gehring" />
+                </div>
+                <div className="testi-company-badge">
+                  <span className="badge-name">Holzhaus Fabrik</span>
+                </div>
               </div>
+              <div className="testi-quote-icon">“</div>
               <p className="testi-quote">
-                HIGH steht in meinem Büro wie eine Linie, an der man Tage ausrichtet —
-                ich öffne es nicht oft, aber es ordnet alles, was um ihn herum geschieht
+                Sehr klar, sehr hochwertig und bis ins Detail sauber umgesetzt.
+                Genau die Art von Zusammenarbeit, die wir schätzen
               </p>
               <div className="testi-meta">
-                <span className="name">Dr. Anselm Vogt</span>
-                <span className="role">CEO · Vogt Industriebeteiligungen</span>
+                <span className="name">Sascha Gehring</span>
+                <span className="role">CEO, Holzhaus Fabrik</span>
+                <span className="location">Innovationsführer im Holzbau</span>
               </div>
             </article>
 
             <article className="testi-card">
-              <div className="testi-portrait">
-                <image-slot id="t2" placeholder="Porträt — Marlene Berger" shape="rect" src="/images/ceo2.jpg" />
+              <div className="testi-card-top">
+                <div className="testi-avatar">
+                  <img src="/images/timo_horl.png" alt="Timo Horl" />
+                </div>
+                <div className="testi-company-badge">
+                  <span className="badge-name">Horl</span>
+                </div>
               </div>
+              <div className="testi-quote-icon">“</div>
               <p className="testi-quote">
-                Ein Möbelstück, das mich zwingt, langsamer zu werden.
-                Nach dem Closing einer Übernahme habe ich zum ersten Mal seit Wochen wieder zwei Minuten still gestanden
+                Studio höllental. hat sofort verstanden, was uns wichtig ist.
+                Das Ergebnis passt heute perfekt zu meinem Alltag
               </p>
               <div className="testi-meta">
-                <span className="name">Marlene Berger</span>
-                <span className="role">Geschäftsführerin · Berger &amp; Reith</span>
+                <span className="name">Timo Horl</span>
+                <span className="role">Founder, Horl</span>
+                <span className="location">Weltweit erfolgreiches Premiumbrand</span>
               </div>
             </article>
 
             <article className="testi-card">
-              <div className="testi-portrait">
-                <image-slot id="t3" placeholder="Porträt — Friedrich Kaltenbach" shape="rect" src="/images/ceo3.jpg" />
+              <div className="testi-card-top">
+                <div className="testi-avatar">
+                  <img src="/images/christoph_ernst.png" alt="Christoph Ernst" />
+                </div>
+                <div className="testi-company-badge">
+                  <span className="badge-name">Büba</span>
+                </div>
               </div>
+              <div className="testi-quote-icon">“</div>
               <p className="testi-quote">
-                Wir kaufen kein Möbel — wir kaufen einen Platz im Raum, der nichts beweisen muss.
-                HIGH ist die teuerste, leiseste Entscheidung in unserem Vorstandsbüro
+                Klare Gestaltung, starke Materialien und eine sehr angenehme Zusammenarbeit.
+                Das Gesamtbild passt einfach
               </p>
               <div className="testi-meta">
-                <span className="name">Friedrich Kaltenbach</span>
-                <span className="role">Vorstand · Kaltenbach Privatbankiers</span>
+                <span className="name">Christoph Ernst</span>
+                <span className="role">CEO, Büba</span>
+                <span className="location">Marktführer Gebäudedienstleister</span>
               </div>
             </article>
           </div>
@@ -479,31 +596,17 @@ export default function LandingPage() {
           </div>
           <div className="body">
             <h3>Mit Sicherheit die beste <span className="em">Entscheidung</span> des Tages</h3>
-            <p>Eine HIGH-Konfiguration beginnt mit einem 60-minütigen Analysetermin — vor Ort, in Ihrem Büro,
-              oder an einem ruhigen Ort Ihrer Wahl. Wir sehen, was Sie tun. Wir hören, was Sie brauchen.
-              Erst danach reden wir über Material, Maße und Termin.</p>
-            <a href="#" className="cta-button">
-              Next Level Now
+            <p style={{ marginBottom: '10px', fontWeight: '500' }}>Wir analysieren ausgewählte CEO- und Unternehmerbüros auf Fokus, Klarheit und Wirkung.</p>
+            <p>Eine Studio höllental-Konfiguration beginnt mit einem 30-minütigen Analysetermin. Wir sehen, was Sie tun. Wir hören, was Sie brauchen. Erst danach reden wir über Material, Maße und Termin.</p>
+            <a href="#" className="cta-button" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
+              30-minütigen Analysetermin anfragen
               <span className="arrow" aria-hidden="true">→</span>
             </a>
           </div>
         </div>
       </section>
 
-      {/* LIFELINE — external CDN video (too large for GitHub/Vercel) */}
-      {LIFELINE_VIDEO_URL && (
-        <section className="lifeline">
-          <video
-            className="lifeline-video"
-            src={LIFELINE_VIDEO_URL}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-          />
-        </section>
-      )}
+
 
       {/* FOOTER */}
       <footer data-screen-label="07 Footer">
@@ -547,6 +650,88 @@ export default function LandingPage() {
           <span><a href="#">Impressum</a> · <a href="#">Datenschutz</a></span>
         </div>
       </footer>
+      {isModalOpen && (
+        <div className="modal-overlay" onClick={() => { setIsModalOpen(false); setIsSuccess(false); setErrors({}); }}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '450px' }}>
+            <button className="modal-close" onClick={() => { setIsModalOpen(false); setIsSuccess(false); setErrors({}); }}>✕</button>
+            
+            {!isSuccess ? (
+              <div style={{ animation: 'modalFadeIn 0.3s forwards' }}>
+                <h3>Analysetermin anfragen</h3>
+                <p style={{ fontSize: '14px', color: 'var(--bone-dim)', marginBottom: '24px', lineHeight: '1.5' }}>
+                  Wir melden uns persönlich bei Ihnen, um zu prüfen, ob HIGH zu Ihrem Büro, Ihren Abläufen und Ihren Anforderungen passt.
+                </p>
+                <form onSubmit={handleSubmit}>
+                  <div className="form-group">
+                    <label htmlFor="name">Vor- und Nachname *</label>
+                    <input 
+                      type="text" 
+                      id="name" 
+                      placeholder="Max Mustermann" 
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      aria-invalid={errors.name ? 'true' : 'false'}
+                      aria-describedby={errors.name ? 'name-error' : undefined}
+                    />
+                    {errors.name && <span id="name-error" className="error-text" style={{ color: '#ff4d4d', fontSize: '12px', marginTop: '4px' }}>{errors.name}</span>}
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="email">E-Mail-Adresse *</label>
+                    <input 
+                      type="email" 
+                      id="email" 
+                      placeholder="max@unternehmen.de" 
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      aria-invalid={errors.email ? 'true' : 'false'}
+                      aria-describedby={errors.email ? 'email-error' : undefined}
+                    />
+                    {errors.email && <span id="email-error" className="error-text" style={{ color: '#ff4d4d', fontSize: '12px', marginTop: '4px' }}>{errors.email}</span>}
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="phone">Telefonnummer</label>
+                    <input 
+                      type="tel" 
+                      id="phone" 
+                      placeholder="optional" 
+                      value={formData.phone}
+                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="message">Nachricht</label>
+                    <textarea 
+                      id="message" 
+                      placeholder="Was möchten Sie verändern?" 
+                      value={formData.message}
+                      onChange={(e) => setFormData({...formData, message: e.target.value})}
+                      style={{ minHeight: '100px', resize: 'vertical', background: '#2a2a2a', border: '1px solid #404040', padding: '16px', color: 'var(--bone)', fontFamily: 'inherit', fontSize: '16px' }}
+                    />
+                  </div>
+                  
+                  <button type="submit" className="cta-button" style={{ marginTop: '20px', width: '100%', justifyContent: 'center' }}>
+                    Anfrage senden
+                  </button>
+                  
+                  <p style={{ fontSize: '11px', color: 'var(--bone-dim)', marginTop: '12px', textAlign: 'center' }}>
+                    Wir melden uns persönlich. Kein Newsletter. Keine Weitergabe Ihrer Daten.
+                  </p>
+                </form>
+              </div>
+            ) : (
+              <div style={{ animation: 'modalFadeIn 0.3s forwards', textAlign: 'center' }}>
+                <h3 style={{ fontSize: '32px', marginBottom: '16px' }}>Vielen Dank.</h3>
+                <p style={{ fontSize: '16px', color: 'var(--bone)', marginBottom: '30px', lineHeight: '1.4' }}>
+                  Ihre Anfrage wurde übermittelt. Wir melden uns persönlich bei Ihnen.
+                </p>
+                <button className="cta-button" style={{ width: '100%', justifyContent: 'center' }} onClick={() => { setIsModalOpen(false); setIsSuccess(false); setFormData({name:'', email:'', phone:'', message:''}); }}>
+                  Schließen
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </>
   )
 }
