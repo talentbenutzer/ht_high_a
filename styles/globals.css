@@ -453,7 +453,7 @@
   .intro::after{
     content: "";
     position: absolute; inset: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.7);
     z-index: 1;
     pointer-events: none;
   }
@@ -1363,12 +1363,29 @@
 .modal-content {
   background: #141413;
   border: 1px solid var(--line);
-  padding: 40px;
+  padding: 24px;
   width: 100%;
   max-width: 500px;
   position: relative;
   transform: translateY(20px);
   animation: modalSlideUp 0.3s forwards;
+  max-height: 100dvh;
+  overflow-y: auto;
+}
+
+@media (min-width: 860px) {
+  .modal-content {
+    max-width: 960px;
+    max-height: calc(100vh - 48px);
+    padding: 48px;
+  }
+  
+  .modal-grid {
+    display: grid;
+    grid-template-columns: 30% 70%;
+    gap: 40px;
+    align-items: start;
+  }
 }
 
 .modal-close {
@@ -1382,6 +1399,7 @@
   background: none;
   border: none;
   cursor: pointer;
+  z-index: 10;
 }
 
 .modal-close:hover {
@@ -1402,10 +1420,10 @@
 }
 
 .form-group {
-  margin-bottom: 24px;
+  margin-bottom: 18px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .form-group label {

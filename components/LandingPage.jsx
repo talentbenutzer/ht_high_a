@@ -12,11 +12,15 @@ const getCurrentDateTime = () => {
 export default function LandingPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [isSending, setIsSending] = useState(false)
+  const [submitError, setSubmitError] = useState('')
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    message: ''
+    timeline: 'Noch offen',
+    message: '',
+    website: '' // Honeypot
   })
   const [errors, setErrors] = useState({})
 
@@ -206,6 +210,7 @@ export default function LandingPage() {
         setIsModalOpen(false)
         setIsSuccess(false)
         setErrors({})
+        setSubmitError('')
       }
     }
     if (isModalOpen) {
@@ -214,9 +219,10 @@ export default function LandingPage() {
     return () => window.removeEventListener('keydown', handleEscape)
   }, [isModalOpen])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
+    setSubmitError('');
     
     if (!formData.name.trim()) {
       newErrors.name = 'Bitte geben Sie Ihren Namen ein.';
@@ -231,10 +237,32 @@ export default function LandingPage() {
     setErrors(newErrors);
     
     if (Object.keys(newErrors).length === 0) {
-      // Simulation of successful submit
-      // Hier kann später ein echter Versanddienst angebunden werden,
-      // z.B. Formspree, Resend, EmailJS, Supabase oder eine eigene API-Route.
-      setIsSuccess(true);
+      setIsSending(true);
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...formData,
+            pageUrl: window.location.href,
+            language: navigator.language
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          setIsSuccess(true);
+          setFormData({ name: '', email: '', phone: '', timeline: 'Noch offen', message: '', website: '' });
+        } else {
+          setSubmitError(data.error || 'Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es später erneut oder schreiben Sie direkt an info@hoellental.studio.');
+        }
+      } catch (error) {
+        console.error('Submit error:', error);
+        setSubmitError('Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es später erneut oder schreiben Sie direkt an info@hoellental.studio.');
+      } finally {
+        setIsSending(false);
+      }
     }
   };
   return (
@@ -333,11 +361,13 @@ export default function LandingPage() {
             <image-slot id="usp-feature" placeholder="HIGH · Zürich" shape="rect" src="/images/usp-01.jpg" style={{ width: '100%', height: '100%', display: 'block' }} />
           </div>
           <div className="shell" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-            <div className="usp-overlay-text" style={{ position: 'absolute', left: 'var(--page-pad)', top: '60px', maxWidth: '600px', pointerEvents: 'auto' }}>
-              <p style={{ color: 'var(--bone-dim)', fontSize: 'clamp(15px, 1.2vw, 18px)', lineHeight: '1.6', marginBottom: '16px' }}>
+            <div className="usp-overlay-text-top" style={{ position: 'absolute', left: 'var(--page-pad)', top: '60px', maxWidth: '600px', pointerEvents: 'auto' }}>
+              <h3 style={{ fontSize: 'clamp(32px, 4vw, 56px)', color: 'var(--bone)', fontWeight: '300', lineHeight: '1.1' }}>Material, Ruhe und Präzision stehen im Mittelpunkt</h3>
+            </div>
+            <div className="usp-overlay-text-bottom" style={{ position: 'absolute', left: 'var(--page-pad)', bottom: '60px', maxWidth: '600px', pointerEvents: 'auto' }}>
+              <p style={{ color: 'var(--bone-dim)', fontSize: 'clamp(15px, 1.2vw, 18px)', lineHeight: '1.6' }}>
                 Ihre Umgebung beeinflusst Entscheidungen - jeden Tag.
               </p>
-              <h3 style={{ fontSize: 'clamp(32px, 4vw, 56px)', color: 'var(--bone)', fontWeight: '300', lineHeight: '1.1' }}>Material, Ruhe und Präzision stehen im Mittelpunkt</h3>
             </div>
           </div>
         </div>
@@ -651,72 +681,130 @@ export default function LandingPage() {
         </div>
       </footer>
       {isModalOpen && (
-        <div className="modal-overlay" onClick={() => { setIsModalOpen(false); setIsSuccess(false); setErrors({}); }}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '450px' }}>
-            <button className="modal-close" onClick={() => { setIsModalOpen(false); setIsSuccess(false); setErrors({}); }}>✕</button>
+        <div className="modal-overlay" onClick={() => { setIsModalOpen(false); setIsSuccess(false); setErrors({}); setSubmitError(''); }}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => { setIsModalOpen(false); setIsSuccess(false); setErrors({}); setSubmitError(''); }}>✕</button>
             
             {!isSuccess ? (
-              <div style={{ animation: 'modalFadeIn 0.3s forwards' }}>
-                <h3>Analysetermin anfragen</h3>
-                <p style={{ fontSize: '14px', color: 'var(--bone-dim)', marginBottom: '24px', lineHeight: '1.5' }}>
-                  Wir melden uns persönlich bei Ihnen, um zu prüfen, ob HIGH zu Ihrem Büro, Ihren Abläufen und Ihren Anforderungen passt.
-                </p>
-                <form onSubmit={handleSubmit}>
-                  <div className="form-group">
-                    <label htmlFor="name">Vor- und Nachname *</label>
-                    <input 
-                      type="text" 
-                      id="name" 
-                      placeholder="Max Mustermann" 
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      aria-invalid={errors.name ? 'true' : 'false'}
-                      aria-describedby={errors.name ? 'name-error' : undefined}
-                    />
-                    {errors.name && <span id="name-error" className="error-text" style={{ color: '#ff4d4d', fontSize: '12px', marginTop: '4px' }}>{errors.name}</span>}
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="email">E-Mail-Adresse *</label>
-                    <input 
-                      type="email" 
-                      id="email" 
-                      placeholder="max@unternehmen.de" 
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      aria-invalid={errors.email ? 'true' : 'false'}
-                      aria-describedby={errors.email ? 'email-error' : undefined}
-                    />
-                    {errors.email && <span id="email-error" className="error-text" style={{ color: '#ff4d4d', fontSize: '12px', marginTop: '4px' }}>{errors.email}</span>}
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="phone">Telefonnummer</label>
-                    <input 
-                      type="tel" 
-                      id="phone" 
-                      placeholder="optional" 
-                      value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="message">Nachricht</label>
-                    <textarea 
-                      id="message" 
-                      placeholder="Was möchten Sie verändern?" 
-                      value={formData.message}
-                      onChange={(e) => setFormData({...formData, message: e.target.value})}
-                      style={{ minHeight: '100px', resize: 'vertical', background: '#2a2a2a', border: '1px solid #404040', padding: '16px', color: 'var(--bone)', fontFamily: 'inherit', fontSize: '16px' }}
-                    />
-                  </div>
-                  
-                  <button type="submit" className="cta-button" style={{ marginTop: '20px', width: '100%', justifyContent: 'center' }}>
-                    Anfrage senden
-                  </button>
-                  
-                  <p style={{ fontSize: '11px', color: 'var(--bone-dim)', marginTop: '12px', textAlign: 'center' }}>
-                    Wir melden uns persönlich. Kein Newsletter. Keine Weitergabe Ihrer Daten.
+              <div className="modal-grid" style={{ animation: 'modalFadeIn 0.3s forwards' }}>
+                <div className="modal-left">
+                  <h3>Analysetermin anfragen</h3>
+                  <p style={{ fontSize: '14px', color: 'var(--bone-dim)', marginBottom: '24px', lineHeight: '1.5' }}>
+                    Wir melden uns persönlich bei Ihnen, um zu prüfen, ob HIGH zu Ihrem Büro, Ihren Abläufen und Ihren Anforderungen passt.
                   </p>
-                </form>
+                  <div className="trust-points" style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '20px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--bone-dim)', fontSize: '14px' }}>
+                      <span style={{ color: 'var(--bone)' }}>—</span> Persönliche Rückmeldung
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--bone-dim)', fontSize: '14px' }}>
+                      <span style={{ color: 'var(--bone)' }}>—</span> Kein Newsletter
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--bone-dim)', fontSize: '14px' }}>
+                      <span style={{ color: 'var(--bone)' }}>—</span> Keine Weitergabe Ihrer Daten
+                    </div>
+                  </div>
+                </div>
+                <div className="modal-right">
+                  <form onSubmit={handleSubmit}>
+                    {/* Honeypot field */}
+                    <div style={{ display: 'none' }}>
+                      <label htmlFor="website">Website</label>
+                      <input 
+                        type="text" 
+                        id="website" 
+                        value={formData.website} 
+                        onChange={(e) => setFormData({...formData, website: e.target.value})} 
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="name">Vor- und Nachname *</label>
+                      <input 
+                        type="text" 
+                        id="name" 
+                        placeholder="Max Mustermann" 
+                        value={formData.name}
+                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                        aria-invalid={errors.name ? 'true' : 'false'}
+                        aria-describedby={errors.name ? 'name-error' : undefined}
+                        disabled={isSending}
+                        style={{ height: '52px' }}
+                      />
+                      {errors.name && <span id="name-error" className="error-text" style={{ color: '#ff4d4d', fontSize: '12px', marginTop: '4px' }}>{errors.name}</span>}
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="email">E-Mail-Adresse *</label>
+                      <input 
+                        type="email" 
+                        id="email" 
+                        placeholder="max@unternehmen.de" 
+                        value={formData.email}
+                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                        aria-invalid={errors.email ? 'true' : 'false'}
+                        aria-describedby={errors.email ? 'email-error' : undefined}
+                        disabled={isSending}
+                        style={{ height: '52px' }}
+                      />
+                      {errors.email && <span id="email-error" className="error-text" style={{ color: '#ff4d4d', fontSize: '12px', marginTop: '4px' }}>{errors.email}</span>}
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="phone">Telefonnummer</label>
+                      <input 
+                        type="tel" 
+                        id="phone" 
+                        placeholder="optional" 
+                        value={formData.phone}
+                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                        disabled={isSending}
+                        style={{ height: '52px' }}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="timeline" style={{ textTransform: 'none' }}>Wann möchten Sie Ihre Arbeitsumgebung verändern?</label>
+                      <select 
+                        id="timeline" 
+                        value={formData.timeline}
+                        onChange={(e) => setFormData({...formData, timeline: e.target.value})}
+                        disabled={isSending}
+                        style={{ background: '#2a2a2a', border: '1px solid #404040', padding: '16px', color: 'var(--bone)', fontFamily: 'inherit', fontSize: '16px', width: '100%', height: '52px' }}
+                      >
+                        <option value="Noch offen">Noch offen</option>
+                        <option value="So bald wie möglich">So bald wie möglich</option>
+                        <option value="In den nächsten 3 Monaten">In den nächsten 3 Monaten</option>
+                        <option value="In den nächsten 6 Monaten">In den nächsten 6 Monaten</option>
+                        <option value="In den nächsten 12 Monaten">In den nächsten 12 Monaten</option>
+                      </select>
+                      <p style={{ fontSize: '11px', color: 'var(--bone-dim)', marginTop: '4px' }}>
+                        Optional, hilft uns bei der Vorbereitung.
+                      </p>
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="message">Nachricht</label>
+                      <textarea 
+                        id="message" 
+                        placeholder="Was möchten Sie verändern?" 
+                        value={formData.message}
+                        onChange={(e) => setFormData({...formData, message: e.target.value})}
+                        style={{ minHeight: '90px', maxHeight: '110px', resize: 'vertical', background: '#2a2a2a', border: '1px solid #404040', padding: '16px', color: 'var(--bone)', fontFamily: 'inherit', fontSize: '16px' }}
+                        disabled={isSending}
+                      />
+                    </div>
+                    
+                    {submitError && (
+                      <p style={{ color: '#ff4d4d', fontSize: '14px', marginTop: '10px', marginBottom: '10px' }}>
+                        {submitError}
+                      </p>
+                    )}
+
+                    <button type="submit" className="cta-button" style={{ marginTop: '10px', width: '100%', justifyContent: 'center', height: '64px' }} disabled={isSending}>
+                      {isSending ? 'Wird gesendet …' : 'Anfrage senden'}
+                    </button>
+                    
+                    <p style={{ fontSize: '11px', color: 'var(--bone-dim)', marginTop: '12px', textAlign: 'center' }}>
+                      Wir melden uns persönlich. Kein Newsletter. Keine Weitergabe Ihrer Daten.
+                    </p>
+                  </form>
+                </div>
               </div>
             ) : (
               <div style={{ animation: 'modalFadeIn 0.3s forwards', textAlign: 'center' }}>
@@ -724,7 +812,7 @@ export default function LandingPage() {
                 <p style={{ fontSize: '16px', color: 'var(--bone)', marginBottom: '30px', lineHeight: '1.4' }}>
                   Ihre Anfrage wurde übermittelt. Wir melden uns persönlich bei Ihnen.
                 </p>
-                <button className="cta-button" style={{ width: '100%', justifyContent: 'center' }} onClick={() => { setIsModalOpen(false); setIsSuccess(false); setFormData({name:'', email:'', phone:'', message:''}); }}>
+                <button className="cta-button" style={{ width: '100%', justifyContent: 'center' }} onClick={() => { setIsModalOpen(false); setIsSuccess(false); setFormData({name:'', email:'', phone:'', timeline:'Noch offen', message:'', website:''}); }}>
                   Schließen
                 </button>
               </div>
