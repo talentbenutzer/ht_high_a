@@ -323,25 +323,33 @@ export default function LandingPage() {
 
       {/* INTRO */}
       <section className="intro" id="system" data-screen-label="02 Intro" style={{ background: '#000', padding: '120px 0' }}>
-        <div className="shell grid12">
-          <div className="col-label label-stack" style={{ gridColumn: '1 / 13', marginBottom: '60px' }}>
+        <div className="shell grid12" style={{ alignItems: 'start' }}>
+          
+          {/* Top Left Labels */}
+          <div className="col-label label-stack" style={{ gridColumn: '1 / 5', gridRow: '1', marginBottom: '60px' }}>
             <span className="meta" style={{ color: 'var(--mid-2)' }}>№ 02 — Über</span>
             <span className="meta signal" style={{ color: 'var(--bone)', opacity: 0.8 }}>Entstanden im Schwarzwald. Entwickelt für Fokus.</span>
           </div>
           
-          <div className="col-body" style={{ gridColumn: '1 / 6' }}>
-            <h2 className="intro-anim" style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 300, lineHeight: '1.2', color: 'var(--bone)', marginBottom: '40px' }}>
+          {/* Top Right Headline */}
+          <div style={{ gridColumn: '5 / 13', gridRow: '1', marginBottom: '60px' }}>
+            <h2 className="intro-anim" style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 300, lineHeight: '1.2', color: 'var(--bone)', margin: 0 }}>
               Das Interior-Piece ist die Architektur eines Tages, an dem alles <span className="em">stimmen</span> muss.
             </h2>
-            <p className="intro-anim" style={{ transitionDelay: '150ms', color: 'var(--bone-dim)', lineHeight: '1.6', marginBottom: '24px' }}>
+          </div>
+          
+          {/* Bottom Left Paragraphs */}
+          <div style={{ gridColumn: '1 / 5', gridRow: '2', display: 'flex', flexDirection: 'column', gap: '24px', color: 'var(--bone-dim)', lineHeight: '1.6' }}>
+            <p className="intro-anim" style={{ transitionDelay: '150ms' }}>
               Manche Arbeitstage enden mit einem Abschluss. Andere mit einer Entscheidung, die Verantwortung verlangt. HIGH ist für beides gemacht — ein Möbelstück für Räume, in denen Verantwortung getragen und bewusst übernommen wird.
             </p>
-            <p className="intro-anim" style={{ transitionDelay: '300ms', color: 'var(--bone-dim)', lineHeight: '1.6' }}>
+            <p className="intro-anim" style={{ transitionDelay: '300ms' }}>
               Wir bauen für Klarheit. Für die ruhigen Minuten zwischen Sitzungen, für die ersten Stunden des Tages, für den letzten Gedanken am Abend. Es ist Werkzeug, Ritual und Statement zugleich.
             </p>
           </div>
           
-          <div style={{ gridColumn: '7 / 13' }}>
+          {/* Bottom Right Video */}
+          <div style={{ gridColumn: '5 / 13', gridRow: '2' }}>
             <video
               src="/videos/p1.mp4"
               autoPlay
@@ -352,6 +360,7 @@ export default function LandingPage() {
               style={{ width: '100%', borderRadius: '12px', display: 'block' }}
             />
           </div>
+          
         </div>
       </section>
 
