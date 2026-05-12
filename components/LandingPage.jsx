@@ -342,7 +342,15 @@ export default function LandingPage() {
           </div>
           
           <div style={{ gridColumn: '7 / 13' }}>
-            <img src="/images/usp-01.jpg" alt="Interior" style={{ width: '100%', borderRadius: '12px', display: 'block' }} />
+            <video
+              src="/videos/p1.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              style={{ width: '100%', borderRadius: '12px', display: 'block' }}
+            />
           </div>
         </div>
       </section>
