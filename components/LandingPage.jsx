@@ -646,38 +646,45 @@ export default function LandingPage() {
           </div>
           <div className="foot-cols">
             <div className="foot-col">
-              <h5>Studio</h5>
+              <h5>STUDIO</h5>
               <ul>
-                <li><a href="#">Manifest</a></li>
-                <li><a href="#">Werkstatt</a></li>
-                <li><a href="#">Material</a></li>
-                <li><a href="#">Presse</a></li>
+                <li><a href="https://hoellental.studio/de/studio">Studio</a></li>
+                <li><a href="https://hoellental.studio/de/produkte/bespoke">Bespoke</a></li>
               </ul>
             </div>
             <div className="foot-col">
-              <h5>Stücke</h5>
+              <h5>PIECES</h5>
               <ul>
-                <li><a href="#">HIGH</a></li>
-                <li><a href="#">HIGH &amp; WORK</a></li>
-                <li><a href="#">Edition №2</a></li>
-                <li><a href="#">Auftragsarbeit</a></li>
+                <li><a href="https://hoellental.studio/de/produkte/high">High</a></li>
+                <li><a href="https://hoellental.studio/de/produkte/low">Low</a></li>
+                <li><a href="https://hoellental.studio/de/produkte/long">Long</a></li>
+                <li><a href="https://hoellental.studio/de/produkte/work">Work</a></li>
               </ul>
             </div>
             <div className="foot-col">
-              <h5>Kontakt</h5>
+              <h5>KONTAKT</h5>
               <ul>
-                <li><a href="mailto:studio@hoellental.com">studio@hoellental.com</a></li>
-                <li><a href="#">+49 7551 — 000 000</a></li>
-                <li><a href="#">Termin buchen</a></li>
-                <li><a href="#">Standort</a></li>
+                <li><a href="mailto:info@hoellental.studio">info@hoellental.studio</a></li>
+                <li><a href="tel:+497626977211">+49 7626 977211</a></li>
+                <li><a href="#kontakt">Termin buchen</a></li>
               </ul>
+              <div style={{ marginTop: '24px', fontSize: '14px', color: 'var(--bone-dim)', lineHeight: '1.6' }}>
+                Studio höllental.<br />
+                Tüchlinger Weg 1<br />
+                79400 Kandern<br />
+                Deutschland
+              </div>
             </div>
           </div>
         </div>
         <div className="foot-base">
-          <span>© 2026 Studio Höllental Manufaktur</span>
-          <span>Möbelstück HIGH · Edition I · № 001 / 144</span>
-          <span><a href="#">Impressum</a> · <a href="#">Datenschutz</a></span>
+          <span>© 2026 Studio höllental Interiors</span>
+          <span>
+            <a href="https://www.instagram.com/hoellental/" target="_blank" rel="noopener noreferrer">Instagram</a> • <a href="https://www.linkedin.com/company/studio-h%C3%B6llental/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          </span>
+          <span>
+            <a href="https://hoellental.studio/de/impressum">Impressum</a> · <a href="https://hoellental.studio/de/datenschutz">Datenschutz</a>
+          </span>
         </div>
       </footer>
       {isModalOpen && (
