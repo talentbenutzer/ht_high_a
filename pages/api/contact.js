@@ -78,7 +78,7 @@ export default async function handler(req, res) {
   try {
     const data = await resend.emails.send({
       from: 'Studio höllental. <noreply@hoellental.studio>',
-      to: process.env.CONTACT_TO_EMAIL || 'sales@hoellental.studio',
+      to: ['sales@hoellental.studio', 'edmund.laabs@grabner.design'],
       subject: `Anfrage via Landingpage HIGH01 von "${name}"`,
       text: mailContent,
       replyTo: email,
