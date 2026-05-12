@@ -322,23 +322,27 @@ export default function LandingPage() {
       </section>
 
       {/* INTRO */}
-      <section className="intro" id="system" data-screen-label="02 Intro">
-        <video className="intro-video" src="/videos/p1.mp4" autoPlay muted loop playsInline preload="auto" />
+      <section className="intro" id="system" data-screen-label="02 Intro" style={{ background: '#000', padding: '120px 0' }}>
         <div className="shell grid12">
-          <div className="col-label label-stack">
-            <span className="meta">№ 02 — Über</span>
-            <span className="meta signal">Entstanden im Schwarzwald. Entwickelt für Fokus.</span>
+          <div className="col-label label-stack" style={{ gridColumn: '1 / 13', marginBottom: '60px' }}>
+            <span className="meta" style={{ color: 'var(--mid-2)' }}>№ 02 — Über</span>
+            <span className="meta signal" style={{ color: 'var(--bone)', opacity: 0.8 }}>Entstanden im Schwarzwald. Entwickelt für Fokus.</span>
           </div>
-          <div className="col-body">
-            <h2 className="intro-anim">
+          
+          <div className="col-body" style={{ gridColumn: '1 / 6' }}>
+            <h2 className="intro-anim" style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 300, lineHeight: '1.2', color: 'var(--bone)', marginBottom: '40px' }}>
               Das Interior-Piece ist die Architektur eines Tages, an dem alles <span className="em">stimmen</span> muss.
             </h2>
-            <p className="intro-anim" style={{ transitionDelay: '150ms' }}>
+            <p className="intro-anim" style={{ transitionDelay: '150ms', color: 'var(--bone-dim)', lineHeight: '1.6', marginBottom: '24px' }}>
               Manche Arbeitstage enden mit einem Abschluss. Andere mit einer Entscheidung, die Verantwortung verlangt. HIGH ist für beides gemacht — ein Möbelstück für Räume, in denen Verantwortung getragen und bewusst übernommen wird.
             </p>
-            <p className="intro-anim" style={{ transitionDelay: '300ms' }}>
+            <p className="intro-anim" style={{ transitionDelay: '300ms', color: 'var(--bone-dim)', lineHeight: '1.6' }}>
               Wir bauen für Klarheit. Für die ruhigen Minuten zwischen Sitzungen, für die ersten Stunden des Tages, für den letzten Gedanken am Abend. Es ist Werkzeug, Ritual und Statement zugleich.
             </p>
+          </div>
+          
+          <div style={{ gridColumn: '7 / 13' }}>
+            <img src="/images/usp-01.jpg" alt="Interior" style={{ width: '100%', borderRadius: '12px', display: 'block' }} />
           </div>
         </div>
       </section>
