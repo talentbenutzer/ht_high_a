@@ -489,6 +489,8 @@
     display: flex; flex-direction: column; gap: 14px;
   }
   .intro .label-stack .num{ color: var(--bone); font-size: 12px; }
+  .intro-left { grid-column: 1 / 5; grid-row: 1; }
+  .intro-right { grid-column: 5 / 13; grid-row: 1; }
 
   /* ============================================================
      USP / DETAIL GRID
@@ -525,6 +527,7 @@
     gap: 40px;
     background: transparent;
   }
+  .usp-grid .usp-cell { grid-column: span 4; }
   .usp-cell{
     background: transparent;
     padding: 0;
@@ -768,8 +771,8 @@
     align-items: center;
   }
   .testi-avatar {
-    width: 56px;
-    height: 56px;
+    width: 68px;
+    height: 68px;
     border-radius: 50%;
     overflow: hidden;
   }
@@ -1009,9 +1012,14 @@
      ============================================================ */
   @media (max-width: 900px){
     :root{ --grid-gutter: 12px; }
-    .nav{ padding: 16px var(--page-pad); }
+    .nav{ 
+      padding: 16px var(--page-pad); 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+    }
     .nav .left .navlink:not(:first-child){ display: none; }
-    .nav .right .navlink{ display: none; }
+    .nav .right .navlink:not(.cta-pill){ display: none; }
 
     .hero{ height: 200vh; }
     .hero-left{
@@ -1021,26 +1029,40 @@
       gap: 0;
     }
     .hero-prefix{
-      font-size: clamp(28px, 7vw, 48px);
+      font-size: clamp(20px, 6vw, 40px);
       height: auto;
+      white-space: normal;
     }
     .hero-reel{
-      height: clamp(36px, 8.5vw, 60px);
+      height: clamp(26px, 7.5vw, 50px);
       min-width: 0;
       width: calc(100vw - var(--page-pad) * 2 - 8px);
     }
     .hero-word{
-      font-size: clamp(28px, 7vw, 48px);
+      font-size: clamp(20px, 6vw, 40px);
     }
     .hero-foot{ display: none; }
     .cab-callout{ display: none; }
 
     .intro .col-label, .intro .col-body{ grid-column: 1 / -1; }
     .intro h2{ font-size: 32px; }
+    .intro-left, .intro-right {
+      grid-column: 1 / -1 !important;
+      grid-row: auto !important;
+    }
 
     .usp-head .lhs, .usp-head .rhs{ grid-column: 1 / -1; }
     .usp-cell.feature, .usp-cell.tall, .usp-cell.std, .usp-cell.wide{
       grid-column: 1 / -1; grid-row: auto; min-height: 360px;
+    }
+    .usp-grid .usp-cell {
+      grid-column: 1 / -1 !important;
+    }
+    .modal-img {
+      display: none !important;
+    }
+    #usp-feature img {
+      object-position: right !important;
     }
     .usp-cell.feature{ min-height: 480px; }
 

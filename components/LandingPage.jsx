@@ -323,12 +323,12 @@ export default function LandingPage() {
         <div className="shell grid12" style={{ alignItems: 'start' }}>
           
           {/* Top Left Labels */}
-          <div className="col-label label-stack" style={{ gridColumn: '1 / 5', gridRow: '1', marginBottom: '60px' }}>
+          <div className="col-label label-stack intro-left" style={{ marginBottom: '60px' }}>
             <span className="meta signal" style={{ color: 'var(--bone)', opacity: 0.8, marginTop: '3px' }}>Entstanden im Schwarzwald.<br />Entwickelt für Fokus.</span>
           </div>
           
           {/* Top Right Headline */}
-          <div style={{ gridColumn: '5 / 13', gridRow: '1', marginBottom: '60px' }}>
+          <div className="intro-right" style={{ marginBottom: '60px' }}>
             <h2 className="intro-anim" style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 300, lineHeight: '1.2', color: 'var(--bone)', margin: 0 }}>
               Das Interior-Piece ist die Architektur eines Tages, an dem alles <span className="em">stimmen</span> muss.
             </h2>
@@ -378,7 +378,7 @@ export default function LandingPage() {
           </div>
           <div className="shell" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
             <div className="usp-overlay-text-top" style={{ position: 'absolute', left: 'var(--page-pad)', top: '60px', maxWidth: '600px', pointerEvents: 'auto' }}>
-              <h3 style={{ fontSize: 'clamp(32px, 4vw, 56px)', color: 'var(--bone)', fontWeight: '300', lineHeight: '1.1' }}>Material, Ruhe und Präzision stehen im Mittelpunkt</h3>
+              <h3 style={{ fontSize: 'clamp(32px, 4vw, 56px)', color: 'var(--bone)', fontWeight: '300', lineHeight: '1.1' }}>Material, Ruhe und Präzision<br />stehen im Mittelpunkt</h3>
             </div>
             <div className="usp-overlay-text-bottom" style={{ position: 'absolute', left: 'var(--page-pad)', bottom: '60px', maxWidth: '600px', pointerEvents: 'auto' }}>
               <p style={{ color: 'var(--bone-dim)', fontSize: 'clamp(15px, 1.2vw, 18px)', lineHeight: '1.6', fontWeight: '700' }}>
@@ -397,21 +397,21 @@ export default function LandingPage() {
           </div>
 
           <div className="usp-grid" style={{ marginTop: '40px' }}>
-            <article className="usp-cell" style={{ gridColumn: 'span 4' }}>
+            <article className="usp-cell">
               <div className="image-slot-wrap" style={{ width: '100%', aspectRatio: '4/3', marginBottom: '20px' }}>
                 <image-slot placeholder="Samtige Oberfläche" shape="rect" src="/images/surface.jpg" style={{ width: '100%', height: '100%', display: 'block' }} />
               </div>
               <h4>Samtige Oberfläche</h4>
               <p style={{ minHeight: '3em' }}>Schafft visuelle Ruhe und überzeugt in der Haptik.</p>
             </article>
-            <article className="usp-cell" style={{ gridColumn: 'span 4' }}>
+            <article className="usp-cell">
               <div className="image-slot-wrap" style={{ width: '100%', aspectRatio: '4/3', marginBottom: '20px' }}>
                 <image-slot placeholder="Tip-on & Beleuchtung" shape="rect" src="/images/tipon.jpg" style={{ width: '100%', height: '100%', display: 'block' }} />
               </div>
               <h4>Tip-on & Licht</h4>
               <p style={{ minHeight: '3em' }}>Sensorische Innenbeleuchtung und durchdachte Schubladen.</p>
             </article>
-            <article className="usp-cell" style={{ gridColumn: 'span 4' }}>
+            <article className="usp-cell">
               <div className="image-slot-wrap" style={{ width: '100%', aspectRatio: '4/3', marginBottom: '20px' }}>
                 <image-slot placeholder="Erweiterungen" shape="rect" src="/images/innen.jpg" style={{ width: '100%', height: '100%', display: 'block' }} />
               </div>
@@ -558,7 +558,7 @@ export default function LandingPage() {
         <div className="shell">
           <div className="testi-header-new">
             <div className="testi-title-wrap">
-              <h2 className="testi-title">Unternehmer, die <span className="text-muted">Verantwortung</span> tragen.</h2>
+              <h2 className="testi-title">Unternehmer,<br />die <span className="text-muted">Verantwortung</span> tragen.</h2>
             </div>
           </div>
 
@@ -707,7 +707,7 @@ export default function LandingPage() {
                 <div className="modal-left">
                   <h3>Analysetermin anfragen</h3>
                   <div style={{ margin: '20px 0' }}>
-                    <img src="/images/high_end.jpg" alt="Analysetermin" style={{ width: '100%', height: 'auto', display: 'block' }} />
+                    <img src="/images/high_end.jpg" alt="Analysetermin" className="modal-img" style={{ width: '100%', height: 'auto', display: 'block' }} />
                   </div>
                 </div>
                 <div className="modal-right">
