@@ -291,11 +291,13 @@ export default function LandingPage() {
             <video
               className="hero-video"
               id="heroVideo"
-              src="/videos/33.mp4"
               muted
               playsInline
               preload="auto"
-            />
+            >
+              <source src="/videos/333.webm" type="video/webm" />
+              <source src="/videos/33.mp4" type="video/mp4" />
+            </video>
           </div>
 
           <div className="hero-progress" id="heroProgress"></div>
@@ -335,13 +337,12 @@ export default function LandingPage() {
             </h2>
           </div>
           
-          {/* Bottom Right Image (Moved up in JSX for stacking order) */}
+          {/* Bottom Right Video (Moved up in JSX for stacking order) */}
           <div className="intro-image">
-            <img
-              src="/images/hoellental_choclate.jpg"
-              alt="Höllental Chocolate"
-              style={{ width: '100%', display: 'block' }}
-            />
+            <video autoPlay muted loop playsInline style={{ width: '100%', display: 'block' }}>
+              <source src="/videos/interior.webm" type="video/webm" />
+              <source src="/videos/interior.mp4" type="video/mp4" />
+            </video>
           </div>
 
           {/* Bottom Left Paragraphs */}
