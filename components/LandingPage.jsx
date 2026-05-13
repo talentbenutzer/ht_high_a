@@ -56,14 +56,14 @@ export default function LandingPage() {
 
           const v = document.getElementById('heroVideo')
           if (v && v.duration && isFinite(v.duration)) {
-            const target = Math.max(0, Math.min(v.duration - 0.05, t * 2 * v.duration))
+            const target = Math.max(0, Math.min(v.duration - 0.05, (t / 0.75) * v.duration))
             if (Math.abs(v.currentTime - target) > 0.03) {
               try { v.currentTime = target } catch (e) { }
             }
           }
 
           const n = words.length
-          const idx = Math.min(n - 1, Math.floor(t * 2 * n))
+          const idx = Math.min(n - 1, Math.floor(t * n))
           if (idx !== lastIdx) {
             words.forEach((w, i) => {
               w.classList.toggle('is-active', i === idx)
@@ -113,7 +113,7 @@ export default function LandingPage() {
         const nameEl = document.getElementById('colorReelName')
         if (!section || !v) return
 
-        const colors = ['Chocolate', 'Dust', 'Earth', 'Ocean', 'Plant', 'Shadow', 'Sand']
+        const colors = ['Shadow', 'Chocolate', 'Earth', 'Ocean', 'Sand', 'Plant', 'Dust']
         let lastColorIdx = -1
 
         function seek() {
@@ -274,15 +274,11 @@ export default function LandingPage() {
       <nav className="nav" aria-label="Hauptnavigation">
         <div className="left">
           <a href="#" className="wordmark" data-screen-label="Wordmark">
-            <img src="/images/hoellental_logo_black.svg" alt="höllental." />
+            <img src="/images/st_hoellental_in.svg" alt="höllental." />
           </a>
         </div>
         <div></div>
         <div className="right">
-          <a href="#high" className="navlink">HIGH</a>
-          <a href="#system" className="navlink">Fokus</a>
-          <a href="#kollektion" className="navlink">Kollektion</a>
-          <a href="#stimmen" className="navlink">Stimmen</a>
           <a href="#kontakt" className="navlink cta-pill">Analyse</a>
         </div>
       </nav>
@@ -313,9 +309,10 @@ export default function LandingPage() {
             <div className="hero-prefix">Du möchtest</div>
 
             <div className="hero-reel" id="reel" aria-live="polite">
-              <div className="hero-word" data-i="0">Klarheit.</div>
-              <div className="hero-word" data-i="1">Dynamik.</div>
-              <div className="hero-word" data-i="2">Fokus.</div>
+              <div className="hero-word" data-i="0">Performance.</div>
+              <div className="hero-word" data-i="1">Klarheit.</div>
+              <div className="hero-word" data-i="2">Dynamik.</div>
+              <div className="hero-word" data-i="3">Fokus.</div>
             </div>
           </div>
         </div>
@@ -327,8 +324,7 @@ export default function LandingPage() {
           
           {/* Top Left Labels */}
           <div className="col-label label-stack" style={{ gridColumn: '1 / 5', gridRow: '1', marginBottom: '60px' }}>
-            <span className="meta" style={{ color: 'var(--mid-2)' }}>№ 02 — Über</span>
-            <span className="meta signal" style={{ color: 'var(--bone)', opacity: 0.8 }}>Entstanden im Schwarzwald. Entwickelt für Fokus.</span>
+            <span className="meta signal" style={{ color: 'var(--bone)', opacity: 0.8, marginTop: '3px' }}>Entstanden im Schwarzwald.<br />Entwickelt für Fokus.</span>
           </div>
           
           {/* Top Right Headline */}
@@ -344,7 +340,7 @@ export default function LandingPage() {
               Manche Arbeitstage enden mit einem Abschluss. Andere mit einer Entscheidung, die Verantwortung verlangt. HIGH ist für beides gemacht — ein Möbelstück für Räume, in denen Verantwortung getragen und bewusst übernommen wird.
             </p>
             <p className="intro-anim" style={{ transitionDelay: '300ms' }}>
-              Wir bauen für Klarheit. Für die ruhigen Minuten zwischen Sitzungen, für die ersten Stunden des Tages, für den letzten Gedanken am Abend. Es ist Werkzeug, Ritual und Statement zugleich.
+              Für die ruhigen Minuten zwischen Sitzungen, für die ersten Stunden des Tages, für den letzten Gedanken am Abend. Es ist Werkzeug, Ritual und Statement zugleich.
             </p>
           </div>
           
@@ -369,7 +365,6 @@ export default function LandingPage() {
         <div className="shell">
           <div className="usp-head">
             <div className="lhs">
-              <span className="meta">№ 03 — Das Stück</span>
               <h3>Jedes Stück. <span className="em">Ein Einzelstück.</span></h3>
             </div>
           </div>
@@ -386,7 +381,7 @@ export default function LandingPage() {
               <h3 style={{ fontSize: 'clamp(32px, 4vw, 56px)', color: 'var(--bone)', fontWeight: '300', lineHeight: '1.1' }}>Material, Ruhe und Präzision stehen im Mittelpunkt</h3>
             </div>
             <div className="usp-overlay-text-bottom" style={{ position: 'absolute', left: 'var(--page-pad)', bottom: '60px', maxWidth: '600px', pointerEvents: 'auto' }}>
-              <p style={{ color: 'var(--bone-dim)', fontSize: 'clamp(15px, 1.2vw, 18px)', lineHeight: '1.6' }}>
+              <p style={{ color: 'var(--bone-dim)', fontSize: 'clamp(15px, 1.2vw, 18px)', lineHeight: '1.6', fontWeight: '700' }}>
                 Ihre Umgebung beeinflusst Entscheidungen - jeden Tag.
               </p>
             </div>
@@ -397,31 +392,31 @@ export default function LandingPage() {
 
           <div className="usp-text-block" style={{ marginTop: '80px', marginBottom: '40px', maxWidth: '800px' }}>
             <p style={{ fontSize: '20px', lineHeight: '1.6', color: 'var(--bone)', fontWeight: '300' }}>
-              Das Highboard vereint durchdachte Funktionalität mit höchstem gestalterischem Anspruch. Seine samtige, pflegeleichte Oberfläche schafft visuelle Ruhe und überzeugt in der Haptik. Zwei Türen mit Tip-on Beschlag öffnen den Blick auf ein durchdachtes Innenleben aus Schubladen, sensorischer Innenbeleuchtung und optionalen Erweiterungen wie einem Weindegustationsset oder einem Humidor mit Wasserbetäubelung.
+              Das Highboard vereint durchdachte Funktionalität mit höchstem gestalterischem Anspruch. Seine samtige, pflegeleichte Oberfläche schafft visuelle Ruhe und überzeugt in der Haptik. Zwei Türen mit Tip-on Beschlag öffnen den Blick auf ein durchdachtes Innenleben aus Schubladen, sensorischer Innenbeleuchtung und optionalen Erweiterungen wie einem Weindegustationsset oder einem Humidor mit Wasserbeträufelung.
             </p>
           </div>
 
           <div className="usp-grid" style={{ marginTop: '40px' }}>
             <article className="usp-cell" style={{ gridColumn: 'span 4' }}>
               <div className="image-slot-wrap" style={{ width: '100%', aspectRatio: '4/3', marginBottom: '20px' }}>
-                <image-slot placeholder="Samtige Oberfläche" shape="rect" style={{ width: '100%', height: '100%', display: 'block' }} />
+                <image-slot placeholder="Samtige Oberfläche" shape="rect" src="/images/surface.jpg" style={{ width: '100%', height: '100%', display: 'block' }} />
               </div>
               <h4>Samtige Oberfläche</h4>
               <p style={{ minHeight: '3em' }}>Schafft visuelle Ruhe und überzeugt in der Haptik.</p>
             </article>
             <article className="usp-cell" style={{ gridColumn: 'span 4' }}>
               <div className="image-slot-wrap" style={{ width: '100%', aspectRatio: '4/3', marginBottom: '20px' }}>
-                <image-slot placeholder="Tip-on & Beleuchtung" shape="rect" style={{ width: '100%', height: '100%', display: 'block' }} />
+                <image-slot placeholder="Tip-on & Beleuchtung" shape="rect" src="/images/tipon.jpg" style={{ width: '100%', height: '100%', display: 'block' }} />
               </div>
               <h4>Tip-on & Licht</h4>
               <p style={{ minHeight: '3em' }}>Sensorische Innenbeleuchtung und durchdachte Schubladen.</p>
             </article>
             <article className="usp-cell" style={{ gridColumn: 'span 4' }}>
               <div className="image-slot-wrap" style={{ width: '100%', aspectRatio: '4/3', marginBottom: '20px' }}>
-                <image-slot placeholder="Erweiterungen" shape="rect" style={{ width: '100%', height: '100%', display: 'block' }} />
+                <image-slot placeholder="Erweiterungen" shape="rect" src="/images/innen.jpg" style={{ width: '100%', height: '100%', display: 'block' }} />
               </div>
               <h4>Exklusive Optionen</h4>
-              <p style={{ minHeight: '3em' }}>Weindegustationsset oder Humidor mit Wasserbetäubelung.</p>
+              <p style={{ minHeight: '3em' }}>Weindegustationsset oder Humidor mit Wasserbeträufelung.</p>
             </article>
           </div>
         </div>
@@ -430,7 +425,7 @@ export default function LandingPage() {
       {/* QUOTE BANNER */}
       <section className="quote-banner">
         <div className="shell grid12">
-          <div className="lhs"><span className="meta">№ 04</span></div>
+          <div className="lhs"></div>
           <div className="body">
             <h3 className="quote-animated">
               <span className="qa-word qa-from-left" data-qorder="0">Zwischen</span>&nbsp;
@@ -457,13 +452,14 @@ export default function LandingPage() {
           <video
             className="colorreel-video"
             id="colorReelVideo"
-            src="/videos/cho.mp4"
             muted
             playsInline
             preload="auto"
-          />
+          >
+            <source src="/videos/color.webm" type="video/webm" />
+            <source src="/videos/color.mp4" type="video/mp4" />
+          </video>
           <div className="colorreel-caption">
-            <span className="meta">№ 04 — Kollektion</span>
             <h3>Sieben Oberflächen. <span className="em">Jede eine eigene Stimmung.</span></h3>
             <div className="colorreel-colorname" id="colorReelName">Chocolate</div>
           </div>
@@ -486,30 +482,30 @@ export default function LandingPage() {
 
           <div className="swatches" role="tablist" aria-label="Farbauswahl">
             <button type="button" className="swatch is-active" role="tab" aria-selected="true"
-              data-color="#3a2e22" data-on="#f3f1ec">
-              <span className="sw-fill" style={{ background: '#3a2e22' }}></span>
-              <span className="sw-meta">
-                <span className="sw-rule"></span>
-                <span className="sw-num">01</span>
-                <span className="sw-name">Earth</span>
-              </span>
-            </button>
-            <button type="button" className="swatch" role="tab" aria-selected="false"
-              data-color="#b8a994" data-on="#1a1a1a">
-              <span className="sw-fill" style={{ background: '#b8a994' }}></span>
-              <span className="sw-meta">
-                <span className="sw-rule"></span>
-                <span className="sw-num">02</span>
-                <span className="sw-name">Dust</span>
-              </span>
-            </button>
-            <button type="button" className="swatch" role="tab" aria-selected="false"
               data-color="#0e0e0e" data-on="#f3f1ec">
               <span className="sw-fill" style={{ background: '#0e0e0e' }}></span>
               <span className="sw-meta">
                 <span className="sw-rule"></span>
-                <span className="sw-num">03</span>
+                <span className="sw-num">01</span>
                 <span className="sw-name">Shadow</span>
+              </span>
+            </button>
+            <button type="button" className="swatch" role="tab" aria-selected="false"
+              data-color="#3b2418" data-on="#f3f1ec">
+              <span className="sw-fill" style={{ background: '#3b2418' }}></span>
+              <span className="sw-meta">
+                <span className="sw-rule"></span>
+                <span className="sw-num">02</span>
+                <span className="sw-name">Chocolate</span>
+              </span>
+            </button>
+            <button type="button" className="swatch" role="tab" aria-selected="false"
+              data-color="#3a2e22" data-on="#f3f1ec">
+              <span className="sw-fill" style={{ background: '#3a2e22' }}></span>
+              <span className="sw-meta">
+                <span className="sw-rule"></span>
+                <span className="sw-num">03</span>
+                <span className="sw-name">Earth</span>
               </span>
             </button>
             <button type="button" className="swatch" role="tab" aria-selected="false"
@@ -522,30 +518,30 @@ export default function LandingPage() {
               </span>
             </button>
             <button type="button" className="swatch" role="tab" aria-selected="false"
-              data-color="#2f3a2a" data-on="#f3f1ec">
-              <span className="sw-fill" style={{ background: '#2f3a2a' }}></span>
-              <span className="sw-meta">
-                <span className="sw-rule"></span>
-                <span className="sw-num">05</span>
-                <span className="sw-name">Plant</span>
-              </span>
-            </button>
-            <button type="button" className="swatch" role="tab" aria-selected="false"
               data-color="#7a7873" data-on="#1a1a1a">
               <span className="sw-fill" style={{ background: '#7a7873' }}></span>
               <span className="sw-meta">
                 <span className="sw-rule"></span>
-                <span className="sw-num">06</span>
+                <span className="sw-num">05</span>
                 <span className="sw-name">Sand</span>
               </span>
             </button>
             <button type="button" className="swatch" role="tab" aria-selected="false"
-              data-color="#3b2418" data-on="#f3f1ec">
-              <span className="sw-fill" style={{ background: '#3b2418' }}></span>
+              data-color="#2f3a2a" data-on="#f3f1ec">
+              <span className="sw-fill" style={{ background: '#2f3a2a' }}></span>
+              <span className="sw-meta">
+                <span className="sw-rule"></span>
+                <span className="sw-num">06</span>
+                <span className="sw-name">Plant</span>
+              </span>
+            </button>
+            <button type="button" className="swatch" role="tab" aria-selected="false"
+              data-color="#b8a994" data-on="#1a1a1a">
+              <span className="sw-fill" style={{ background: '#b8a994' }}></span>
               <span className="sw-meta">
                 <span className="sw-rule"></span>
                 <span className="sw-num">07</span>
-                <span className="sw-name">Chocolate</span>
+                <span className="sw-name">Dust</span>
               </span>
             </button>
           </div>
@@ -562,12 +558,7 @@ export default function LandingPage() {
         <div className="shell">
           <div className="testi-header-new">
             <div className="testi-title-wrap">
-              <span className="testi-sub">STIMMEN</span>
               <h2 className="testi-title">Unternehmer, die <span className="text-muted">Verantwortung</span> tragen.</h2>
-            </div>
-            <div className="testi-nav">
-              <button className="testi-nav-btn prev" aria-label="Previous">←</button>
-              <button className="testi-nav-btn next" aria-label="Next">→</button>
             </div>
           </div>
 
@@ -642,8 +633,6 @@ export default function LandingPage() {
       <section className="cta" id="kontakt" data-screen-label="06 CTA">
         <div className="shell grid12">
           <div className="lhs label-stack">
-            <span className="meta">№ 06 — Analyse</span>
-            <span className="meta signal">Persönlich</span>
           </div>
           <div className="body">
             <h3>Mit Sicherheit die beste <span className="em">Entscheidung</span> des Tages</h3>
@@ -717,19 +706,8 @@ export default function LandingPage() {
               <div className="modal-grid" style={{ animation: 'modalFadeIn 0.3s forwards' }}>
                 <div className="modal-left">
                   <h3>Analysetermin anfragen</h3>
-                  <p style={{ fontSize: '14px', color: 'var(--bone-dim)', marginBottom: '24px', lineHeight: '1.5' }}>
-                    Wir melden uns persönlich bei Ihnen, um zu prüfen, ob HIGH zu Ihrem Büro, Ihren Abläufen und Ihren Anforderungen passt.
-                  </p>
-                  <div className="trust-points" style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '20px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--bone-dim)', fontSize: '14px' }}>
-                      <span style={{ color: 'var(--bone)' }}>—</span> Persönliche Rückmeldung
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--bone-dim)', fontSize: '14px' }}>
-                      <span style={{ color: 'var(--bone)' }}>—</span> Kein Newsletter
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--bone-dim)', fontSize: '14px' }}>
-                      <span style={{ color: 'var(--bone)' }}>—</span> Keine Weitergabe Ihrer Daten
-                    </div>
+                  <div style={{ margin: '20px 0' }}>
+                    <img src="/images/high_end.jpg" alt="Analysetermin" style={{ width: '100%', height: 'auto', display: 'block' }} />
                   </div>
                 </div>
                 <div className="modal-right">
@@ -827,10 +805,6 @@ export default function LandingPage() {
                     <button type="submit" className="cta-button" style={{ marginTop: '10px', width: '100%', justifyContent: 'center', height: '64px' }} disabled={isSending}>
                       {isSending ? 'Wird gesendet …' : 'Anfrage senden'}
                     </button>
-                    
-                    <p style={{ fontSize: '11px', color: 'var(--bone-dim)', marginTop: '12px', textAlign: 'center' }}>
-                      Wir melden uns persönlich. Kein Newsletter. Keine Weitergabe Ihrer Daten.
-                    </p>
                   </form>
                 </div>
               </div>
