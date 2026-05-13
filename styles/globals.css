@@ -87,9 +87,10 @@
   .wordmark{
     display: flex;
     align-items: center;
+    margin-top: 20px;
   }
   .wordmark img{
-    height: 36px;
+    height: 44px;
     width: auto;
     display: block;
   }
@@ -122,8 +123,11 @@
   }
 
   .nav .cta-pill{
-    border: none;
-    padding: 0 0 4px 0;
+    border: 1px solid var(--bone);
+    padding: 16px 22px;
+  }
+  .nav .cta-pill::after{
+    display: none !important;
   }
 
   /* ============================================================
@@ -491,6 +495,17 @@
   .intro .label-stack .num{ color: var(--bone); font-size: 12px; }
   .intro-left { grid-column: 1 / 5; grid-row: 1; }
   .intro-right { grid-column: 5 / 13; grid-row: 1; }
+  .intro-paragraphs { 
+    grid-column: 1 / 5; 
+    grid-row: 2; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 24px; 
+    color: var(--bone-dim); 
+    line-height: 1.6; 
+  }
+  .intro-image { grid-column: 5 / 13; grid-row: 2; }
+  .usp-accordion-wrap { grid-column: 1 / span 5; }
 
   /* ============================================================
      USP / DETAIL GRID
@@ -837,8 +852,8 @@
     transition: background 500ms ease;
   }
   .cta .grid12{ row-gap: 48px; align-items: start; }
-  .cta .lhs{ grid-column: 1 / span 3; }
-  .cta .body{ grid-column: 4 / span 8; }
+  .cta .lhs{ grid-column: 1 / span 3; grid-row: 1; }
+  .cta .body{ grid-column: 4 / span 8; grid-row: 1; }
   .cta h3{
     font-size: clamp(44px, 6.4vw, 124px);
     font-weight: 200;
@@ -871,6 +886,10 @@
   .cta:has(.cta-button:hover) p,
   .cta:has(.cta-button:hover) .meta {
     color: var(--ink);
+  }
+  .cta:has(.cta-button:hover) .sales-manager-text,
+  .cta:has(.cta-button:hover) .sales-manager-text span {
+    color: var(--ink) !important;
   }
 
   @keyframes cta-pulse {
@@ -1046,7 +1065,7 @@
 
     .intro .col-label, .intro .col-body{ grid-column: 1 / -1; }
     .intro h2{ font-size: 32px; }
-    .intro-left, .intro-right {
+    .intro-left, .intro-right, .intro-paragraphs, .intro-image, .usp-accordion-wrap {
       grid-column: 1 / -1 !important;
       grid-row: auto !important;
     }
@@ -1073,7 +1092,7 @@
     .testi-header-new { flex-direction: column; align-items: flex-start; gap: 24px; }
     .testi-row { grid-template-columns: 1fr; }
 
-    .cta .lhs, .cta .body{ grid-column: 1 / -1; }
+    .cta .lhs, .cta .body{ grid-column: 1 / -1 !important; grid-row: auto !important; }
     .cta h3{ font-size: 44px; }
 
     .foot-mark{ grid-column: 1 / -1; font-size: 80px; }

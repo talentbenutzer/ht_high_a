@@ -23,6 +23,7 @@ export default function LandingPage() {
     website: '' // Honeypot
   })
   const [errors, setErrors] = useState({})
+  const [openAccordion, setOpenAccordion] = useState(0)
 
   useEffect(() => {
     // Respect prefers-reduced-motion
@@ -279,7 +280,7 @@ export default function LandingPage() {
         </div>
         <div></div>
         <div className="right">
-          <a href="#kontakt" className="navlink cta-pill">Analyse</a>
+          <a href="#kontakt" className="navlink cta-pill">PERSÖNLICHE BERATUNG</a>
         </div>
       </nav>
 
@@ -330,12 +331,21 @@ export default function LandingPage() {
           {/* Top Right Headline */}
           <div className="intro-right" style={{ marginBottom: '60px' }}>
             <h2 className="intro-anim" style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 300, lineHeight: '1.2', color: 'var(--bone)', margin: 0 }}>
-              Das Interior-Piece ist die Architektur eines Tages, an dem alles <span className="em">stimmen</span> muss.
+              Das Interior-Piece ist die Architektur eines Tages, an dem alles stimmen muss.
             </h2>
           </div>
           
+          {/* Bottom Right Image (Moved up in JSX for stacking order) */}
+          <div className="intro-image">
+            <img
+              src="/images/hoellental_choclate.jpg"
+              alt="Höllental Chocolate"
+              style={{ width: '100%', display: 'block' }}
+            />
+          </div>
+
           {/* Bottom Left Paragraphs */}
-          <div style={{ gridColumn: '1 / 5', gridRow: '2', display: 'flex', flexDirection: 'column', gap: '24px', color: 'var(--bone-dim)', lineHeight: '1.6' }}>
+          <div className="intro-paragraphs">
             <p className="intro-anim" style={{ transitionDelay: '150ms' }}>
               Manche Arbeitstage enden mit einem Abschluss. Andere mit einer Entscheidung, die Verantwortung verlangt. HIGH ist für beides gemacht — ein Möbelstück für Räume, in denen Verantwortung getragen und bewusst übernommen wird.
             </p>
@@ -344,80 +354,102 @@ export default function LandingPage() {
             </p>
           </div>
           
-          {/* Bottom Right Video */}
-          <div style={{ gridColumn: '5 / 13', gridRow: '2' }}>
-            <video
-              src="/videos/p1.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              style={{ width: '100%', borderRadius: '12px', display: 'block' }}
-            />
-          </div>
-          
         </div>
       </section>
 
-      {/* USP / DETAIL GRID */}
-      <section className="usp">
-        <div className="shell">
-          <div className="usp-head">
-            <div className="lhs">
-              <h3>Jedes Stück. <span className="em">Ein Einzelstück.</span></h3>
-            </div>
+      {/* USP / ACCORDION SECTION */}
+      <section className="usp" style={{ position: 'relative', background: '#1a1a1a', color: 'var(--bone)', overflow: 'hidden', padding: 0 }}>
+        {/* Full width background image / video */}
+        <div style={{ width: '100%', position: 'relative', height: '100vh', display: 'flex', alignItems: 'center' }}>
+          <div style={{ position: 'absolute', inset: 0, opacity: 0.4, transition: 'opacity 0.5s ease' }}>
+            {openAccordion === 0 && (
+              <video src="/videos/holz_eiche.mp4" autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            )}
+            {openAccordion === 1 && (
+              <video src="/videos/heimisch_holz.mp4" autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            )}
+            {openAccordion === 2 && (
+              <img src="/images/oberf.jpg" alt="Background" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            )}
+            {openAccordion === -1 && (
+              <img src="/images/spuerbare_praezision.png" alt="Background" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            )}
           </div>
+          
+          <div className="shell" style={{ position: 'relative', zIndex: 1 }}>
+            <div className="grid12">
+              <div className="usp-accordion-wrap">
+                <h3 style={{ fontSize: 'clamp(32px, 4vw, 56px)', fontWeight: '300', marginBottom: '40px', fontFamily: 'var(--font-sans)' }}>Spürbare Präzision.</h3>
+                
+                {/* Accordion */}
+                <div style={{ border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)' }}>
+                  
+                  {/* Item 1 */}
+                  <div style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                    <button 
+                      onClick={() => setOpenAccordion(openAccordion === 0 ? -1 : 0)}
+                      style={{ width: '100%', padding: '24px', background: 'none', border: 'none', color: 'var(--bone)', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontFamily: 'inherit' }}
+                    >
+                      <span style={{ fontSize: 'clamp(18px, 1.5vw, 22px)', fontWeight: '400' }}>Hochwertig geräucherte Eiche</span>
+                      <span style={{ fontSize: '20px' }}>{openAccordion === 0 ? '−' : '+'}</span>
+                    </button>
+                    <div style={{ 
+                      maxHeight: openAccordion === 0 ? '200px' : '0', 
+                      overflow: 'hidden', 
+                      transition: 'max-height 0.3s ease-out, padding 0.3s ease-out',
+                      padding: openAccordion === 0 ? '0 24px 24px 24px' : '0 24px'
+                    }}>
+                      <div style={{ fontSize: 'clamp(15px, 1.2vw, 18px)', color: 'var(--bone-dim)', lineHeight: '1.6' }}>
+                        Natürlich veredelt, mit einer individuellen Maserung, die jedem Stück Tiefe, Charakter und eine angenehme Haptik verleiht.
+                      </div>
+                    </div>
+                  </div>
 
-        </div> {/* Close previous shell */}
+                  {/* Item 2 */}
+                  <div style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                    <button 
+                      onClick={() => setOpenAccordion(openAccordion === 1 ? -1 : 1)}
+                      style={{ width: '100%', padding: '24px', background: 'none', border: 'none', color: 'var(--bone)', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontFamily: 'inherit' }}
+                    >
+                      <span style={{ fontSize: 'clamp(18px, 1.5vw, 22px)', fontWeight: '400' }}>Regional zertifiziertes Holz</span>
+                      <span style={{ fontSize: '20px' }}>{openAccordion === 1 ? '−' : '+'}</span>
+                    </button>
+                    <div style={{ 
+                      maxHeight: openAccordion === 1 ? '200px' : '0', 
+                      overflow: 'hidden', 
+                      transition: 'max-height 0.3s ease-out, padding 0.3s ease-out',
+                      padding: openAccordion === 1 ? '0 24px 24px 24px' : '0 24px'
+                    }}>
+                      <div style={{ fontSize: 'clamp(15px, 1.2vw, 18px)', color: 'var(--bone-dim)', lineHeight: '1.6' }}>
+                        Aus nachvollziebarer Forstwirtschaft, mit kurzen Wegen, geringem CO2 Fußabdruck und dem Anspruch, lokale Wertschöpfung und Langlebigkeit zu verienen.
+                      </div>
+                    </div>
+                  </div>
 
-        {/* Full width image section */}
-        <div style={{ width: '100%', position: 'relative', height: '80vh', marginBottom: '80px' }}>
-          <div className="image-slot-wrap" style={{ width: '100%', height: '100%', borderBottom: '1px solid var(--line)', borderTop: '1px solid var(--line)' }}>
-            <image-slot id="usp-feature" placeholder="HIGH · Zürich" shape="rect" src="/images/usp-01.jpg" style={{ width: '100%', height: '100%', display: 'block' }} />
-          </div>
-          <div className="shell" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-            <div className="usp-overlay-text-top" style={{ position: 'absolute', left: 'var(--page-pad)', top: '60px', maxWidth: '600px', pointerEvents: 'auto' }}>
-              <h3 style={{ fontSize: 'clamp(32px, 4vw, 56px)', color: 'var(--bone)', fontWeight: '300', lineHeight: '1.1' }}>Material, Ruhe und Präzision<br />stehen im Mittelpunkt</h3>
-            </div>
-            <div className="usp-overlay-text-bottom" style={{ position: 'absolute', left: 'var(--page-pad)', bottom: '60px', maxWidth: '600px', pointerEvents: 'auto' }}>
-              <p style={{ color: 'var(--bone-dim)', fontSize: 'clamp(15px, 1.2vw, 18px)', lineHeight: '1.6', fontWeight: '700' }}>
-                Ihre Umgebung beeinflusst Entscheidungen - jeden Tag.
-              </p>
-            </div>
-          </div>
-        </div>
+                  {/* Item 3 */}
+                  <div>
+                    <button 
+                      onClick={() => setOpenAccordion(openAccordion === 2 ? -1 : 2)}
+                      style={{ width: '100%', padding: '24px', background: 'none', border: 'none', color: 'var(--bone)', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontFamily: 'inherit' }}
+                    >
+                      <span style={{ fontSize: 'clamp(18px, 1.5vw, 22px)', fontWeight: '400' }}>Einzigartige Oberflächen</span>
+                      <span style={{ fontSize: '20px' }}>{openAccordion === 2 ? '−' : '+'}</span>
+                    </button>
+                    <div style={{ 
+                      maxHeight: openAccordion === 2 ? '200px' : '0', 
+                      overflow: 'hidden', 
+                      transition: 'max-height 0.3s ease-out, padding 0.3s ease-out',
+                      padding: openAccordion === 2 ? '0 24px 24px 24px' : '0 24px'
+                    }}>
+                      <div style={{ fontSize: 'clamp(15px, 1.2vw, 18px)', color: 'var(--bone-dim)', lineHeight: '1.6' }}>
+                        Warm und samtig in der Berührung, matt in der Optik und pflegeleicht in der Anwendung. schaffen unserer Oberflächen visuelle Ruhe und dauerhafte Qualität.
+                      </div>
+                    </div>
+                  </div>
 
-        <div className="shell"> {/* Open new shell */}
-
-          <div className="usp-text-block" style={{ marginTop: '80px', marginBottom: '40px', maxWidth: '800px' }}>
-            <p style={{ fontSize: '20px', lineHeight: '1.6', color: 'var(--bone)', fontWeight: '300' }}>
-              Das Highboard vereint durchdachte Funktionalität mit höchstem gestalterischem Anspruch. Seine samtige, pflegeleichte Oberfläche schafft visuelle Ruhe und überzeugt in der Haptik. Zwei Türen mit Tip-on Beschlag öffnen den Blick auf ein durchdachtes Innenleben aus Schubladen, sensorischer Innenbeleuchtung und optionalen Erweiterungen wie einem Weindegustationsset oder einem Humidor mit Wasserbeträufelung.
-            </p>
-          </div>
-
-          <div className="usp-grid" style={{ marginTop: '40px' }}>
-            <article className="usp-cell">
-              <div className="image-slot-wrap" style={{ width: '100%', aspectRatio: '4/3', marginBottom: '20px' }}>
-                <image-slot placeholder="Samtige Oberfläche" shape="rect" src="/images/surface.jpg" style={{ width: '100%', height: '100%', display: 'block' }} />
+                </div>
               </div>
-              <h4>Samtige Oberfläche</h4>
-              <p style={{ minHeight: '3em' }}>Schafft visuelle Ruhe und überzeugt in der Haptik.</p>
-            </article>
-            <article className="usp-cell">
-              <div className="image-slot-wrap" style={{ width: '100%', aspectRatio: '4/3', marginBottom: '20px' }}>
-                <image-slot placeholder="Tip-on & Beleuchtung" shape="rect" src="/images/tipon.jpg" style={{ width: '100%', height: '100%', display: 'block' }} />
-              </div>
-              <h4>Tip-on & Licht</h4>
-              <p style={{ minHeight: '3em' }}>Sensorische Innenbeleuchtung und durchdachte Schubladen.</p>
-            </article>
-            <article className="usp-cell">
-              <div className="image-slot-wrap" style={{ width: '100%', aspectRatio: '4/3', marginBottom: '20px' }}>
-                <image-slot placeholder="Erweiterungen" shape="rect" src="/images/innen.jpg" style={{ width: '100%', height: '100%', display: 'block' }} />
-              </div>
-              <h4>Exklusive Optionen</h4>
-              <p style={{ minHeight: '3em' }}>Weindegustationsset oder Humidor mit Wasserbeträufelung.</p>
-            </article>
+            </div>
           </div>
         </div>
       </section>
@@ -632,16 +664,23 @@ export default function LandingPage() {
       {/* CTA */}
       <section className="cta" id="kontakt" data-screen-label="06 CTA">
         <div className="shell grid12">
-          <div className="lhs label-stack">
-          </div>
           <div className="body">
             <h3>Mit Sicherheit die beste <span className="em">Entscheidung</span> des Tages</h3>
             <p style={{ marginBottom: '10px', fontWeight: '500' }}>Wir analysieren ausgewählte CEO- und Unternehmerbüros auf Fokus, Klarheit und Wirkung.</p>
-            <p>Eine Studio höllental-Konfiguration beginnt mit einem 30-minütigen Analysetermin. Wir sehen, was Sie tun. Wir hören, was Sie brauchen. Erst danach reden wir über Material, Maße und Termin.</p>
+            <p>Eine Studio höllental-Konfiguration beginnt mit einem persönlichen Analysetermin. Wir sehen, was Sie tun. Wir hören, was Sie brauchen. Erst danach reden wir über Material, Maße und Termin.</p>
             <a href="#" className="cta-button" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
-              30-minütigen Analysetermin anfragen
+              Jetzt persönliche Beratung anfragen
               <span className="arrow" aria-hidden="true">→</span>
             </a>
+          </div>
+          <div className="lhs" style={{ display: 'flex', alignItems: 'flex-end', gap: '15px', alignSelf: 'flex-end' }}>
+            <div style={{ backgroundColor: '#2a2a2a', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', width: '160px', height: '160px', overflow: 'hidden' }}>
+              <img src="/images/cf01q.png" alt="Christian Frei" style={{ width: '100%', height: 'auto', display: 'block' }} />
+            </div>
+            <div className="sales-manager-text" style={{ fontSize: '11px', color: 'var(--bone-dim)', lineHeight: '1.4', paddingBottom: '10px', letterSpacing: '0.05em' }}>
+              <span style={{ color: 'var(--bone)', fontWeight: '500', fontSize: '13px' }}>Christian Frei</span><br />
+              Sales Manager
+            </div>
           </div>
         </div>
       </section>
