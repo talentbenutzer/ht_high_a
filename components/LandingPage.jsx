@@ -133,8 +133,17 @@ export default function LandingPage() {
           }
 
           const target = Math.max(0, Math.min(v.duration - 0.05, t * v.duration))
-          if (Math.abs(v.currentTime - target) > 0.03) {
-            try { v.currentTime = target } catch (e) { }
+          const isMobile = window.innerWidth < 900
+          
+          if (isMobile) {
+            v.loop = true
+            if (v.paused) {
+              v.play().catch(e => {})
+            }
+          } else {
+            if (Math.abs(v.currentTime - target) > 0.03) {
+              try { v.currentTime = target } catch (e) { }
+            }
           }
         }
 
