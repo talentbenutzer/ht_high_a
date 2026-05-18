@@ -412,7 +412,7 @@ export default function LandingPage() {
 
           <div className="hero-left">
             <div className="hero-meta-top">
-              <span className="meta">№ 001 · Studio Höllental</span>
+              <span className="meta">№ 001 · Studio höllental.</span>
               <span className="dotline"></span>
               <span className="meta">Möbelstück HIGH</span>
             </div>
@@ -441,7 +441,7 @@ export default function LandingPage() {
           {/* Top Right Headline */}
           <div className="intro-right" style={{ marginBottom: '60px' }}>
             <h2 className="intro-anim" style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 300, lineHeight: '1.2', color: 'var(--bone)', margin: 0, textWrap: 'wrap' }}>
-              <span>Zwischen Druck und Triumph — ein Möbelstück,</span><br /><span>das beides aushält.</span>
+              <span>Zwischen Druck und Triumph – ein Möbelstück,</span><br /><span>das beides aushält.</span>
             </h2>
           </div>
           
@@ -456,7 +456,7 @@ export default function LandingPage() {
           {/* Bottom Left Paragraphs */}
           <div className="intro-paragraphs">
             <p className="intro-anim" style={{ transitionDelay: '150ms' }}>
-              Manche Arbeitstage enden mit einem Abschluss.<br />Andere mit einer Entscheidung, die Verantwortung verlangt. HIGH ist für beides gemacht — ein Möbelstück für Räume, in denen Verantwortung getragen und bewusst übernommen wird.
+              Manche Arbeitstage enden mit einem Abschluss.<br />Andere mit einer Entscheidung, die Verantwortung verlangt. HIGH ist für beides gemacht – ein Möbelstück für Räume, in denen Verantwortung getragen und bewusst übernommen wird.
             </p>
             <p className="intro-anim" style={{ transitionDelay: '300ms' }}>
               Für die ruhigen Minuten zwischen Sitzungen, für die ersten Stunden des Tages, für den letzten Gedanken am Abend. Es ist Werkzeug, Ritual und Statement zugleich.
@@ -530,7 +530,7 @@ export default function LandingPage() {
                       padding: openAccordion === 1 ? '0 24px 24px 24px' : '0 24px'
                     }}>
                       <div style={{ fontSize: 'clamp(15px, 1.2vw, 18px)', color: 'var(--bone-dim)', lineHeight: '1.6' }}>
-                        Aus nachvollziebarer Forstwirtschaft, mit kurzen Wegen, geringem CO2 Fußabdruck und dem Anspruch, lokale Wertschöpfung und Langlebigkeit zu verienen.
+                        Aus nachvollziehbarer Forstwirtschaft, mit kurzen Wegen, geringem CO₂-Fußabdruck und dem Anspruch, lokale Wertschöpfung und Langlebigkeit zu vereinen.
                       </div>
                     </div>
                   </div>
@@ -551,7 +551,7 @@ export default function LandingPage() {
                       padding: openAccordion === 2 ? '0 24px 24px 24px' : '0 24px'
                     }}>
                       <div style={{ fontSize: 'clamp(15px, 1.2vw, 18px)', color: 'var(--bone-dim)', lineHeight: '1.6' }}>
-                        Warm und samtig in der Berührung, matt in der Optik und pflegeleicht in der Anwendung. schaffen unserer Oberflächen visuelle Ruhe und dauerhafte Qualität.
+                        Warm und samtig in der Berührung, matt in der Optik und pflegeleicht in der Anwendung, schaffen unsere Oberflächen visuelle Ruhe und dauerhafte Qualität.
                       </div>
                     </div>
                   </div>
@@ -573,7 +573,7 @@ export default function LandingPage() {
               <span className="qa-word qa-from-top" data-qorder="1">Druck</span>&nbsp;
               <span className="qa-word qa-fade" data-qorder="2">und</span>&nbsp;
               <span className="qa-word qa-scale em" data-qorder="3">Triumph</span>&nbsp;
-              <span className="qa-word qa-fade" data-qorder="4">—</span>&nbsp;
+              <span className="qa-word qa-fade" data-qorder="4">–</span>&nbsp;
               <span className="qa-word qa-fade" data-qorder="5">ein</span>&nbsp;
               <span className="qa-word qa-fade" data-qorder="6">Möbelstück,</span>&nbsp;
               <span className="qa-word qa-fade" data-qorder="7">das</span>&nbsp;
@@ -612,7 +612,7 @@ export default function LandingPage() {
         <div className="shell">
           <div className="colors-head">
             <div className="lhs">
-              <span className="meta">№ 04 — Material</span>
+              <span className="meta">№ 04 – Material</span>
               <h3>Sieben <span className="em">Oberflächen</span>. Eine Entscheidung.</h3>
             </div>
             <div className="rhs">
@@ -715,7 +715,7 @@ export default function LandingPage() {
               <div className="testi-quote-icon">“</div>
               <p className="testi-quote">
                 Sehr klar, sehr hochwertig und bis ins Detail sauber umgesetzt.
-                Genau die Art von Zusammenarbeit, die wir schätzen
+                Genau die Art von Zusammenarbeit, die wir schätzen.
               </p>
               <div className="testi-meta">
                 <span className="name">Sascha Gehring</span>
@@ -736,7 +736,7 @@ export default function LandingPage() {
               <div className="testi-quote-icon">“</div>
               <p className="testi-quote">
                 Studio höllental. hat sofort verstanden, was uns wichtig ist.
-                Das Ergebnis passt heute perfekt zu meinem Alltag
+                Das Ergebnis passt heute perfekt zu meinem Alltag.
               </p>
               <div className="testi-meta">
                 <span className="name">Timo Horl</span>
@@ -757,7 +757,7 @@ export default function LandingPage() {
               <div className="testi-quote-icon">“</div>
               <p className="testi-quote">
                 Klare Gestaltung, starke Materialien und eine sehr angenehme Zusammenarbeit.
-                Das Gesamtbild passt einfach
+                Das Gesamtbild passt einfach.
               </p>
               <div className="testi-meta">
                 <span className="name">Christoph Ernst</span>
@@ -776,7 +776,7 @@ export default function LandingPage() {
             <h3>Mit Sicherheit die beste <span className="em">Entscheidung</span> des Tages</h3>
             <p style={{ marginBottom: '10px', fontWeight: '500' }}>Wir analysieren ausgewählte CEO- und Unternehmerbüros auf Fokus, Klarheit und Wirkung.</p>
             <p>
-              {'Eine Studio höllental-Konfiguration beginnt mit einem persönlichen Analysetermin. Wir sehen, was Sie tun. Wir hören, was Sie brauchen.'}<br />
+              {'Eine Konfiguration von Studio höllental. beginnt mit einem persönlichen Analysetermin. Wir sehen, was Sie tun. Wir hören, was Sie brauchen.'}<br />
               {'Erst danach reden wir über Material und Maße.'}
             </p>
             <a href="#" className="cta-button" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
