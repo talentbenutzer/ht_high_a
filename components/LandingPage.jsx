@@ -381,7 +381,6 @@ export default function LandingPage() {
                 onLoadedMetadata={(e) => { e.target.pause(); setIsVideoLoaded(true); }}
                 onCanPlay={(e) => { setIsVideoLoaded(true); }}
               >
-                <source src={isVideoMounted && isMobileVideo ? "/videos/high-scroll-mobile.webm" : "/videos/high-scroll-desktop.webm"} type="video/webm" />
                 <source src={isVideoMounted && isMobileVideo ? "/videos/high-scroll-mobile.mp4" : "/videos/high-scroll-desktop.mp4"} type="video/mp4" />
               </video>
             ) : (
@@ -598,7 +597,6 @@ export default function LandingPage() {
             playsInline
             preload="auto"
           >
-            <source src="/videos/color.webm" type="video/webm" />
             <source src="/videos/color.mp4" type="video/mp4" />
           </video>
           <div className="colorreel-caption">
