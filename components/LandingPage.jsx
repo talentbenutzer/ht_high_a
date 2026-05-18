@@ -775,7 +775,10 @@ export default function LandingPage() {
           <div className="body">
             <h3>Mit Sicherheit die beste <span className="em">Entscheidung</span> des Tages</h3>
             <p style={{ marginBottom: '10px', fontWeight: '500' }}>Wir analysieren ausgewählte CEO- und Unternehmerbüros auf Fokus, Klarheit und Wirkung.</p>
-            <p>Eine Studio höllental-Konfiguration beginnt mit einem persönlichen Analysetermin. Wir sehen, was Sie tun. Wir hören, was Sie brauchen. Erst danach reden wir über Material und Maße.</p>
+            <p>
+              {'Eine Studio höllental-Konfiguration beginnt mit einem persönlichen Analysetermin. Wir sehen, was Sie tun. Wir hören, was Sie brauchen.'}<br />
+              {'Erst danach reden wir über Material und Maße.'}
+            </p>
             <a href="#" className="cta-button" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
               Jetzt persönliche Beratung anfragen
               <span className="arrow" aria-hidden="true">→</span>
