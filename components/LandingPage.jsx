@@ -441,7 +441,7 @@ export default function LandingPage() {
           {/* Top Right Headline */}
           <div className="intro-right" style={{ marginBottom: '60px' }}>
             <h2 className="intro-anim" style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 300, lineHeight: '1.2', color: 'var(--bone)', margin: 0 }}>
-              Das Interior-Piece ist die Architektur eines Tages, an dem alles stimmen muss.
+              Zwischen Druck und Triumph — ein Möbelstück,<br />das beides aushält.
             </h2>
           </div>
           
@@ -456,7 +456,7 @@ export default function LandingPage() {
           {/* Bottom Left Paragraphs */}
           <div className="intro-paragraphs">
             <p className="intro-anim" style={{ transitionDelay: '150ms' }}>
-              Manche Arbeitstage enden mit einem Abschluss. Andere mit einer Entscheidung, die Verantwortung verlangt. HIGH ist für beides gemacht — ein Möbelstück für Räume, in denen Verantwortung getragen und bewusst übernommen wird.
+              Manche Arbeitstage enden mit einem Abschluss.<br />Andere mit einer Entscheidung, die Verantwortung verlangt. HIGH ist für beides gemacht — ein Möbelstück für Räume, in denen Verantwortung getragen und bewusst übernommen wird.
             </p>
             <p className="intro-anim" style={{ transitionDelay: '300ms' }}>
               Für die ruhigen Minuten zwischen Sitzungen, für die ersten Stunden des Tages, für den letzten Gedanken am Abend. Es ist Werkzeug, Ritual und Statement zugleich.
