@@ -1073,6 +1073,9 @@
       grid-column: 1 / -1 !important;
       grid-row: auto !important;
     }
+    .intro-left, .intro-right {
+      margin-bottom: 0 !important;
+    }
 
     .usp-head .lhs, .usp-head .rhs{ grid-column: 1 / -1; }
     .usp-cell.feature, .usp-cell.tall, .usp-cell.std, .usp-cell.wide{
