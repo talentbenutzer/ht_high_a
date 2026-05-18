@@ -29,7 +29,7 @@
 
   *{ box-sizing: border-box; }
   html, body { margin:0; padding:0; }
-  html { background: var(--ink); }
+  html { background: var(--ink); overflow-x: hidden; width: 100%; }
   body{
     background: var(--ink);
     color: var(--bone);
@@ -39,6 +39,8 @@
     text-rendering: optimizeLegibility;
     line-height: 1.4;
     overflow-x: hidden;
+    width: 100%;
+    position: relative;
   }
   ::selection{ background: #ffffff; color: #000000; }
 
@@ -1039,6 +1041,7 @@
     }
     .nav .left .navlink:not(:first-child){ display: none; }
     .nav .right .navlink:not(.cta-pill){ display: none; }
+    .nav .cta-pill { padding: 10px 14px; font-size: 10px; }
     .wordmark img { height: 32px; }
 
     .hero{ height: 200vh; }
