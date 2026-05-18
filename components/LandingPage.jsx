@@ -90,6 +90,28 @@ export default function LandingPage() {
         const bar = document.getElementById('heroProgress')
         let lastIdx = -1
 
+        let targetTime = 0
+        let currentTime = 0
+        let hasInitializedTime = false
+
+        function renderHero() {
+          const v = document.getElementById('heroVideo')
+          if (v && v.readyState >= 1 && v.duration && isFinite(v.duration)) {
+            if (!hasInitializedTime) {
+              currentTime = targetTime
+              hasInitializedTime = true
+            }
+            // LERP for smooth scrubbing
+            currentTime += (targetTime - currentTime) * 0.08
+
+            if (Math.abs(v.currentTime - currentTime) > 0.01) {
+              try { v.currentTime = currentTime } catch (e) { }
+            }
+          }
+          requestAnimationFrame(renderHero)
+        }
+        requestAnimationFrame(renderHero)
+
         function onScroll() {
           const rect = hero.getBoundingClientRect()
           const total = hero.offsetHeight - window.innerHeight
@@ -99,11 +121,8 @@ export default function LandingPage() {
           if (bar) bar.style.width = (t * 100) + '%'
 
           const v = document.getElementById('heroVideo')
-          if (v && v.readyState >= 1 && v.duration && isFinite(v.duration)) {
-            const target = Math.max(0, Math.min(v.duration - 0.05, (t / 0.75) * v.duration))
-            if (Math.abs(v.currentTime - target) > 0.03) {
-              try { v.currentTime = target } catch (e) { }
-            }
+          if (v && v.duration && isFinite(v.duration)) {
+            targetTime = Math.max(0, Math.min(v.duration - 0.05, (t / 0.75) * v.duration))
           }
 
           const n = words.length
@@ -160,6 +179,27 @@ export default function LandingPage() {
         const colors = ['Shadow', 'Chocolate', 'Earth', 'Ocean', 'Sand', 'Plant', 'Dust']
         let lastColorIdx = -1
 
+        let targetTime = 0
+        let currentTime = 0
+        let hasInitializedTime = false
+
+        function renderColorReel() {
+          if (v.readyState >= 1 && v.duration && isFinite(v.duration)) {
+            if (!hasInitializedTime) {
+              currentTime = targetTime
+              hasInitializedTime = true
+            }
+            // LERP for smooth scrubbing
+            currentTime += (targetTime - currentTime) * 0.08
+
+            if (Math.abs(v.currentTime - currentTime) > 0.01) {
+              try { v.currentTime = currentTime } catch (e) { }
+            }
+          }
+          requestAnimationFrame(renderColorReel)
+        }
+        requestAnimationFrame(renderColorReel)
+
         function seek() {
           if (!v.duration || !isFinite(v.duration)) return
           const rect = section.getBoundingClientRect()
@@ -175,10 +215,7 @@ export default function LandingPage() {
             lastColorIdx = colorIdx
           }
 
-          const target = Math.max(0, Math.min(v.duration - 0.05, t * v.duration))
-          if (Math.abs(v.currentTime - target) > 0.03) {
-            try { v.currentTime = target } catch (e) { }
-          }
+          targetTime = Math.max(0, Math.min(v.duration - 0.05, t * v.duration))
         }
 
         v.load()
