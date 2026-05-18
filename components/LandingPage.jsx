@@ -24,6 +24,16 @@ export default function LandingPage() {
   })
   const [errors, setErrors] = useState({})
   const [openAccordion, setOpenAccordion] = useState(0)
+  const [isMobileVideo, setIsMobileVideo] = useState(false)
+  const [isVideoMounted, setIsVideoMounted] = useState(false)
+
+  useEffect(() => {
+    setIsVideoMounted(true)
+    const checkMobile = () => setIsMobileVideo(window.innerWidth <= 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   useEffect(() => {
     // Respect prefers-reduced-motion
@@ -34,6 +44,8 @@ export default function LandingPage() {
         const v = document.getElementById('heroVideo')
         if (!v) return
         const onReady = () => { try { v.pause() } catch (e) { } }
+        // Ensure video stays paused initially
+        v.addEventListener('canplay', onReady, { once: true })
         if (v.readyState >= 1) onReady()
         else v.addEventListener('loadedmetadata', onReady, { once: true })
       })()
@@ -56,7 +68,7 @@ export default function LandingPage() {
           if (bar) bar.style.width = (t * 100) + '%'
 
           const v = document.getElementById('heroVideo')
-          if (v && v.duration && isFinite(v.duration)) {
+          if (v && v.readyState >= 1 && v.duration && isFinite(v.duration)) {
             const target = Math.max(0, Math.min(v.duration - 0.05, (t / 0.75) * v.duration))
             if (Math.abs(v.currentTime - target) > 0.03) {
               try { v.currentTime = target } catch (e) { }
@@ -298,14 +310,17 @@ export default function LandingPage() {
         <div className="hero-stage">
           <div className="hero-right" aria-hidden="true">
             <video
+              key={isVideoMounted ? (isMobileVideo ? 'mobile' : 'desktop') : 'ssr'}
               className="hero-video"
               id="heroVideo"
               muted
               playsInline
-              preload="auto"
+              preload={isVideoMounted && isMobileVideo ? "metadata" : "auto"}
+              poster={isVideoMounted && isMobileVideo ? "/images/high-scroll-poster-mobile.jpg" : "/images/high-scroll-poster-desktop.jpg"}
+              onLoadedMetadata={(e) => { e.target.pause() }}
             >
-              <source src="/videos/333.webm" type="video/webm" />
-              <source src="/videos/33.mp4" type="video/mp4" />
+              <source src={isVideoMounted && isMobileVideo ? "/videos/high-scroll-mobile.webm" : "/videos/high-scroll-desktop.webm"} type="video/webm" />
+              <source src={isVideoMounted && isMobileVideo ? "/videos/high-scroll-mobile.mp4" : "/videos/high-scroll-desktop.mp4"} type="video/mp4" />
             </video>
           </div>
 
@@ -677,7 +692,7 @@ export default function LandingPage() {
           <div className="body">
             <h3>Mit Sicherheit die beste <span className="em">Entscheidung</span> des Tages</h3>
             <p style={{ marginBottom: '10px', fontWeight: '500' }}>Wir analysieren ausgewählte CEO- und Unternehmerbüros auf Fokus, Klarheit und Wirkung.</p>
-            <p>Eine Studio höllental-Konfiguration beginnt mit einem persönlichen Analysetermin. Wir sehen, was Sie tun. Wir hören, was Sie brauchen. Erst danach reden wir über Material, Maße und Termin.</p>
+            <p>Eine Studio höllental-Konfiguration beginnt mit einem persönlichen Analysetermin. Wir sehen, was Sie tun. Wir hören, was Sie brauchen. Erst danach reden wir über Material und Maße.</p>
             <a href="#" className="cta-button" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
               Jetzt persönliche Beratung anfragen
               <span className="arrow" aria-hidden="true">→</span>
