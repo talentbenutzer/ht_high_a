@@ -781,11 +781,11 @@ export default function LandingPage() {
               <span className="arrow" aria-hidden="true">→</span>
             </a>
           </div>
-          <div className="lhs" style={{ display: 'flex', alignItems: 'flex-end', gap: '15px', alignSelf: 'flex-end' }}>
-            <div style={{ backgroundColor: '#2a2a2a', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', width: '160px', height: '160px', overflow: 'hidden', borderRadius: '50%' }}>
+          <div className="lhs" style={{ display: 'flex', alignItems: 'center', gap: '15px', alignSelf: 'flex-end' }}>
+            <div style={{ backgroundColor: '#2a2a2a', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', width: '80px', height: '80px', flexShrink: 0, overflow: 'hidden', borderRadius: '50%' }}>
               <img src="/images/cf01q.png" alt="Christian Frei" style={{ width: '100%', height: 'auto', display: 'block' }} />
             </div>
-            <div className="sales-manager-text" style={{ fontSize: '11px', color: 'var(--bone-dim)', lineHeight: '1.4', paddingBottom: '10px', letterSpacing: '0.05em' }}>
+            <div className="sales-manager-text" style={{ fontSize: '11px', color: 'var(--bone-dim)', lineHeight: '1.4', letterSpacing: '0.05em' }}>
               <span style={{ color: 'var(--bone)', fontWeight: '500', fontSize: '13px' }}>Christian Frei</span><br />
               Business Development &<br />Partnership
             </div>
