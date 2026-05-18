@@ -38,46 +38,21 @@ export default function LandingPage() {
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // play/pause init for iOS + touchstart gesture unlock
+  // play/pause init for iOS
   useEffect(() => {
     const v = document.getElementById('heroVideo');
     if (v && !prefersReducedMotion) {
       setIsVideoLoaded(false);
-
-      const unlockVideo = () => {
-        if (v.readyState < 2) {
-          const playPromise = v.play();
-          if (playPromise !== undefined) {
-            playPromise.then(() => {
-              v.pause();
-              setIsVideoLoaded(true);
-            }).catch(() => {});
-          }
-        } else {
-          setIsVideoLoaded(true);
-        }
-        document.body.removeEventListener('touchstart', unlockVideo);
-        document.body.removeEventListener('click', unlockVideo);
-      };
-
+      v.load();
       const playPromise = v.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
           v.pause();
           setIsVideoLoaded(true);
         }).catch(() => {
-          document.body.addEventListener('touchstart', unlockVideo, { once: true });
-          document.body.addEventListener('click', unlockVideo, { once: true });
+          // Silently ignore autoplay errors to prevent console noise
         });
-      } else {
-        document.body.addEventListener('touchstart', unlockVideo, { once: true });
-        document.body.addEventListener('click', unlockVideo, { once: true });
       }
-
-      return () => {
-        document.body.removeEventListener('touchstart', unlockVideo);
-        document.body.removeEventListener('click', unlockVideo);
-      };
     }
   }, [isMobileVideo, prefersReducedMotion]);
 
@@ -201,17 +176,8 @@ export default function LandingPage() {
           }
 
           const target = Math.max(0, Math.min(v.duration - 0.05, t * v.duration))
-          const isMobile = window.innerWidth < 900
-          
-          if (isMobile) {
-            v.loop = true
-            if (v.paused) {
-              v.play().catch(e => {})
-            }
-          } else {
-            if (Math.abs(v.currentTime - target) > 0.03) {
-              try { v.currentTime = target } catch (e) { }
-            }
+          if (Math.abs(v.currentTime - target) > 0.03) {
+            try { v.currentTime = target } catch (e) { }
           }
         }
 
@@ -372,6 +338,7 @@ export default function LandingPage() {
                 id="heroVideo"
                 muted
                 playsInline
+                autoPlay
                 preload="auto"
                 poster={isVideoMounted && isMobileVideo ? "/images/high-scroll-poster-mobile.jpg" : "/images/high-scroll-poster-desktop.jpg"}
                 onLoadedMetadata={(e) => { e.target.pause(); setIsVideoLoaded(true); }}
