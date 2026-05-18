@@ -46,7 +46,6 @@ export default function LandingPage() {
 
       const unlockVideo = () => {
         if (v.readyState < 2) {
-          v.load();
           const playPromise = v.play();
           if (playPromise !== undefined) {
             playPromise.then(() => {
@@ -57,29 +56,27 @@ export default function LandingPage() {
         } else {
           setIsVideoLoaded(true);
         }
-        window.removeEventListener('touchstart', unlockVideo);
-        window.removeEventListener('click', unlockVideo);
+        document.body.removeEventListener('touchstart', unlockVideo);
+        document.body.removeEventListener('click', unlockVideo);
       };
 
-      // Try playing immediately (works on desktop and some Androids)
       const playPromise = v.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
           v.pause();
           setIsVideoLoaded(true);
         }).catch(() => {
-          // If auto-play blocked, attach to first user interaction (critical for iOS Safari)
-          window.addEventListener('touchstart', unlockVideo, { once: true });
-          window.addEventListener('click', unlockVideo, { once: true });
+          document.body.addEventListener('touchstart', unlockVideo, { once: true });
+          document.body.addEventListener('click', unlockVideo, { once: true });
         });
       } else {
-        window.addEventListener('touchstart', unlockVideo, { once: true });
-        window.addEventListener('click', unlockVideo, { once: true });
+        document.body.addEventListener('touchstart', unlockVideo, { once: true });
+        document.body.addEventListener('click', unlockVideo, { once: true });
       }
 
       return () => {
-        window.removeEventListener('touchstart', unlockVideo);
-        window.removeEventListener('click', unlockVideo);
+        document.body.removeEventListener('touchstart', unlockVideo);
+        document.body.removeEventListener('click', unlockVideo);
       };
     }
   }, [isMobileVideo, prefersReducedMotion]);
@@ -375,7 +372,6 @@ export default function LandingPage() {
                 id="heroVideo"
                 muted
                 playsInline
-                autoPlay
                 preload="auto"
                 poster={isVideoMounted && isMobileVideo ? "/images/high-scroll-poster-mobile.jpg" : "/images/high-scroll-poster-desktop.jpg"}
                 onLoadedMetadata={(e) => { e.target.pause(); setIsVideoLoaded(true); }}
