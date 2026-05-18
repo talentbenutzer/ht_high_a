@@ -26,14 +26,43 @@ export default function LandingPage() {
   const [openAccordion, setOpenAccordion] = useState(0)
   const [isMobileVideo, setIsMobileVideo] = useState(false)
   const [isVideoMounted, setIsVideoMounted] = useState(false)
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false)
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 
   useEffect(() => {
     setIsVideoMounted(true)
     const checkMobile = () => setIsMobileVideo(window.innerWidth <= 768)
     checkMobile()
     window.addEventListener('resize', checkMobile)
+    setPrefersReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
+
+  useEffect(() => {
+    const v = document.getElementById('heroVideo');
+    if (v && !prefersReducedMotion) {
+      setIsVideoLoaded(false);
+      const playPromise = v.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          v.pause();
+          setIsVideoLoaded(true);
+        }).catch(() => {
+          // Silently ignore autoplay errors to prevent console noise
+        });
+      }
+    }
+  }, [isMobileVideo, prefersReducedMotion]);
+
+  useEffect(() => {
+    let timeout;
+    if (!isVideoLoaded && !prefersReducedMotion) {
+      timeout = setTimeout(() => {
+        setIsVideoLoaded(true); // Fallback to hide loader after 5s
+      }, 5000);
+    }
+    return () => clearTimeout(timeout);
+  }, [isVideoLoaded, prefersReducedMotion]);
 
   useEffect(() => {
     // Respect prefers-reduced-motion
@@ -309,19 +338,44 @@ export default function LandingPage() {
       <section className="hero" id="high" data-screen-label="01 Hero">
         <div className="hero-stage">
           <div className="hero-right" aria-hidden="true">
-            <video
-              key={isVideoMounted ? (isMobileVideo ? 'mobile' : 'desktop') : 'ssr'}
-              className="hero-video"
-              id="heroVideo"
-              muted
-              playsInline
-              preload={isVideoMounted && isMobileVideo ? "metadata" : "auto"}
-              poster={isVideoMounted && isMobileVideo ? "/images/high-scroll-poster-mobile.jpg" : "/images/high-scroll-poster-desktop.jpg"}
-              onLoadedMetadata={(e) => { e.target.pause() }}
-            >
-              <source src={isVideoMounted && isMobileVideo ? "/videos/high-scroll-mobile.webm" : "/videos/high-scroll-desktop.webm"} type="video/webm" />
-              <source src={isVideoMounted && isMobileVideo ? "/videos/high-scroll-mobile.mp4" : "/videos/high-scroll-desktop.mp4"} type="video/mp4" />
-            </video>
+            {!prefersReducedMotion ? (
+              <video
+                key={isVideoMounted ? (isMobileVideo ? 'mobile' : 'desktop') : 'ssr'}
+                className="hero-video"
+                id="heroVideo"
+                muted
+                playsInline
+                preload="auto"
+                poster={isVideoMounted && isMobileVideo ? "/images/high-scroll-poster-mobile.jpg" : "/images/high-scroll-poster-desktop.jpg"}
+                onLoadedMetadata={(e) => { e.target.pause(); setIsVideoLoaded(true); }}
+                onCanPlay={(e) => { setIsVideoLoaded(true); }}
+              >
+                <source src={isVideoMounted && isMobileVideo ? "/videos/high-scroll-mobile.webm" : "/videos/high-scroll-desktop.webm"} type="video/webm" />
+                <source src={isVideoMounted && isMobileVideo ? "/videos/high-scroll-mobile.mp4" : "/videos/high-scroll-desktop.mp4"} type="video/mp4" />
+              </video>
+            ) : (
+              <img 
+                src={isVideoMounted && isMobileVideo ? "/images/high-scroll-poster-mobile.jpg" : "/images/high-scroll-poster-desktop.jpg"} 
+                alt="HIGH" 
+                className="hero-video" 
+                style={{ objectFit: 'cover', width: '100%', height: '100%' }} 
+              />
+            )}
+
+            {!isVideoLoaded && !prefersReducedMotion && (
+               <div className="hero-loader" style={{ position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, color: 'var(--bone)', fontSize: '11px', letterSpacing: '0.1em', opacity: 0.6, textTransform: 'uppercase' }}>
+                 HIGH wird geladen
+                 <div style={{ width: '100%', height: '1px', background: 'rgba(255,255,255,0.2)', marginTop: '8px', position: 'relative', overflow: 'hidden' }}>
+                   <div style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '30%', background: 'rgba(255,255,255,0.6)', animation: 'loaderSlide 1.5s infinite ease-in-out' }}></div>
+                 </div>
+               </div>
+            )}
+            <style jsx>{`
+              @keyframes loaderSlide {
+                0% { left: -30%; }
+                100% { left: 100%; }
+              }
+            `}</style>
           </div>
 
           <div className="hero-progress" id="heroProgress"></div>
