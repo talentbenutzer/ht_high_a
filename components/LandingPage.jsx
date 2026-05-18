@@ -440,8 +440,8 @@ export default function LandingPage() {
           
           {/* Top Right Headline */}
           <div className="intro-right" style={{ marginBottom: '60px' }}>
-            <h2 className="intro-anim" style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 300, lineHeight: '1.2', color: 'var(--bone)', margin: 0 }}>
-              {'Zwischen Druck und Triumph — ein Möbelstück,'}<br />{'das beides aushält.'}
+            <h2 className="intro-anim" style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 300, lineHeight: '1.2', color: 'var(--bone)', margin: 0, textWrap: 'wrap' }}>
+              <span>Zwischen Druck und Triumph — ein Möbelstück,</span><br /><span>das beides aushält.</span>
             </h2>
           </div>
           
