@@ -1052,17 +1052,17 @@
       gap: 0;
     }
     .hero-prefix{
-      font-size: clamp(20px, 6vw, 40px);
+      font-size: clamp(40px, 12vw, 80px);
       height: auto;
       white-space: normal;
     }
     .hero-reel{
-      height: clamp(26px, 7.5vw, 50px);
+      height: clamp(52px, 15vw, 100px);
       min-width: 0;
       width: calc(100vw - var(--page-pad) * 2 - 8px);
     }
     .hero-word{
-      font-size: clamp(20px, 6vw, 40px);
+      font-size: clamp(40px, 12vw, 80px);
     }
     .hero-foot{ display: none; }
     .cab-callout{ display: none; }
