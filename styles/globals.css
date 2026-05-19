@@ -815,7 +815,7 @@
   .testi-quote {
     font-size: clamp(18px, 1.4vw, 24px);
     font-weight: 300;
-    line-height: 1.4;
+    line-height: 1.5;
     color: var(--bone);
     margin: 0;
     text-wrap: pretty;
@@ -860,7 +860,7 @@
     font-size: clamp(44px, 6.4vw, 124px);
     font-weight: 200;
     letter-spacing: 0.015em;
-    line-height: 0.96;
+    line-height: 1.0;
     margin: 0 0 0.4em;
     color: var(--bone);
     text-wrap: balance;
@@ -1094,7 +1094,7 @@
 
     .quote-banner .lhs{ grid-column: 1 / -1; }
     .quote-banner .body{ grid-column: 1 / -1; }
-    .quote-banner h3{ font-size: 40px; }
+    .quote-banner h3{ font-size: clamp(28px, 8vw, 40px); }
 
     .testi-header-new { flex-direction: column; align-items: flex-start; gap: 24px; }
     .testi-row { grid-template-columns: 1fr; }

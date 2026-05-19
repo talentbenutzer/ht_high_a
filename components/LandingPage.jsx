@@ -440,8 +440,8 @@ export default function LandingPage() {
           
           {/* Top Right Headline */}
           <div className="intro-right" style={{ marginBottom: '60px' }}>
-            <h2 className="intro-anim" style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 300, lineHeight: '1.2', color: 'var(--bone)', margin: 0, textWrap: 'wrap' }}>
-              <span>Zwischen Druck und Triumph – ein Möbelstück,</span><br /><span>das beides aushält.</span>
+            <h2 className="intro-anim" style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 300, lineHeight: '1.2', color: 'var(--bone)', margin: 0, textWrap: 'balance' }}>
+              Zwischen Druck und Triumph – ein Möbelstück, das beides aushält.
             </h2>
           </div>
           
@@ -456,7 +456,10 @@ export default function LandingPage() {
           {/* Bottom Left Paragraphs */}
           <div className="intro-paragraphs">
             <p className="intro-anim" style={{ transitionDelay: '150ms' }}>
-              Manche Arbeitstage enden mit einem Abschluss.<br />Andere mit einer Entscheidung, die Verantwortung verlangt. HIGH ist für beides gemacht – ein Möbelstück für Räume, in denen Verantwortung getragen und bewusst übernommen wird.
+              Manche Arbeitstage enden mit einem Abschluss. Andere mit einer Entscheidung, die Verantwortung verlangt.
+            </p>
+            <p className="intro-anim" style={{ transitionDelay: '225ms' }}>
+              HIGH ist für beides gemacht – ein Möbelstück für Räume, in denen Verantwortung getragen und bewusst übernommen wird.
             </p>
             <p className="intro-anim" style={{ transitionDelay: '300ms' }}>
               Für die ruhigen Minuten zwischen Sitzungen, für die ersten Stunden des Tages, für den letzten Gedanken am Abend. Es ist Werkzeug, Ritual und Statement zugleich.
@@ -503,7 +506,7 @@ export default function LandingPage() {
                       <span style={{ fontSize: '20px' }}>{openAccordion === 0 ? '−' : '+'}</span>
                     </button>
                     <div style={{ 
-                      maxHeight: openAccordion === 0 ? '200px' : '0', 
+                      maxHeight: openAccordion === 0 ? '300px' : '0', 
                       overflow: 'hidden', 
                       transition: 'max-height 0.3s ease-out, padding 0.3s ease-out',
                       padding: openAccordion === 0 ? '0 24px 24px 24px' : '0 24px'
@@ -524,7 +527,7 @@ export default function LandingPage() {
                       <span style={{ fontSize: '20px' }}>{openAccordion === 1 ? '−' : '+'}</span>
                     </button>
                     <div style={{ 
-                      maxHeight: openAccordion === 1 ? '200px' : '0', 
+                      maxHeight: openAccordion === 1 ? '300px' : '0',
                       overflow: 'hidden', 
                       transition: 'max-height 0.3s ease-out, padding 0.3s ease-out',
                       padding: openAccordion === 1 ? '0 24px 24px 24px' : '0 24px'
@@ -545,7 +548,7 @@ export default function LandingPage() {
                       <span style={{ fontSize: '20px' }}>{openAccordion === 2 ? '−' : '+'}</span>
                     </button>
                     <div style={{ 
-                      maxHeight: openAccordion === 2 ? '200px' : '0', 
+                      maxHeight: openAccordion === 2 ? '300px' : '0',
                       overflow: 'hidden', 
                       transition: 'max-height 0.3s ease-out, padding 0.3s ease-out',
                       padding: openAccordion === 2 ? '0 24px 24px 24px' : '0 24px'
@@ -569,18 +572,18 @@ export default function LandingPage() {
           <div className="lhs"></div>
           <div className="body">
             <h3 className="quote-animated">
-              <span className="qa-word qa-from-left" data-qorder="0">Zwischen</span>&nbsp;
-              <span className="qa-word qa-from-top" data-qorder="1">Druck</span>&nbsp;
-              <span className="qa-word qa-fade" data-qorder="2">und</span>&nbsp;
-              <span className="qa-word qa-scale em" data-qorder="3">Triumph</span>&nbsp;
-              <span className="qa-word qa-fade" data-qorder="4">–</span>&nbsp;
-              <span className="qa-word qa-fade" data-qorder="5">ein</span>&nbsp;
-              <span className="qa-word qa-fade" data-qorder="6">Möbelstück,</span>&nbsp;
-              <span className="qa-word qa-fade" data-qorder="7">das</span>&nbsp;
+              <span className="qa-word qa-from-left" data-qorder="0">Zwischen</span>{' '}
+              <span className="qa-word qa-from-top" data-qorder="1">Druck</span>{' '}
+              <span className="qa-word qa-fade" data-qorder="2">und</span>{' '}
+              <span className="qa-word qa-scale em" data-qorder="3">Triumph</span>{' '}
+              <span className="qa-word qa-fade" data-qorder="4">–</span>{' '}
+              <span className="qa-word qa-fade" data-qorder="5">ein</span>{' '}
+              <span className="qa-word qa-fade" data-qorder="6">Möbelstück,</span>{' '}
+              <span className="qa-word qa-fade" data-qorder="7">das</span>{' '}
               <span className="qa-beides" data-qorder="8">
                 <span className="qa-bei qa-from-top">bei</span>
                 <span className="qa-des qa-from-bottom">des</span>
-              </span>&nbsp;
+              </span>{' '}
               <span className="qa-word qa-fade" data-qorder="9">aushält.</span>
             </h3>
           </div>
