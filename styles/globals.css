@@ -186,23 +186,18 @@
 
   .hero-left{
     position: absolute;
-    left: var(--page-pad);
+    left: 50%;
     top: 50%;
-    transform: translateY(-50%);
+    transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: clamp(14px, 1.6vw, 28px);
-    text-align: left;
+    text-align: center;
     z-index: 2;
     pointer-events: none;
-  }
-  .hero-headline-row{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: clamp(16px, 1.6vw, 28px);
-    height: clamp(48px, 7.5vw, 132px);
+    width: 100%;
+    padding: 0 var(--page-pad);
   }
   .hero-subheadline{
     font-size: clamp(16px, 2vw, 40px);
@@ -249,15 +244,16 @@
   .hero-reel{
     position: relative;
     height: clamp(48px, 7.5vw, 132px);
-    min-width: clamp(280px, 32vw, 640px);
+    width: clamp(280px, 50vw, 800px);
     overflow: visible;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
   }
   .hero-word{
     position: absolute;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%);
     top: 0;
     bottom: 0;
     font-size: clamp(40px, 7vw, 120px);
@@ -570,27 +566,25 @@
   .intro .label-stack .num{ color: var(--bone); font-size: 12px; }
   .intro-left { grid-column: 1 / 5; grid-row: 1; }
   .intro-right { grid-column: 5 / 13; grid-row: 1; }
-  .intro-image {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    margin: clamp(40px, 5vw, 72px) 0;
-    overflow: hidden;
-  }
-  .intro-image img {
-    width: 100%;
-    height: clamp(320px, 50vw, 680px);
-    object-fit: cover;
-    object-position: center 30%;
-    display: block;
-  }
   .intro-paragraphs {
-    grid-column: 1 / span 8;
-    grid-row: 3;
+    grid-column: 1 / span 5;
+    grid-row: 2;
     display: flex;
     flex-direction: column;
     gap: 24px;
     color: var(--bone-dim);
     line-height: 1.6;
+    align-self: center;
+  }
+  .intro-image {
+    grid-column: 6 / -1;
+    grid-row: 2;
+    overflow: hidden;
+  }
+  .intro-image img {
+    width: 100%;
+    height: auto;
+    display: block;
   }
   .intro-marginalia{
     opacity: 0.7;
@@ -1092,8 +1086,8 @@
   .trust-price-row p{
     font-family: var(--display);
     font-size: clamp(13px, 1.1vw, 16px);
-    font-weight: 300;
-    color: rgba(255,255,255,0.5);
+    font-weight: 400;
+    color: var(--bone);
     line-height: 1.7;
     margin: 0;
     max-width: 56ch;
@@ -1334,17 +1328,6 @@
       align-items: flex-start;
       height: auto;
       gap: clamp(20px, 5vw, 32px);
-    }
-    .hero-headline-row{
-      flex-direction: column;
-      align-items: flex-start;
-      height: auto;
-      gap: 0;
-    }
-    .hero-prefix{
-      font-size: clamp(40px, 12vw, 80px);
-      height: auto;
-      white-space: normal;
     }
     .hero-reel{
       height: clamp(52px, 15vw, 100px);

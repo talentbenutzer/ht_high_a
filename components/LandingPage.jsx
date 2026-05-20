@@ -445,15 +445,11 @@ export default function LandingPage() {
               <span className="meta">Möbelstück HIGH</span>
             </div>
 
-            <div className="hero-headline-row">
-              <div className="hero-prefix">Sie wollen</div>
-
-              <div className="hero-reel" id="reel" aria-live="polite">
-                <div className="hero-word" data-i="0">Performance.</div>
-                <div className="hero-word" data-i="1">Klarheit.</div>
-                <div className="hero-word" data-i="2">Dynamik.</div>
-                <div className="hero-word" data-i="3">Fokus.</div>
-              </div>
+            <div className="hero-reel" id="reel" aria-live="polite">
+              <div className="hero-word" data-i="0">Performance.</div>
+              <div className="hero-word" data-i="1">Klarheit.</div>
+              <div className="hero-word" data-i="2">Dynamik.</div>
+              <div className="hero-word" data-i="3">Fokus.</div>
             </div>
 
             <div className="hero-subheadline">
@@ -493,12 +489,7 @@ export default function LandingPage() {
             </h2>
           </div>
           
-          {/* Büro-Bild */}
-          <div className="intro-image">
-            <img src="/images/sw_office.jpg" alt="Büro-Setting mit HIGHboard" />
-          </div>
-
-          {/* Bottom Left Paragraphs */}
+          {/* Text links */}
           <div className="intro-paragraphs">
             <p className="intro-anim" style={{ transitionDelay: '150ms' }}>
               Manche Arbeitstage enden mit einem Abschluss. Andere mit einer Entscheidung, die Verantwortung verlangt.
@@ -509,6 +500,11 @@ export default function LandingPage() {
             <p className="intro-anim" style={{ transitionDelay: '300ms' }}>
               Für die ruhigen Minuten zwischen Sitzungen, für die ersten Stunden des Tages, für den letzten Gedanken am Abend. Es ist Werkzeug, Ritual und Statement zugleich.
             </p>
+          </div>
+
+          {/* Bild rechts — komplett sichtbar */}
+          <div className="intro-image">
+            <img src="/images/sw_office.jpg" alt="Büro-Setting mit HIGHboard" />
           </div>
           
         </div>
