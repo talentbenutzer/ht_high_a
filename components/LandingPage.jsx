@@ -18,16 +18,16 @@ export default function LandingPage() {
     name: '',
     email: '',
     phone: '',
-    timeline: 'Noch offen',
+    topic: '',
     message: '',
     website: '' // Honeypot
   })
   const [errors, setErrors] = useState({})
-  const [openAccordion, setOpenAccordion] = useState(0)
   const [isMobileVideo, setIsMobileVideo] = useState(false)
   const [isVideoMounted, setIsVideoMounted] = useState(false)
   const [isVideoLoaded, setIsVideoLoaded] = useState(false)
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+  const [isMainCtaVisible, setIsMainCtaVisible] = useState(false)
 
   useEffect(() => {
     setIsVideoMounted(true)
@@ -38,7 +38,7 @@ export default function LandingPage() {
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // play/pause init for iOS
+  // play/pause init for iOS — Video lädt, spielt kurz an, pausiert für Scroll-Scrubbing
   useEffect(() => {
     const v = document.getElementById('heroVideo');
     if (v && !prefersReducedMotion) {
@@ -65,6 +65,22 @@ export default function LandingPage() {
     }
     return () => clearTimeout(timeout);
   }, [isVideoLoaded, prefersReducedMotion]);
+
+  // Sticky-CTA ausblenden sobald Haupt-CTA-Block sichtbar ist
+  useEffect(() => {
+    const target = document.getElementById('kontakt');
+    if (!target || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsMainCtaVisible(entry.isIntersecting && entry.intersectionRatio >= 0.3);
+        });
+      },
+      { threshold: [0, 0.3, 0.6] }
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     // Respect prefers-reduced-motion
@@ -233,7 +249,7 @@ export default function LandingPage() {
 
     if (prefersReducedMotion) return
 
-      // ── Hero entrance (skip if reduced-motion) ────────────────────
+      // ── Hero entrance: prefix fade-in + erstes Wort sichtbar ────
       ; (function heroEntrance() {
         const prefix = document.querySelector('.hero-prefix')
         const words = document.querySelectorAll('.hero-word')
@@ -360,7 +376,16 @@ export default function LandingPage() {
         </div>
         <div></div>
         <div className="right">
-          <a href="#kontakt" className="navlink cta-pill">PERSÖNLICHE BERATUNG</a>
+          <button
+            type="button"
+            className={`navlink cta-pill nav-studio-cta${isMainCtaVisible ? ' is-faded' : ''}${isModalOpen ? ' is-hidden' : ''}`}
+            onClick={() => setIsModalOpen(true)}
+            aria-label="Studio-Termin anfragen"
+            aria-hidden={isModalOpen ? 'true' : undefined}
+          >
+            <span className="nav-cta-label">Studio-Termin</span>
+            <span className="nav-cta-arrow" aria-hidden="true">→</span>
+          </button>
         </div>
       </nav>
 
@@ -379,18 +404,21 @@ export default function LandingPage() {
                 preload="auto"
                 poster={isVideoMounted && isMobileVideo ? "/images/high-scroll-poster-mobile.jpg" : "/images/high-scroll-poster-desktop.jpg"}
                 onLoadedMetadata={(e) => { e.target.pause(); setIsVideoLoaded(true); }}
-                onCanPlay={(e) => { setIsVideoLoaded(true); }}
+                onCanPlay={() => { setIsVideoLoaded(true); }}
               >
                 <source src={isVideoMounted && isMobileVideo ? "/videos/high-scroll-mobile.mp4" : "/videos/high-scroll-desktop.mp4"} type="video/mp4" />
               </video>
             ) : (
-              <img 
-                src={isVideoMounted && isMobileVideo ? "/images/high-scroll-poster-mobile.jpg" : "/images/high-scroll-poster-desktop.jpg"} 
-                alt="HIGH" 
-                className="hero-video" 
-                style={{ objectFit: 'cover', width: '100%', height: '100%' }} 
+              <img
+                src={isVideoMounted && isMobileVideo ? "/images/high-scroll-poster-mobile.jpg" : "/images/high-scroll-poster-desktop.jpg"}
+                alt="HIGH"
+                className="hero-video"
+                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
               />
             )}
+
+            {/* Vignette-Verlauf hinter der Headline für Lesbarkeit auf mittleren Screens */}
+            <div className="hero-vignette" aria-hidden="true"></div>
 
             {!isVideoLoaded && !prefersReducedMotion && (
                <div className="hero-loader" style={{ position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, color: 'var(--bone)', fontSize: '11px', letterSpacing: '0.1em', opacity: 0.6, textTransform: 'uppercase' }}>
@@ -417,14 +445,34 @@ export default function LandingPage() {
               <span className="meta">Möbelstück HIGH</span>
             </div>
 
-            <div className="hero-prefix">Du möchtest</div>
+            <div className="hero-headline-row">
+              <div className="hero-prefix">Sie wollen</div>
 
-            <div className="hero-reel" id="reel" aria-live="polite">
-              <div className="hero-word" data-i="0">Performance.</div>
-              <div className="hero-word" data-i="1">Klarheit.</div>
-              <div className="hero-word" data-i="2">Dynamik.</div>
-              <div className="hero-word" data-i="3">Fokus.</div>
+              <div className="hero-reel" id="reel" aria-live="polite">
+                <div className="hero-word" data-i="0">Performance.</div>
+                <div className="hero-word" data-i="1">Klarheit.</div>
+                <div className="hero-word" data-i="2">Dynamik.</div>
+                <div className="hero-word" data-i="3">Fokus.</div>
+              </div>
             </div>
+
+            <div className="hero-subheadline">
+              HIGHboard – Manufaktur für Räume, in denen entschieden wird.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* QUOTE BANNER */}
+      <section className="quote-banner">
+        <div className="shell grid12">
+          <div className="lhs"></div>
+          <div className="body">
+            <h3 className="quote-animated">
+              <span className="qa-word qa-from-left" data-qorder="0">Verantwortung</span>{' '}
+              <span className="qa-word qa-fade" data-qorder="1">braucht</span>{' '}
+              <span className="qa-word qa-scale" data-qorder="2">Raum.</span>
+            </h3>
           </div>
         </div>
       </section>
@@ -435,7 +483,7 @@ export default function LandingPage() {
           
           {/* Top Left Labels */}
           <div className="col-label label-stack intro-left" style={{ marginBottom: '60px' }}>
-            <span className="meta signal" style={{ color: 'var(--bone)', opacity: 0.8, marginTop: '3px' }}>Entstanden im Schwarzwald.<br />Entwickelt für Fokus.</span>
+            <span className="meta signal intro-marginalia" style={{ color: 'var(--bone)', marginTop: '3px' }}>Entstanden im Schwarzwald.<br />Entwickelt für Fokus.</span>
           </div>
           
           {/* Top Right Headline */}
@@ -445,12 +493,9 @@ export default function LandingPage() {
             </h2>
           </div>
           
-          {/* Bottom Right Video (Moved up in JSX for stacking order) */}
+          {/* Büro-Bild */}
           <div className="intro-image">
-            <video autoPlay muted loop playsInline style={{ width: '100%', display: 'block' }}>
-              <source src="/videos/interior.webm" type="video/webm" />
-              <source src="/videos/interior.mp4" type="video/mp4" />
-            </video>
+            <img src="/images/sw_office.jpg" alt="Büro-Setting mit HIGHboard" />
           </div>
 
           {/* Bottom Left Paragraphs */}
@@ -469,233 +514,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* USP / ACCORDION SECTION */}
-      <section className="usp" style={{ position: 'relative', background: '#1a1a1a', color: 'var(--bone)', overflow: 'hidden', padding: 0 }}>
-        {/* Full width background image / video */}
-        <div style={{ width: '100%', position: 'relative', height: '100vh', display: 'flex', alignItems: 'center' }}>
-          <div style={{ position: 'absolute', inset: 0, opacity: 0.4, transition: 'opacity 0.5s ease' }}>
-            {openAccordion === 0 && (
-              <video src="/videos/holz_eiche.mp4" autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            )}
-            {openAccordion === 1 && (
-              <video src="/videos/heimisch_holz.mp4" autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            )}
-            {openAccordion === 2 && (
-              <img src="/images/oberf.jpg" alt="Background" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            )}
-            {openAccordion === -1 && (
-              <img src="/images/spuerbare_praezision.png" alt="Background" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            )}
-          </div>
-          
-          <div className="shell" style={{ position: 'relative', zIndex: 1 }}>
-            <div className="grid12">
-              <div className="usp-accordion-wrap">
-                <h3 style={{ fontSize: 'clamp(32px, 4vw, 56px)', fontWeight: '300', marginBottom: '40px', fontFamily: 'var(--font-sans)' }}>Spürbare Präzision.</h3>
-                
-                {/* Accordion */}
-                <div style={{ border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)' }}>
-                  
-                  {/* Item 1 */}
-                  <div style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                    <button 
-                      onClick={() => setOpenAccordion(openAccordion === 0 ? -1 : 0)}
-                      style={{ width: '100%', padding: '24px', background: 'none', border: 'none', color: 'var(--bone)', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontFamily: 'inherit' }}
-                    >
-                      <span style={{ fontSize: 'clamp(18px, 1.5vw, 22px)', fontWeight: '400' }}>Hochwertig geräucherte Eiche</span>
-                      <span style={{ fontSize: '20px' }}>{openAccordion === 0 ? '−' : '+'}</span>
-                    </button>
-                    <div style={{ 
-                      maxHeight: openAccordion === 0 ? '300px' : '0', 
-                      overflow: 'hidden', 
-                      transition: 'max-height 0.3s ease-out, padding 0.3s ease-out',
-                      padding: openAccordion === 0 ? '0 24px 24px 24px' : '0 24px'
-                    }}>
-                      <div style={{ fontSize: 'clamp(15px, 1.2vw, 18px)', color: 'var(--bone-dim)', lineHeight: '1.6' }}>
-                        Natürlich veredelt, mit einer individuellen Maserung, die jedem Stück Tiefe, Charakter und eine angenehme Haptik verleiht.
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Item 2 */}
-                  <div style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                    <button 
-                      onClick={() => setOpenAccordion(openAccordion === 1 ? -1 : 1)}
-                      style={{ width: '100%', padding: '24px', background: 'none', border: 'none', color: 'var(--bone)', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontFamily: 'inherit' }}
-                    >
-                      <span style={{ fontSize: 'clamp(18px, 1.5vw, 22px)', fontWeight: '400' }}>Regional zertifiziertes Holz</span>
-                      <span style={{ fontSize: '20px' }}>{openAccordion === 1 ? '−' : '+'}</span>
-                    </button>
-                    <div style={{ 
-                      maxHeight: openAccordion === 1 ? '300px' : '0',
-                      overflow: 'hidden', 
-                      transition: 'max-height 0.3s ease-out, padding 0.3s ease-out',
-                      padding: openAccordion === 1 ? '0 24px 24px 24px' : '0 24px'
-                    }}>
-                      <div style={{ fontSize: 'clamp(15px, 1.2vw, 18px)', color: 'var(--bone-dim)', lineHeight: '1.6' }}>
-                        Aus nachvollziehbarer Forstwirtschaft, mit kurzen Wegen, geringem CO₂-Fußabdruck und dem Anspruch, lokale Wertschöpfung und Langlebigkeit zu vereinen.
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Item 3 */}
-                  <div>
-                    <button 
-                      onClick={() => setOpenAccordion(openAccordion === 2 ? -1 : 2)}
-                      style={{ width: '100%', padding: '24px', background: 'none', border: 'none', color: 'var(--bone)', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontFamily: 'inherit' }}
-                    >
-                      <span style={{ fontSize: 'clamp(18px, 1.5vw, 22px)', fontWeight: '400' }}>Einzigartige Oberflächen</span>
-                      <span style={{ fontSize: '20px' }}>{openAccordion === 2 ? '−' : '+'}</span>
-                    </button>
-                    <div style={{ 
-                      maxHeight: openAccordion === 2 ? '300px' : '0',
-                      overflow: 'hidden', 
-                      transition: 'max-height 0.3s ease-out, padding 0.3s ease-out',
-                      padding: openAccordion === 2 ? '0 24px 24px 24px' : '0 24px'
-                    }}>
-                      <div style={{ fontSize: 'clamp(15px, 1.2vw, 18px)', color: 'var(--bone-dim)', lineHeight: '1.6' }}>
-                        Warm und samtig in der Berührung, matt in der Optik und pflegeleicht in der Anwendung, schaffen unsere Oberflächen visuelle Ruhe und dauerhafte Qualität.
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* QUOTE BANNER */}
-      <section className="quote-banner">
-        <div className="shell grid12">
-          <div className="lhs"></div>
-          <div className="body">
-            <h3 className="quote-animated">
-              <span className="qa-word qa-from-left" data-qorder="0">Zwischen</span>{' '}
-              <span className="qa-word qa-from-top" data-qorder="1">Druck</span>{' '}
-              <span className="qa-word qa-fade" data-qorder="2">und</span>{' '}
-              <span className="qa-word qa-scale em" data-qorder="3">Triumph</span>{' '}
-              <span className="qa-word qa-fade" data-qorder="4">–</span>{' '}
-              <span className="qa-word qa-fade" data-qorder="5">ein</span>{' '}
-              <span className="qa-word qa-fade" data-qorder="6">Möbelstück,</span>{' '}
-              <span className="qa-word qa-fade" data-qorder="7">das</span>{' '}
-              <span className="qa-beides" data-qorder="8">
-                <span className="qa-bei qa-from-top">bei</span>
-                <span className="qa-des qa-from-bottom">des</span>
-              </span>{' '}
-              <span className="qa-word qa-fade" data-qorder="9">aushält.</span>
-            </h3>
-          </div>
-        </div>
-      </section>
-
-      {/* COLORREEL */}
-      <section className="colorreel" id="kollektion" data-screen-label="04 Kollektion">
-        <div className="colorreel-stage">
-          <video
-            className="colorreel-video"
-            id="colorReelVideo"
-            muted
-            playsInline
-            preload="auto"
-          >
-            <source src="/videos/color.mp4" type="video/mp4" />
-          </video>
-          <div className="colorreel-caption">
-            <h3>Sieben Oberflächen. <span className="em">Jede eine eigene Stimmung.</span></h3>
-            <div className="colorreel-colorname" id="colorReelName">Chocolate</div>
-          </div>
-          <div className="colorreel-progress" id="colorReelProgress"></div>
-        </div>
-      </section>
-
-      {/* COLOR CHOOSER */}
-      <section className="colors" id="farben" data-screen-label="05 Farben" style={{ display: 'none' }}>
-        <div className="shell">
-          <div className="colors-head">
-            <div className="lhs">
-              <span className="meta">№ 04 – Material</span>
-              <h3>Sieben <span className="em">Oberflächen</span>. Eine Entscheidung.</h3>
-            </div>
-            <div className="rhs">
-              <p>Jeder Farbton ist eine eigene Stimmung. Wählen Sie die Oberfläche, mit der HIGH in Ihrem Raum stehen soll.</p>
-            </div>
-          </div>
-
-          <div className="swatches" role="tablist" aria-label="Farbauswahl">
-            <button type="button" className="swatch is-active" role="tab" aria-selected="true"
-              data-color="#0e0e0e" data-on="#f3f1ec">
-              <span className="sw-fill" style={{ background: '#0e0e0e' }}></span>
-              <span className="sw-meta">
-                <span className="sw-rule"></span>
-                <span className="sw-num">01</span>
-                <span className="sw-name">Shadow</span>
-              </span>
-            </button>
-            <button type="button" className="swatch" role="tab" aria-selected="false"
-              data-color="#3b2418" data-on="#f3f1ec">
-              <span className="sw-fill" style={{ background: '#3b2418' }}></span>
-              <span className="sw-meta">
-                <span className="sw-rule"></span>
-                <span className="sw-num">02</span>
-                <span className="sw-name">Chocolate</span>
-              </span>
-            </button>
-            <button type="button" className="swatch" role="tab" aria-selected="false"
-              data-color="#3a2e22" data-on="#f3f1ec">
-              <span className="sw-fill" style={{ background: '#3a2e22' }}></span>
-              <span className="sw-meta">
-                <span className="sw-rule"></span>
-                <span className="sw-num">03</span>
-                <span className="sw-name">Earth</span>
-              </span>
-            </button>
-            <button type="button" className="swatch" role="tab" aria-selected="false"
-              data-color="#1d2d3a" data-on="#f3f1ec">
-              <span className="sw-fill" style={{ background: '#1d2d3a' }}></span>
-              <span className="sw-meta">
-                <span className="sw-rule"></span>
-                <span className="sw-num">04</span>
-                <span className="sw-name">Ocean</span>
-              </span>
-            </button>
-            <button type="button" className="swatch" role="tab" aria-selected="false"
-              data-color="#7a7873" data-on="#1a1a1a">
-              <span className="sw-fill" style={{ background: '#7a7873' }}></span>
-              <span className="sw-meta">
-                <span className="sw-rule"></span>
-                <span className="sw-num">05</span>
-                <span className="sw-name">Sand</span>
-              </span>
-            </button>
-            <button type="button" className="swatch" role="tab" aria-selected="false"
-              data-color="#2f3a2a" data-on="#f3f1ec">
-              <span className="sw-fill" style={{ background: '#2f3a2a' }}></span>
-              <span className="sw-meta">
-                <span className="sw-rule"></span>
-                <span className="sw-num">06</span>
-                <span className="sw-name">Plant</span>
-              </span>
-            </button>
-            <button type="button" className="swatch" role="tab" aria-selected="false"
-              data-color="#b8a994" data-on="#1a1a1a">
-              <span className="sw-fill" style={{ background: '#b8a994' }}></span>
-              <span className="sw-meta">
-                <span className="sw-rule"></span>
-                <span className="sw-num">07</span>
-                <span className="sw-name">Dust</span>
-              </span>
-            </button>
-          </div>
-
-          <div className="colors-foot">
-            <span className="meta current-meta">Aktuell — <span id="currentName">Earth</span></span>
-            <span className="meta">HIGH · Edition I</span>
-          </div>
-        </div>
-      </section>
-
       {/* TESTIMONIALS */}
       <section className="testi" id="stimmen" data-screen-label="05 Stimmen">
         <div className="shell">
@@ -705,6 +523,10 @@ export default function LandingPage() {
             </div>
           </div>
 
+          {/* TODO: Testimonial-Avatare einheitlich neu produzieren —
+              idealerweise B/W-Porträts oder einheitlich gefarbene Aufnahmen,
+              gleicher Hintergrund/Setup. Aktuell drei verschiedene Foto-Stile.
+              Übergangslösung: CSS grayscale-Filter für visuelle Konsistenz. */}
           <div className="testi-row">
             <article className="testi-card">
               <div className="testi-card-top">
@@ -744,7 +566,7 @@ export default function LandingPage() {
               <div className="testi-meta">
                 <span className="name">Timo Horl</span>
                 <span className="role">Founder, Horl 1993 GmbH</span>
-                <span className="location">Weltweit erfolgreiches Premiumbrand</span>
+                <span className="location">Premium-Marke mit weltweitem Erfolg</span>
               </div>
             </article>
 
@@ -772,18 +594,98 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* TRUST-SEKTION */}
+      <section className="trust" data-screen-label="Trust">
+        <div className="shell">
+          <div className="trust-grid">
+            <div className="trust-cell">
+              <div className="trust-value trust-value--num">123 Stunden</div>
+              <div className="trust-label">Handarbeit je HIGHboard</div>
+            </div>
+            <div className="trust-cell">
+              <div className="trust-value trust-value--word">Schwarzwald</div>
+              <div className="trust-label">Hier gefertigt</div>
+            </div>
+            <div className="trust-cell">
+              <div className="trust-value trust-value--word">Regional</div>
+              <div className="trust-label">Zertifiziertes Holz</div>
+            </div>
+            <div className="trust-cell">
+              <div className="trust-value trust-value--num">17 Jahre</div>
+              <div className="trust-label">Manufaktur-Tradition</div>
+            </div>
+          </div>
+          <div className="trust-price-row">
+            <p>Highboard HIGH wird in limitierter Auflage gefertigt. Preise auf Anfrage, im fünfstelligen Bereich.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* USP / MATERIAL — Waldvideo Fullscreen */}
+      <section className="usp-wald" data-screen-label="Material">
+        {/* Background Video */}
+        <video
+          className="usp-wald-video"
+          src="/videos/heimisch_holz.mp4"
+          autoPlay
+          muted
+          playsInline
+          loop
+          preload="auto"
+        />
+        {/* Dark Overlay */}
+        <div className="usp-wald-overlay" aria-hidden="true" />
+
+        {/* Content */}
+        <div className="usp-wald-content">
+          <h3 className="usp-wald-headline">Spürbare Präzision.</h3>
+          <p className="usp-wald-sub">Jedes Stück HIGHboard beginnt hier: im Schwarzwald.</p>
+          <div className="usp-wald-body">
+            <p>
+              Wir beziehen unser Holz von Waldwirtschaften, die wir kennen. Förster
+              mit Namen, Wälder mit Geschichte, Bäume mit Herkunftszertifikat.
+              Nicht aus einer Datenbank — aus einer Beziehung.
+            </p>
+            <p>
+              <strong>Regional zertifiziert.</strong> Kurze Transportwege. Geringer CO₂-Fußabdruck.
+              Ein Versprechen, das wir einlösen, nicht nur aussprechen.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* COLORREEL */}
+      <section className="colorreel" id="kollektion" data-screen-label="04 Kollektion">
+        <div className="colorreel-stage">
+          <video
+            className="colorreel-video"
+            id="colorReelVideo"
+            muted
+            playsInline
+            preload="auto"
+          >
+            <source src="/videos/color.mp4" type="video/mp4" />
+          </video>
+          <div className="colorreel-caption">
+            <h3>Sieben Oberflächen. <span className="em">Jede eine eigene Stimmung.</span></h3>
+            <div className="colorreel-colorname" id="colorReelName">Chocolate</div>
+          </div>
+          <div className="colorreel-progress" id="colorReelProgress"></div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="cta" id="kontakt" data-screen-label="06 CTA">
         <div className="shell grid12">
           <div className="body">
-            <h3>Mit Sicherheit die beste <span className="em">Entscheidung</span> des Tages</h3>
+            <h3>Mit Sicherheit die beste Entscheidung des Tages</h3>
             <p style={{ marginBottom: '10px', fontWeight: '500' }}>Wir analysieren ausgewählte CEO- und Unternehmerbüros auf Fokus, Klarheit und Wirkung.</p>
             <p>
               {'Eine Konfiguration von Studio höllental. beginnt mit einem persönlichen Analysetermin. Wir sehen, was Sie tun. Wir hören, was Sie brauchen.'}<br />
               {'Erst danach reden wir über Material und Maße.'}
             </p>
             <a href="#" className="cta-button" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
-              Jetzt persönliche Beratung anfragen
+              Studio-Termin anfragen
               <span className="arrow" aria-hidden="true">→</span>
             </a>
           </div>
@@ -829,7 +731,7 @@ export default function LandingPage() {
               <ul>
                 <li><a href="mailto:info@hoellental.studio">info@hoellental.studio</a></li>
                 <li><a href="tel:+497626977211">+49 7626 977211</a></li>
-                <li><a href="#kontakt">Termin buchen</a></li>
+                <li><a href="#kontakt">Studio-Termin</a></li>
               </ul>
               <div style={{ marginTop: '24px', fontSize: '14px', color: 'var(--bone-dim)', lineHeight: '1.6' }}>
                 Studio höllental.<br />
@@ -841,7 +743,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="foot-base">
-          <span>© 2026 Studio höllental Interiors</span>
+          <span className="foot-copyright">© 2026 Studio Höllental Interiors</span>
           <span>
             <a href="https://www.instagram.com/hoellental/" target="_blank" rel="noopener noreferrer">Instagram</a> • <a href="https://www.linkedin.com/company/studio-h%C3%B6llental/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
           </span>
@@ -858,9 +760,9 @@ export default function LandingPage() {
             {!isSuccess ? (
               <div className="modal-grid" style={{ animation: 'modalFadeIn 0.3s forwards' }}>
                 <div className="modal-left">
-                  <h3>Analysetermin anfragen</h3>
+                  <h3>Studio-Termin anfragen</h3>
                   <div style={{ margin: '20px 0' }}>
-                    <img src="/images/high_end.jpg" alt="Analysetermin" className="modal-img" style={{ width: '100%', height: 'auto', display: 'block' }} />
+                    <img src="/images/high_end.jpg" alt="Studio-Termin" className="modal-img" style={{ width: '100%', height: 'auto', display: 'block' }} />
                   </div>
                 </div>
                 <div className="modal-right">
@@ -907,11 +809,11 @@ export default function LandingPage() {
                       {errors.email && <span id="email-error" className="error-text" style={{ color: '#ff4d4d', fontSize: '12px', marginTop: '4px' }}>{errors.email}</span>}
                     </div>
                     <div className="form-group">
-                      <label htmlFor="phone">Telefonnummer</label>
-                      <input 
-                        type="tel" 
-                        id="phone" 
-                        placeholder="optional" 
+                      <label htmlFor="phone">Telefonnummer (optional)</label>
+                      <input
+                        type="tel"
+                        id="phone"
+                        placeholder="optional"
                         value={formData.phone}
                         onChange={(e) => setFormData({...formData, phone: e.target.value})}
                         disabled={isSending}
@@ -919,19 +821,18 @@ export default function LandingPage() {
                       />
                     </div>
                     <div className="form-group">
-                      <label htmlFor="timeline" style={{ textTransform: 'none' }}>Wann möchten Sie Ihre Arbeitsumgebung verändern?</label>
-                      <select 
-                        id="timeline" 
-                        value={formData.timeline}
-                        onChange={(e) => setFormData({...formData, timeline: e.target.value})}
+                      <label htmlFor="topic" style={{ textTransform: 'none' }}>Worum geht es?</label>
+                      <select
+                        id="topic"
+                        value={formData.topic}
+                        onChange={(e) => setFormData({...formData, topic: e.target.value})}
                         disabled={isSending}
                         style={{ background: '#2a2a2a', border: '1px solid #404040', padding: '16px', color: 'var(--bone)', fontFamily: 'inherit', fontSize: '16px', width: '100%', height: '52px' }}
                       >
-                        <option value="Noch offen">Noch offen</option>
-                        <option value="So bald wie möglich">So bald wie möglich</option>
-                        <option value="In den nächsten 3 Monaten">In den nächsten 3 Monaten</option>
-                        <option value="In den nächsten 6 Monaten">In den nächsten 6 Monaten</option>
-                        <option value="In den nächsten 12 Monaten">In den nächsten 12 Monaten</option>
+                        <option value="">Bitte wählen</option>
+                        <option value="Neues Büro im Aufbau">Neues Büro im Aufbau</option>
+                        <option value="Bestehendes Büro neu denken">Bestehendes Büro neu denken</option>
+                        <option value="Persönlicher Rückzugsraum">Persönlicher Rückzugsraum</option>
                       </select>
                       <p style={{ fontSize: '11px', color: 'var(--bone-dim)', marginTop: '4px' }}>
                         Optional, hilft uns bei der Vorbereitung.
@@ -967,7 +868,7 @@ export default function LandingPage() {
                 <p style={{ fontSize: '16px', color: 'var(--bone)', marginBottom: '30px', lineHeight: '1.4' }}>
                   Ihre Anfrage wurde übermittelt. Wir melden uns persönlich bei Ihnen.
                 </p>
-                <button className="cta-button" style={{ width: '100%', justifyContent: 'center' }} onClick={() => { setIsModalOpen(false); setIsSuccess(false); setFormData({name:'', email:'', phone:'', timeline:'Noch offen', message:'', website:''}); }}>
+                <button className="cta-button" style={{ width: '100%', justifyContent: 'center' }} onClick={() => { setIsModalOpen(false); setIsSuccess(false); setFormData({name:'', email:'', phone:'', topic:'', message:'', website:''}); }}>
                   Schließen
                 </button>
               </div>

@@ -25,8 +25,9 @@ export default function SuccessPage() {
   return (
     <>
       <Head>
-        <title>Vielen Dank — Studio Höllental</title>
+        <title>Vielen Dank – Studio Höllental</title>
         <meta name="robots" content="noindex, nofollow" />
+        <link rel="canonical" href="https://hoellental.studio/de/produkte/high/success" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -75,7 +76,7 @@ export default function SuccessPage() {
               transition: 'opacity 800ms cubic-bezier(.2,.6,.2,1), filter 900ms cubic-bezier(.2,.6,.2,1)',
               whiteSpace: 'nowrap'
             }}>
-              Vielen Dank<br />
+              Vielen Dank,<br />
               {data.name}
             </h1>
           </div>
@@ -99,7 +100,7 @@ export default function SuccessPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '14px', color: 'var(--bone-dim)' }}>
               <div>E-Mail: <span style={{ color: 'var(--bone)' }}>{data.email}</span></div>
               <div>Telefon: <span style={{ color: 'var(--bone)' }}>{data.phone || 'Nicht angegeben'}</span></div>
-              <div>Zeithorizont: <span style={{ color: 'var(--bone)' }}>{data.timeline}</span></div>
+              <div>Anliegen: <span style={{ color: 'var(--bone)' }}>{data.topic || 'Nicht angegeben'}</span></div>
               {data.message && (
                 <div style={{ marginTop: '8px' }}>
                   Nachricht:<br />

@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Internal server error' });
   }
 
-  const { name, email, phone, message, pageUrl, language, website, timeline } = req.body;
+  const { name, email, phone, message, pageUrl, language, website, topic } = req.body;
 
   // Honeypot check
   if (website) {
@@ -39,15 +39,13 @@ export default async function handler(req, res) {
   if (phone && phone.length > 80) return res.status(400).json({ error: 'Telefonnummer zu lang.' });
   if (message && message.length > 2000) return res.status(400).json({ error: 'Nachricht zu lang.' });
 
-  // Timeline validation
-  const allowedTimelines = [
-    'Noch offen',
-    'So bald wie möglich',
-    'In den nächsten 3 Monaten',
-    'In den nächsten 6 Monaten',
-    'In den nächsten 12 Monaten'
+  // Topic validation
+  const allowedTopics = [
+    'Neues Büro im Aufbau',
+    'Bestehendes Büro neu denken',
+    'Persönlicher Rückzugsraum'
   ];
-  const validTimeline = allowedTimelines.includes(timeline) ? timeline : 'Noch offen';
+  const validTopic = allowedTopics.includes(topic) ? topic : 'Nicht angegeben';
 
   // IP Address
   const forwarded = req.headers['x-forwarded-for'];
@@ -62,12 +60,12 @@ export default async function handler(req, res) {
 
   const mailContent = `
     Neue Anfrage via Landingpage HIGH01
-    
+
     Vor- und Nachname: ${name}
     E-Mail-Adresse: ${email}
     Telefonnummer: ${phone || 'Nicht angegeben'}
-    Zeithorizont: ${validTimeline}
-    
+    Anliegen: ${validTopic}
+
     Nachricht:
     ${message || 'Keine Nachricht'}
     
@@ -112,8 +110,8 @@ ${email}
 Telefonnummer:
 ${phone || "Nicht angegeben"}
 
-Zeithorizont:
-${validTimeline || "Noch offen"}
+Anliegen:
+${validTopic}
 
 Nachricht:
 ${message || "Keine Nachricht"}
@@ -148,8 +146,8 @@ Ihr Team von Studio Höllental Interiors`;
     <div class="label">Telefonnummer:</div>
     <div class="value">${phone || "Nicht angegeben"}</div>
     
-    <div class="label">Zeithorizont:</div>
-    <div class="value">${validTimeline || "Noch offen"}</div>
+    <div class="label">Anliegen:</div>
+    <div class="value">${validTopic}</div>
     
     <div class="label">Nachricht:</div>
     <div class="value">${message || "Keine Nachricht"}</div>
