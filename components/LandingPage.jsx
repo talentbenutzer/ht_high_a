@@ -598,7 +598,7 @@ export default function LandingPage() {
         <div className="shell">
           <div className="trust-grid">
             <div className="trust-cell">
-              <div className="trust-value trust-value--num">123 Stunden</div>
+              <div className="trust-value trust-value--num">187 Stunden</div>
               <div className="trust-label">Handarbeit je HIGHboard</div>
             </div>
             <div className="trust-cell">
