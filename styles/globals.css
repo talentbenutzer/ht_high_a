@@ -574,7 +574,7 @@
     gap: 24px;
     color: var(--bone-dim);
     line-height: 1.6;
-    align-self: center;
+    align-self: start;
   }
   .intro-image {
     grid-column: 6 / -1;
