@@ -504,7 +504,10 @@ export default function LandingPage() {
 
           {/* Bild rechts — komplett sichtbar */}
           <div className="intro-image">
-            <img src="/images/sw_office.jpg" alt="Büro-Setting mit HIGHboard" />
+            <picture>
+              <source media="(max-width: 900px)" srcSet="/images/office_mob.jpg" />
+              <img src="/images/office.jpg" alt="Büro-Setting mit HIGHboard" />
+            </picture>
           </div>
           
         </div>
