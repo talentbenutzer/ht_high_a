@@ -895,12 +895,7 @@
     border-top: 1px solid var(--line);
     background: var(--ink);
   }
-  /* Reserve space rechts oben, damit Sticky-CTA die dritte Karte nicht überlagert */
-  @media (min-width: 901px){
-    .testi .shell{
-      padding-right: clamp(80px, 10vw, 200px);
-    }
-  }
+
   .testi-header-new {
     display: flex;
     justify-content: space-between;
