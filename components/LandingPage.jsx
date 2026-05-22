@@ -453,7 +453,7 @@ export default function LandingPage() {
             </div>
 
             <div className="hero-subheadline">
-              HIGH-board – Manufaktur für Räume, in denen entschieden wird.
+              HIGH-board – Interior-Manufaktur für Räume, in denen entschieden wird.
             </div>
           </div>
         </div>
@@ -598,7 +598,7 @@ export default function LandingPage() {
         <div className="shell">
           <div className="trust-grid">
             <div className="trust-cell">
-              <div className="trust-value trust-value--num">187 Stunden</div>
+              <div className="trust-value trust-value--num">178 Stunden</div>
               <div className="trust-label">Handarbeit je HIGHboard</div>
             </div>
             <div className="trust-cell">
@@ -615,7 +615,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="trust-price-row">
-            <p>Projekte starten im niedrigen fünfstelligen Bereichen.</p>
+            <p>Projekte starten im niedrigen fünfstelligen Bereich.</p>
           </div>
         </div>
       </section>
@@ -677,7 +677,7 @@ export default function LandingPage() {
       <section className="cta" id="kontakt" data-screen-label="06 CTA">
         <div className="shell grid12">
           <div className="body">
-            <h3>Mit Sicherheit die beste Entscheidung des Tages</h3>
+            <h3>„Mit Sicherheit die beste Entscheidung des Tages!"</h3>
             <p style={{ marginBottom: '10px', fontWeight: '500' }}>Wir analysieren ausgewählte CEO- und Unternehmerbüros auf Fokus, Klarheit und Wirkung.</p>
             <p>
               {'Eine Konfiguration von Studio höllental. beginnt mit einem persönlichen Analysetermin. Wir sehen, was Sie tun. Wir hören, was Sie brauchen.'}<br />
@@ -688,13 +688,13 @@ export default function LandingPage() {
               <span className="arrow" aria-hidden="true">→</span>
             </a>
           </div>
-          <div className="lhs" style={{ display: 'flex', alignItems: 'center', gap: '15px', alignSelf: 'flex-end' }}>
-            <div style={{ backgroundColor: '#2a2a2a', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', width: '80px', height: '80px', flexShrink: 0, overflow: 'hidden', borderRadius: '50%' }}>
-              <img src="/images/cf01q.png" alt="Christian Frei" style={{ width: '100%', height: 'auto', display: 'block' }} />
+          <div className="lhs cta-person">
+            <div className="cta-person-img">
+              <img src="/images/cf01q.png" alt="Christian Frei" />
             </div>
-            <div className="sales-manager-text" style={{ fontSize: '11px', color: 'var(--bone-dim)', lineHeight: '1.4', letterSpacing: '0.05em' }}>
-              <span style={{ color: 'var(--bone)', fontWeight: '500', fontSize: '13px' }}>Christian Frei</span><br />
-              Business Development &<br />Partnership
+            <div className="sales-manager-text">
+              <span className="cta-person-name">Christian Frei</span>
+              <span className="cta-person-role">Business Development &amp; Partnership</span>
             </div>
           </div>
         </div>
