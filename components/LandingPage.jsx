@@ -453,7 +453,7 @@ export default function LandingPage() {
             </div>
 
             <div className="hero-subheadline">
-              HIGHboard – Manufaktur für Räume, in denen entschieden wird.
+              HIGH-board – Manufaktur für Räume, in denen entschieden wird.
             </div>
           </div>
         </div>
@@ -615,7 +615,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="trust-price-row">
-            <p>Highboard HIGH wird in limitierter Auflage gefertigt. Preise auf Anfrage, im fünfstelligen Bereich.</p>
+            <p>Projekte starten im niedrigen fünfstelligen Bereichen.</p>
           </div>
         </div>
       </section>
