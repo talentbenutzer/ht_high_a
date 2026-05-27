@@ -506,7 +506,7 @@ export default function LandingPage() {
           <div className="intro-image">
             <picture>
               <source media="(max-width: 900px)" srcSet="/images/office_mob.jpg" />
-              <img src="/images/office.jpg" alt="Büro-Setting mit HIGHboard" />
+              <img src="/images/office.jpg" alt="Büro-Setting mit HIGH-Board" />
             </picture>
           </div>
           
@@ -530,7 +530,7 @@ export default function LandingPage() {
             <article className="testi-card">
               <div className="testi-card-top">
                 <div className="testi-avatar">
-                  <img src="/images/sascha_gehring.png" alt="Sascha Gehring" />
+                  <img src="/images/hhf_gehring.jpg" alt="Sascha Gehring" />
                 </div>
                 <div className="testi-company-badge">
                   <span className="badge-name">Holzhaus Fabrik</span>
@@ -599,7 +599,7 @@ export default function LandingPage() {
           <div className="trust-grid">
             <div className="trust-cell">
               <div className="trust-value trust-value--num">178 Stunden</div>
-              <div className="trust-label">Handarbeit je HIGHboard</div>
+              <div className="trust-label">Handarbeit je HIGH-Board</div>
             </div>
             <div className="trust-cell">
               <div className="trust-value trust-value--word">Schwarzwald</div>
@@ -638,7 +638,7 @@ export default function LandingPage() {
         {/* Content */}
         <div className="usp-wald-content">
           <h3 className="usp-wald-headline">Spürbare Präzision.</h3>
-          <p className="usp-wald-sub">Jedes Stück HIGHboard beginnt hier: im Schwarzwald.</p>
+          <p className="usp-wald-sub">Jedes Stück HIGH-Board beginnt hier: im Schwarzwald.</p>
           <div className="usp-wald-body">
             <p>
               Wir beziehen unser Holz von Waldwirtschaften, die wir kennen. Förster

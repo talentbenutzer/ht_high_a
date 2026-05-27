@@ -12,10 +12,10 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>HIGHboard – Studio Höllental</title>
+        <title>HIGH-Board – Studio Höllental</title>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="description" content="HIGHboard – Das Möbelstück für Räume, in denen Verantwortung getragen wird. Studio Höllental Manufaktur." />
+        <meta name="description" content="HIGH-Board – Das Möbelstück für Räume, in denen Verantwortung getragen wird. Studio Höllental Manufaktur." />
         <link rel="canonical" href="https://hoellental.studio/de/produkte/high" />
         <meta property="og:url" content="https://hoellental.studio/de/produkte/high" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
