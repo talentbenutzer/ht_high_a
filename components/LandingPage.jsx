@@ -690,7 +690,7 @@ export default function LandingPage() {
           </div>
           <div className="lhs cta-person">
             <div className="cta-person-img">
-              <img src="/images/cf01q.png" alt="Christian Frei" />
+              <img src="/images/cf_hoellental.jpeg" alt="Christian Frei" />
             </div>
             <div className="sales-manager-text">
               <span className="cta-person-name">Christian Frei</span>
