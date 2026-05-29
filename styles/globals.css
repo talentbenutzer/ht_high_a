@@ -1901,3 +1901,65 @@
 @keyframes modalSlideUp {
   to { transform: translateY(0); opacity: 1; }
 }
+
+/* ========================================================
+   Language Switcher — DE / EN
+   ======================================================== */
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 32px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.lang-btn {
+  padding: 6px 8px;
+  color: var(--bone);
+  opacity: 0.5;
+  transition: opacity 200ms ease, text-decoration 200ms ease;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  font-weight: inherit;
+  text-decoration: none;
+}
+
+.lang-btn:hover {
+  opacity: 0.7;
+}
+
+.lang-btn.active {
+  opacity: 1;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.lang-separator {
+  color: var(--bone);
+  opacity: 0.3;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Mobile: Language Switcher Spacing */
+@media (max-width: 768px) {
+  .lang-switcher {
+    margin-right: 12px;
+    gap: 6px;
+  }
+
+  .lang-btn {
+    padding: 4px 6px;
+    font-size: 10px;
+  }
+}

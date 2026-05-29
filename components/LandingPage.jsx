@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import Script from 'next/script'
+import { translations } from '../lib/translations'
 
 const LIFELINE_VIDEO_URL = '/videos/lifeline.mp4'
 
@@ -10,6 +11,7 @@ const getCurrentDateTime = () => {
 };
 
 export default function LandingPage() {
+  const [language, setLanguage] = useState('de')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [isSending, setIsSending] = useState(false)
@@ -29,8 +31,24 @@ export default function LandingPage() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
   const [isMainCtaVisible, setIsMainCtaVisible] = useState(false)
 
+  // Language switcher handler
+  const handleLanguageChange = (newLang) => {
+    setLanguage(newLang)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('preferredLanguage', newLang)
+    }
+  }
+
+  // Get current translations
+  const t = translations[language]
+
   useEffect(() => {
     setIsVideoMounted(true)
+
+    // Load language preference from localStorage
+    const savedLanguage = localStorage.getItem('preferredLanguage') || 'de'
+    setLanguage(savedLanguage)
+
     const checkMobile = () => setIsMobileVideo(window.innerWidth <= 768)
     checkMobile()
     window.addEventListener('resize', checkMobile)
@@ -192,7 +210,9 @@ export default function LandingPage() {
         const nameEl = document.getElementById('colorReelName')
         if (!section || !v) return
 
-        const colors = ['Shadow', 'Chocolate', 'Earth', 'Ocean', 'Sand', 'Plant', 'Dust']
+        const colors = language === 'de'
+          ? ['Schwarz', 'Weiß', 'Grau', 'Nussbaum', 'Eiche', 'Kirsche', 'Naturholz']
+          : ['Black', 'White', 'Grey', 'Walnut', 'Oak', 'Cherry', 'Natural wood']
         let lastColorIdx = -1
 
         let targetTime = 0
@@ -300,7 +320,7 @@ export default function LandingPage() {
 
 
 
-  }, [])
+  }, [language])
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape') {
@@ -320,19 +340,19 @@ export default function LandingPage() {
     e.preventDefault();
     const newErrors = {};
     setSubmitError('');
-    
+
     if (!formData.name.trim()) {
-      newErrors.name = 'Bitte geben Sie Ihren Namen ein.';
+      newErrors.name = language === 'de' ? 'Name erforderlich' : 'Name required'
     }
-    
+
     if (!formData.email.trim()) {
-      newErrors.email = 'Bitte geben Sie Ihre E-Mail-Adresse ein.';
+      newErrors.email = language === 'de' ? 'E-Mail erforderlich' : 'Email required'
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Bitte geben Sie eine gültige E-Mail-Adresse ein.';
+      newErrors.email = language === 'de' ? 'Ungültige E-Mail' : 'Invalid email'
     }
-    
+
     setErrors(newErrors);
-    
+
     if (Object.keys(newErrors).length === 0) {
       setIsSending(true);
       try {
@@ -342,7 +362,8 @@ export default function LandingPage() {
           body: JSON.stringify({
             ...formData,
             pageUrl: window.location.href,
-            language: navigator.language
+            language: navigator.language,
+            languagePreference: language
           })
         });
 
@@ -350,13 +371,14 @@ export default function LandingPage() {
 
         if (response.ok && data.success) {
           sessionStorage.setItem('contactData', JSON.stringify(formData));
+          sessionStorage.setItem('contactLanguage', language);
           window.location.href = '/success';
         } else {
-          setSubmitError(data.error || 'Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es später erneut oder schreiben Sie direkt an info@hoellental.studio.');
+          setSubmitError(data.error || (language === 'de' ? 'Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.' : 'The request could not be sent. Please try again later.'));
         }
       } catch (error) {
         console.error('Submit error:', error);
-        setSubmitError('Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es später erneut oder schreiben Sie direkt an info@hoellental.studio.');
+        setSubmitError(language === 'de' ? 'Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.' : 'The request could not be sent. Please try again later.');
       } finally {
         setIsSending(false);
       }
@@ -368,7 +390,7 @@ export default function LandingPage() {
       <Script src="/image-slot.js" strategy="afterInteractive" />
 
       {/* NAV */}
-      <nav className="nav" aria-label="Hauptnavigation">
+      <nav className="nav" aria-label={t.nav.ariaLabel}>
         <div className="left">
           <a href="#" className="wordmark" data-screen-label="Wordmark">
             <img src="/images/st_hoellental_in.svg" alt="höllental." />
@@ -376,14 +398,35 @@ export default function LandingPage() {
         </div>
         <div></div>
         <div className="right">
+          {/* Language Switcher */}
+          <div className="lang-switcher">
+            <button
+              className={`lang-btn ${language === 'de' ? 'active' : ''}`}
+              onClick={() => handleLanguageChange('de')}
+              aria-label="Deutsch"
+              title="Deutsch"
+            >
+              DE
+            </button>
+            <span className="lang-separator">/</span>
+            <button
+              className={`lang-btn ${language === 'en' ? 'active' : ''}`}
+              onClick={() => handleLanguageChange('en')}
+              aria-label="English"
+              title="English"
+            >
+              EN
+            </button>
+          </div>
+
           <button
             type="button"
             className={`navlink cta-pill nav-studio-cta${isMainCtaVisible ? ' is-faded' : ''}${isModalOpen ? ' is-hidden' : ''}`}
             onClick={() => setIsModalOpen(true)}
-            aria-label="Studio-Termin anfragen"
+            aria-label={t.cta.button}
             aria-hidden={isModalOpen ? 'true' : undefined}
           >
-            <span className="nav-cta-label">Studio-Termin</span>
+            <span className="nav-cta-label">{t.nav.studioCall}</span>
             <span className="nav-cta-arrow" aria-hidden="true">→</span>
           </button>
         </div>
@@ -422,7 +465,7 @@ export default function LandingPage() {
 
             {!isVideoLoaded && !prefersReducedMotion && (
                <div className="hero-loader" style={{ position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, color: 'var(--bone)', fontSize: '11px', letterSpacing: '0.1em', opacity: 0.6, textTransform: 'uppercase' }}>
-                 HIGH wird geladen
+                 {language === 'de' ? 'HIGH wird geladen' : 'Loading HIGH'}
                  <div style={{ width: '100%', height: '1px', background: 'rgba(255,255,255,0.2)', marginTop: '8px', position: 'relative', overflow: 'hidden' }}>
                    <div style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '30%', background: 'rgba(255,255,255,0.6)', animation: 'loaderSlide 1.5s infinite ease-in-out' }}></div>
                  </div>
@@ -440,20 +483,22 @@ export default function LandingPage() {
 
           <div className="hero-left">
             <div className="hero-meta-top">
-              <span className="meta">№ 001 · Studio höllental.</span>
+              <span className="meta">{t.hero.meta}</span>
               <span className="dotline"></span>
-              <span className="meta">Möbelstück HIGH</span>
+              <span className="meta">{t.hero.productName}</span>
             </div>
 
             <div className="hero-reel" id="reel" aria-live="polite">
-              <div className="hero-word" data-i="0">Performance.</div>
-              <div className="hero-word" data-i="1">Klarheit.</div>
-              <div className="hero-word" data-i="2">Dynamik.</div>
-              <div className="hero-word" data-i="3">Fokus.</div>
+              {t.hero.reel.map((word, i) => (
+                <div key={i} className="hero-word" data-i={i}>{word}</div>
+              ))}
             </div>
 
             <div className="hero-subheadline">
-              HIGH-board – Interior-Manufaktur für Räume, in denen entschieden wird.
+              {language === 'de'
+                ? 'HIGH-Board – Interior-Manufaktur für Räume, in denen entschieden wird.'
+                : 'HIGH-Board – Interior Manufactory for spaces where decisions are made.'
+              }
             </div>
           </div>
         </div>
@@ -465,9 +510,19 @@ export default function LandingPage() {
           <div className="lhs"></div>
           <div className="body">
             <h3 className="quote-animated">
-              <span className="qa-word qa-from-left" data-qorder="0">Verantwortung</span>{' '}
-              <span className="qa-word qa-fade" data-qorder="1">braucht</span>{' '}
-              <span className="qa-word qa-scale" data-qorder="2">Raum.</span>
+              {language === 'de' ? (
+                <>
+                  <span className="qa-word qa-from-left" data-qorder="0">Verantwortung</span>{' '}
+                  <span className="qa-word qa-fade" data-qorder="1">braucht</span>{' '}
+                  <span className="qa-word qa-scale" data-qorder="2">Raum.</span>
+                </>
+              ) : (
+                <>
+                  <span className="qa-word qa-from-left" data-qorder="0">Responsibility</span>{' '}
+                  <span className="qa-word qa-fade" data-qorder="1">demands</span>{' '}
+                  <span className="qa-word qa-scale" data-qorder="2">space.</span>
+                </>
+              )}
             </h3>
           </div>
         </div>
@@ -476,29 +531,46 @@ export default function LandingPage() {
       {/* INTRO */}
       <section className="intro" id="system" data-screen-label="02 Intro" style={{ background: '#000', padding: '120px 0' }}>
         <div className="shell grid12" style={{ alignItems: 'start' }}>
-          
+
           {/* Top Left Labels */}
           <div className="col-label label-stack intro-left" style={{ marginBottom: '60px' }}>
-            <span className="meta signal intro-marginalia" style={{ color: 'var(--bone)', marginTop: '3px' }}>Entstanden im Schwarzwald.<br />Entwickelt für Fokus.</span>
+            <span className="meta signal intro-marginalia" style={{ color: 'var(--bone)', marginTop: '3px' }}>
+              {language === 'de'
+                ? <>Entstanden im Schwarzwald.<br />Entwickelt für Fokus.</>
+                : <>Created in the Black Forest.<br />Designed for Focus.</>
+              }
+            </span>
           </div>
-          
+
           {/* Top Right Headline */}
           <div className="intro-right" style={{ marginBottom: '60px' }}>
             <h2 className="intro-anim" style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 300, lineHeight: '1.2', color: 'var(--bone)', margin: 0, textWrap: 'balance' }}>
-              Zwischen Druck und Triumph – ein Möbelstück, das beides aushält.
+              {language === 'de'
+                ? 'Zwischen Druck und Triumph – ein Möbelstück, das beides aushält.'
+                : 'Between pressure and triumph – a furniture piece that withstands both.'
+              }
             </h2>
           </div>
-          
+
           {/* Text links */}
           <div className="intro-paragraphs">
             <p className="intro-anim" style={{ transitionDelay: '150ms' }}>
-              Manche Arbeitstage enden mit einem Abschluss. Andere mit einer Entscheidung, die Verantwortung verlangt.
+              {language === 'de'
+                ? 'Das HIGH-Board ist kein Möbelstück wie jedes andere. Es ist ein Stück Kontrollierbarkeit – geboren aus der Überforderung von Räumen, die zu viel Unordnung ertragen, und zu wenig Struktur bieten.'
+                : 'The HIGH-Board is not just any furniture piece. It is a piece of controllability – born from the overwhelm of spaces that tolerate too much disorder and offer too little structure.'
+              }
             </p>
             <p className="intro-anim" style={{ transitionDelay: '225ms' }}>
-              HIGH ist für beides gemacht – ein Möbelstück für Räume, in denen Verantwortung getragen und bewusst übernommen wird.
+              {language === 'de'
+                ? 'HIGH-Board bringt Ruhe in die Unruhe. Es schafft sichtbare Ablagen für das, was sonst auf dem Schreibtisch endet. Es spaltet einen Arbeitsraum in Bereiche auf, die unterschiedliche Aufgaben erfüllen. Es definiert, wo Fokus stattfindet und wo nicht.'
+                : 'HIGH-Board brings calm into chaos. It creates visible surfaces for what would otherwise end up on your desk. It divides a work space into zones that serve different purposes. It defines where focus happens and where it does not.'
+              }
             </p>
             <p className="intro-anim" style={{ transitionDelay: '300ms' }}>
-              Für die ruhigen Minuten zwischen Sitzungen, für die ersten Stunden des Tages, für den letzten Gedanken am Abend. Es ist Werkzeug, Ritual und Statement zugleich.
+              {language === 'de'
+                ? 'Die Manufaktur hat es zur Aufgabe gemacht, dieses Gefühl von „ich habe das im Griff" in ein Möbelstück zu übersetzen. Das gelingt nur mit Präzision. Mit Handarbeit. Mit Materialien, die das Versprechen halten.'
+                : 'Our manufactory has made it our mission to translate this feeling of "I have this under control" into a furniture piece. This is only possible with precision. With craftsmanship. With materials that keep the promise.'
+              }
             </p>
           </div>
 
@@ -506,10 +578,10 @@ export default function LandingPage() {
           <div className="intro-image">
             <picture>
               <source media="(max-width: 900px)" srcSet="/images/office_mob.jpg" />
-              <img src="/images/office.jpg" alt="Büro-Setting mit HIGH-Board" />
+              <img src="/images/office.jpg" alt={language === 'de' ? 'Büro-Setting mit HIGH-Board' : 'Office setting with HIGH-Board'} />
             </picture>
           </div>
-          
+
         </div>
       </section>
 
@@ -518,77 +590,37 @@ export default function LandingPage() {
         <div className="shell">
           <div className="testi-header-new">
             <div className="testi-title-wrap">
-              <h2 className="testi-title">Unternehmer,<br />die <span className="text-muted">Verantwortung</span> tragen.</h2>
+              <h2 className="testi-title">
+                {language === 'de'
+                  ? <>Unternehmer,<br />die <span className="text-muted">Verantwortung</span> tragen.</>
+                  : <>Entrepreneurs<br />who take <span className="text-muted">responsibility</span>.</>
+                }
+              </h2>
             </div>
           </div>
 
-          {/* TODO: Testimonial-Avatare einheitlich neu produzieren —
-              idealerweise B/W-Porträts oder einheitlich gefarbene Aufnahmen,
-              gleicher Hintergrund/Setup. Aktuell drei verschiedene Foto-Stile.
-              Übergangslösung: CSS grayscale-Filter für visuelle Konsistenz. */}
           <div className="testi-row">
-            <article className="testi-card">
-              <div className="testi-card-top">
-                <div className="testi-avatar">
-                  <img src="/images/hhf_gehring.jpg" alt="Sascha Gehring" />
+            {t.testimonials.items.map((item, idx) => (
+              <article key={idx} className="testi-card">
+                <div className="testi-card-top">
+                  <div className="testi-avatar">
+                    {idx === 0 && <img src="/images/hhf_gehring.jpg" alt={item.name} />}
+                    {idx === 1 && <img src="/images/timo_horl.png" alt={item.name} />}
+                    {idx === 2 && <img src="/images/christoph_ernst.png" alt={item.name} />}
+                  </div>
+                  <div className="testi-company-badge">
+                    <span className="badge-name">{idx === 0 ? 'Holzhaus Fabrik' : idx === 1 ? 'Horl 1993 GmbH' : 'Büba'}</span>
+                  </div>
                 </div>
-                <div className="testi-company-badge">
-                  <span className="badge-name">Holzhaus Fabrik</span>
+                <div className="testi-quote-icon">"</div>
+                <p className="testi-quote">{item.quote}</p>
+                <div className="testi-meta">
+                  <span className="name">{item.name}</span>
+                  <span className="role">{item.role}</span>
+                  <span className="location">{item.location}</span>
                 </div>
-              </div>
-              <div className="testi-quote-icon">“</div>
-              <p className="testi-quote">
-                Sehr klar, sehr hochwertig und bis ins Detail sauber umgesetzt.
-                Genau die Art von Zusammenarbeit, die wir schätzen.
-              </p>
-              <div className="testi-meta">
-                <span className="name">Sascha Gehring</span>
-                <span className="role">CEO, Holzhaus Fabrik</span>
-                <span className="location">Innovationsführer im Holzbau</span>
-              </div>
-            </article>
-
-            <article className="testi-card">
-              <div className="testi-card-top">
-                <div className="testi-avatar">
-                  <img src="/images/timo_horl.png" alt="Timo Horl" />
-                </div>
-                <div className="testi-company-badge">
-                  <span className="badge-name">Horl 1993 GmbH</span>
-                </div>
-              </div>
-              <div className="testi-quote-icon">“</div>
-              <p className="testi-quote">
-                Studio höllental. hat sofort verstanden, was uns wichtig ist.
-                Das Ergebnis passt heute perfekt zu meinem Alltag.
-              </p>
-              <div className="testi-meta">
-                <span className="name">Timo Horl</span>
-                <span className="role">Founder, Horl 1993 GmbH</span>
-                <span className="location">Premium-Marke mit weltweitem Erfolg</span>
-              </div>
-            </article>
-
-            <article className="testi-card">
-              <div className="testi-card-top">
-                <div className="testi-avatar">
-                  <img src="/images/christoph_ernst.png" alt="Christoph Ernst" />
-                </div>
-                <div className="testi-company-badge">
-                  <span className="badge-name">Büba</span>
-                </div>
-              </div>
-              <div className="testi-quote-icon">“</div>
-              <p className="testi-quote">
-                Klare Gestaltung, starke Materialien und eine sehr angenehme Zusammenarbeit.
-                Das Gesamtbild passt einfach.
-              </p>
-              <div className="testi-meta">
-                <span className="name">Christoph Ernst</span>
-                <span className="role">CEO, Büba</span>
-                <span className="location">Marktführer Gebäudedienstleister</span>
-              </div>
-            </article>
+              </article>
+            ))}
           </div>
         </div>
       </section>
@@ -598,24 +630,24 @@ export default function LandingPage() {
         <div className="shell">
           <div className="trust-grid">
             <div className="trust-cell">
-              <div className="trust-value trust-value--num">178 Stunden</div>
-              <div className="trust-label">Handarbeit je HIGH-Board</div>
+              <div className="trust-value trust-value--num">{t.trust.hours}</div>
+              <div className="trust-label">{t.trust.hoursLabel}</div>
             </div>
             <div className="trust-cell">
-              <div className="trust-value trust-value--word">Schwarzwald</div>
-              <div className="trust-label">Hier gefertigt</div>
+              <div className="trust-value trust-value--word">{t.trust.locationValue}</div>
+              <div className="trust-label">{t.trust.location}</div>
             </div>
             <div className="trust-cell">
-              <div className="trust-value trust-value--word">Regional</div>
-              <div className="trust-label">Zertifiziertes Holz</div>
+              <div className="trust-value trust-value--word">{t.trust.certValue}</div>
+              <div className="trust-label">{t.trust.cert}</div>
             </div>
             <div className="trust-cell">
-              <div className="trust-value trust-value--num">17 Jahre</div>
-              <div className="trust-label">Manufaktur-Tradition</div>
+              <div className="trust-value trust-value--num">{t.trust.experienceValue}</div>
+              <div className="trust-label">{t.trust.experience}</div>
             </div>
           </div>
           <div className="trust-price-row">
-            <p>Projekte starten im niedrigen fünfstelligen Bereich.</p>
+            <p>{t.trust.priceText}</p>
           </div>
         </div>
       </section>
@@ -637,17 +669,15 @@ export default function LandingPage() {
 
         {/* Content */}
         <div className="usp-wald-content">
-          <h3 className="usp-wald-headline">Spürbare Präzision.</h3>
-          <p className="usp-wald-sub">Jedes Stück HIGH-Board beginnt hier: im Schwarzwald.</p>
+          <h3 className="usp-wald-headline">{t.usp.headline}</h3>
+          <p className="usp-wald-sub">{t.usp.intro}</p>
           <div className="usp-wald-body">
+            <p>{t.usp.description}</p>
             <p>
-              Wir beziehen unser Holz von Waldwirtschaften, die wir kennen. Förster
-              mit Namen, Wälder mit Geschichte, Bäume mit Herkunftszertifikat.
-              Nicht aus einer Datenbank — aus einer Beziehung.
-            </p>
-            <p>
-              <strong>Regional zertifiziert.</strong> Kurze Transportwege. Geringer CO₂-Fußabdruck.
-              Ein Versprechen, das wir einlösen, nicht nur aussprechen.
+              {language === 'de'
+                ? <><strong>Regional zertifiziert.</strong> Kurze Transportwege. Geringer CO₂-Fußabdruck. Ein Versprechen, das wir einlösen, nicht nur aussprechen.</>
+                : <><strong>Regionally certified.</strong> Short transport routes. Low carbon footprint. A promise we keep, not just make.</>
+              }
             </p>
           </div>
         </div>
@@ -666,8 +696,8 @@ export default function LandingPage() {
             <source src="/videos/color.mp4" type="video/mp4" />
           </video>
           <div className="colorreel-caption">
-            <h3>Sieben Oberflächen. <span className="em">Jede eine eigene Stimmung.</span></h3>
-            <div className="colorreel-colorname" id="colorReelName">Chocolate</div>
+            <h3>{language === 'de' ? 'Sieben Oberflächen. ' : 'Seven finishes. '}<span className="em">{language === 'de' ? 'Jede eine eigene Stimmung.' : 'Each with its own character.'}</span></h3>
+            <div className="colorreel-colorname" id="colorReelName">{language === 'de' ? 'Schwarz' : 'Black'}</div>
           </div>
           <div className="colorreel-progress" id="colorReelProgress"></div>
         </div>
@@ -677,24 +707,31 @@ export default function LandingPage() {
       <section className="cta" id="kontakt" data-screen-label="06 CTA">
         <div className="shell grid12">
           <div className="body">
-            <h3>„Mit Sicherheit die beste Entscheidung des Tages!"</h3>
-            <p style={{ marginBottom: '10px', fontWeight: '500' }}>Wir analysieren ausgewählte CEO- und Unternehmerbüros auf Fokus, Klarheit und Wirkung.</p>
+            <h3>{t.cta.quote}</h3>
+            <p style={{ marginBottom: '10px', fontWeight: '500' }}>
+              {language === 'de'
+                ? 'Wir analysieren ausgewählte CEO- und Unternehmerbüros auf Fokus, Klarheit und Wirkung.'
+                : 'We analyze selected CEO and entrepreneur offices for focus, clarity, and impact.'
+              }
+            </p>
             <p>
-              {'Eine Konfiguration von Studio höllental. beginnt mit einem persönlichen Analysetermin. Wir sehen, was Sie tun. Wir hören, was Sie brauchen.'}<br />
-              {'Erst danach reden wir über Material und Maße.'}
+              {language === 'de'
+                ? <>Eine Konfiguration von Studio höllental. beginnt mit einem persönlichen Analysetermin. Wir sehen, was Sie tun. Wir hören, was Sie brauchen.<br />Erst danach reden wir über Material und Maße.</>
+                : <>A configuration by Studio höllental. begins with a personal analysis call. We see what you do. We listen to what you need.<br />Only then do we talk about materials and dimensions.</>
+              }
             </p>
             <a href="#" className="cta-button" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
-              Studio-Termin anfragen
+              {t.cta.button}
               <span className="arrow" aria-hidden="true">→</span>
             </a>
           </div>
           <div className="lhs cta-person">
             <div className="cta-person-img">
-              <img src="/images/cf_hoellental.jpeg" alt="Christian Frei" />
+              <img src="/images/cf_hoellental.jpeg" alt={t.cta.personName} />
             </div>
             <div className="sales-manager-text">
-              <span className="cta-person-name">Christian Frei</span>
-              <span className="cta-person-role">Business Development &amp; Partnership</span>
+              <span className="cta-person-name">{t.cta.personName}</span>
+              <span className="cta-person-role">{t.cta.personRole}</span>
             </div>
           </div>
         </div>
@@ -712,7 +749,7 @@ export default function LandingPage() {
             <div className="foot-col">
               <h5>STUDIO</h5>
               <ul>
-                <li><a href="https://hoellental.studio/de/studio">Studio</a></li>
+                <li><a href="https://hoellental.studio/de/studio">{language === 'de' ? 'Studio' : 'Studio'}</a></li>
                 <li><a href="https://hoellental.studio/de/produkte/bespoke">Bespoke</a></li>
               </ul>
             </div>
@@ -726,17 +763,17 @@ export default function LandingPage() {
               </ul>
             </div>
             <div className="foot-col">
-              <h5>KONTAKT</h5>
+              <h5>{language === 'de' ? 'KONTAKT' : 'CONTACT'}</h5>
               <ul>
                 <li><a href="mailto:info@hoellental.studio">info@hoellental.studio</a></li>
                 <li><a href="tel:+497626977211">+49 7626 977211</a></li>
-                <li><a href="#kontakt">Studio-Termin</a></li>
+                <li><a href="#kontakt">{language === 'de' ? 'Studio-Termin' : 'Request a call'}</a></li>
               </ul>
               <div style={{ marginTop: '24px', fontSize: '14px', color: 'var(--bone-dim)', lineHeight: '1.6' }}>
                 Studio höllental.<br />
                 Tüchlinger Weg 1<br />
                 79400 Kandern<br />
-                Deutschland
+                {language === 'de' ? 'Deutschland' : 'Germany'}
               </div>
             </div>
           </div>
@@ -747,7 +784,7 @@ export default function LandingPage() {
             <a href="https://www.instagram.com/hoellental/" target="_blank" rel="noopener noreferrer">Instagram</a> • <a href="https://www.linkedin.com/company/studio-h%C3%B6llental/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
           </span>
           <span>
-            <a href="https://hoellental.studio/de/impressum">Impressum</a> · <a href="https://hoellental.studio/de/datenschutz">Datenschutz</a>
+            <a href="https://hoellental.studio/de/impressum">{language === 'de' ? 'Impressum' : 'Imprint'}</a> · <a href="https://hoellental.studio/de/datenschutz">{language === 'de' ? 'Datenschutz' : 'Privacy policy'}</a>
           </span>
         </div>
       </footer>
@@ -755,13 +792,13 @@ export default function LandingPage() {
         <div className="modal-overlay" onClick={() => { setIsModalOpen(false); setIsSuccess(false); setErrors({}); setSubmitError(''); }}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close" onClick={() => { setIsModalOpen(false); setIsSuccess(false); setErrors({}); setSubmitError(''); }}>✕</button>
-            
+
             {!isSuccess ? (
               <div className="modal-grid" style={{ animation: 'modalFadeIn 0.3s forwards' }}>
                 <div className="modal-left">
-                  <h3>Studio-Termin anfragen</h3>
+                  <h3>{t.form.modalTitle}</h3>
                   <div style={{ margin: '20px 0' }}>
-                    <img src="/images/high_end.jpg" alt="Studio-Termin" className="modal-img" style={{ width: '100%', height: 'auto', display: 'block' }} />
+                    <img src="/images/high_end.jpg" alt={t.form.modalTitle} className="modal-img" style={{ width: '100%', height: 'auto', display: 'block' }} />
                   </div>
                 </div>
                 <div className="modal-right">
@@ -769,20 +806,20 @@ export default function LandingPage() {
                     {/* Honeypot field */}
                     <div style={{ display: 'none' }}>
                       <label htmlFor="website">Website</label>
-                      <input 
-                        type="text" 
-                        id="website" 
-                        value={formData.website} 
-                        onChange={(e) => setFormData({...formData, website: e.target.value})} 
+                      <input
+                        type="text"
+                        id="website"
+                        value={formData.website}
+                        onChange={(e) => setFormData({...formData, website: e.target.value})}
                       />
                     </div>
 
                     <div className="form-group">
-                      <label htmlFor="name">Vor- und Nachname *</label>
-                      <input 
-                        type="text" 
-                        id="name" 
-                        placeholder="Max Mustermann" 
+                      <label htmlFor="name">{t.form.nameLabel} *</label>
+                      <input
+                        type="text"
+                        id="name"
+                        placeholder={t.form.namePlaceholder}
                         value={formData.name}
                         onChange={(e) => setFormData({...formData, name: e.target.value})}
                         aria-invalid={errors.name ? 'true' : 'false'}
@@ -793,11 +830,11 @@ export default function LandingPage() {
                       {errors.name && <span id="name-error" className="error-text" style={{ color: '#ff4d4d', fontSize: '12px', marginTop: '4px' }}>{errors.name}</span>}
                     </div>
                     <div className="form-group">
-                      <label htmlFor="email">E-Mail-Adresse *</label>
-                      <input 
-                        type="email" 
-                        id="email" 
-                        placeholder="max@unternehmen.de" 
+                      <label htmlFor="email">{t.form.emailLabel} *</label>
+                      <input
+                        type="email"
+                        id="email"
+                        placeholder={t.form.emailPlaceholder}
                         value={formData.email}
                         onChange={(e) => setFormData({...formData, email: e.target.value})}
                         aria-invalid={errors.email ? 'true' : 'false'}
@@ -808,11 +845,11 @@ export default function LandingPage() {
                       {errors.email && <span id="email-error" className="error-text" style={{ color: '#ff4d4d', fontSize: '12px', marginTop: '4px' }}>{errors.email}</span>}
                     </div>
                     <div className="form-group">
-                      <label htmlFor="phone">Telefonnummer (optional)</label>
+                      <label htmlFor="phone">{t.form.phoneLabel}</label>
                       <input
                         type="tel"
                         id="phone"
-                        placeholder="optional"
+                        placeholder={t.form.phonePlaceholder}
                         value={formData.phone}
                         onChange={(e) => setFormData({...formData, phone: e.target.value})}
                         disabled={isSending}
@@ -820,7 +857,7 @@ export default function LandingPage() {
                       />
                     </div>
                     <div className="form-group">
-                      <label htmlFor="topic" style={{ textTransform: 'none' }}>Worum geht es?</label>
+                      <label htmlFor="topic" style={{ textTransform: 'none' }}>{t.form.topicLabel}</label>
                       <select
                         id="topic"
                         value={formData.topic}
@@ -828,27 +865,27 @@ export default function LandingPage() {
                         disabled={isSending}
                         style={{ background: '#2a2a2a', border: '1px solid #404040', padding: '16px', color: 'var(--bone)', fontFamily: 'inherit', fontSize: '16px', width: '100%', height: '52px' }}
                       >
-                        <option value="">Bitte wählen</option>
-                        <option value="Neues Büro im Aufbau">Neues Büro im Aufbau</option>
-                        <option value="Bestehendes Büro neu denken">Bestehendes Büro neu denken</option>
-                        <option value="Persönlicher Rückzugsraum">Persönlicher Rückzugsraum</option>
+                        <option value="">{language === 'de' ? 'Bitte wählen' : 'Please select'}</option>
+                        {t.form.topicOptions.map((opt) => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
                       </select>
                       <p style={{ fontSize: '11px', color: 'var(--bone-dim)', marginTop: '4px' }}>
-                        Optional, hilft uns bei der Vorbereitung.
+                        {language === 'de' ? 'Optional, hilft uns bei der Vorbereitung.' : 'Optional, helps us prepare.'}
                       </p>
                     </div>
                     <div className="form-group">
-                      <label htmlFor="message">Nachricht</label>
-                      <textarea 
-                        id="message" 
-                        placeholder="Was möchten Sie verändern?" 
+                      <label htmlFor="message">{t.form.messageLabel}</label>
+                      <textarea
+                        id="message"
+                        placeholder={t.form.messagePlaceholder}
                         value={formData.message}
                         onChange={(e) => setFormData({...formData, message: e.target.value})}
                         style={{ minHeight: '90px', maxHeight: '110px', resize: 'vertical', background: '#2a2a2a', border: '1px solid #404040', padding: '16px', color: 'var(--bone)', fontFamily: 'inherit', fontSize: '16px' }}
                         disabled={isSending}
                       />
                     </div>
-                    
+
                     {submitError && (
                       <p style={{ color: '#ff4d4d', fontSize: '14px', marginTop: '10px', marginBottom: '10px' }}>
                         {submitError}
@@ -856,19 +893,19 @@ export default function LandingPage() {
                     )}
 
                     <button type="submit" className="cta-button" style={{ marginTop: '10px', width: '100%', justifyContent: 'center', height: '64px' }} disabled={isSending}>
-                      {isSending ? 'Wird gesendet …' : 'Anfrage senden'}
+                      {isSending ? t.form.buttonSending : t.form.buttonSend}
                     </button>
                   </form>
                 </div>
               </div>
             ) : (
               <div style={{ animation: 'modalFadeIn 0.3s forwards', textAlign: 'center' }}>
-                <h3 style={{ fontSize: '32px', marginBottom: '16px' }}>Vielen Dank.</h3>
+                <h3 style={{ fontSize: '32px', marginBottom: '16px' }}>{t.form.successTitle}</h3>
                 <p style={{ fontSize: '16px', color: 'var(--bone)', marginBottom: '30px', lineHeight: '1.4' }}>
-                  Ihre Anfrage wurde übermittelt. Wir melden uns persönlich bei Ihnen.
+                  {t.form.successMessage}
                 </p>
                 <button className="cta-button" style={{ width: '100%', justifyContent: 'center' }} onClick={() => { setIsModalOpen(false); setIsSuccess(false); setFormData({name:'', email:'', phone:'', topic:'', message:'', website:''}); }}>
-                  Schließen
+                  {language === 'de' ? 'Schließen' : 'Close'}
                 </button>
               </div>
             )}

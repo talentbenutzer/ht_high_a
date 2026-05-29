@@ -1,16 +1,21 @@
 import { useEffect, useState } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import { translations } from '../lib/translations'
 
 export default function SuccessPage() {
   const [data, setData] = useState(null)
+  const [language, setLanguage] = useState('de')
   const [animated, setAnimated] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
     const storedData = sessionStorage.getItem('contactData')
+    const storedLanguage = sessionStorage.getItem('contactLanguage') || localStorage.getItem('preferredLanguage') || 'de'
+
     if (storedData) {
       setData(JSON.parse(storedData))
+      setLanguage(storedLanguage)
       // Trigger animation after mount
       setTimeout(() => setAnimated(true), 100)
     } else {
@@ -22,19 +27,21 @@ export default function SuccessPage() {
     return <div style={{ background: '#000', minHeight: '100vh' }} />
   }
 
+  const t = translations[language]
+
   return (
     <>
       <Head>
-        <title>Vielen Dank – Studio Höllental</title>
+        <title>{language === 'de' ? 'Vielen Dank – Studio Höllental' : 'Thank you – Studio Höllental'}</title>
         <meta name="robots" content="noindex, nofollow" />
-        <link rel="canonical" href="https://hoellental.studio/de/produkte/high/success" />
+        <link rel="canonical" href={`https://hoellental.studio/${language === 'de' ? 'de' : 'en'}/produkte/high/success`} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=neue-montreal@400,500,300,700,800&display=swap" />
       </Head>
-      
+
       <section className="hero" style={{ height: '100vh', overflow: 'hidden', position: 'relative' }}>
         <div className="hero-stage" style={{ height: '100%' }}>
           <div className="hero-right">
@@ -48,27 +55,27 @@ export default function SuccessPage() {
               loop={false}
             />
           </div>
-          
+
           {/* Top Left Logo */}
           <div style={{ position: 'absolute', top: 'var(--page-pad)', left: 'var(--page-pad)', zIndex: 3 }}>
             <a href="/" className="wordmark">
               <img src="/images/hoellental_logo_black.svg" alt="höllental." style={{ height: '20px' }} />
             </a>
           </div>
-          
+
           {/* Left Middle Text */}
-          <div style={{ 
-            position: 'absolute', 
-            left: 'var(--page-pad)', 
-            top: '50%', 
-            transform: 'translateY(-50%)', 
+          <div style={{
+            position: 'absolute',
+            left: 'var(--page-pad)',
+            top: '50%',
+            transform: 'translateY(-50%)',
             zIndex: 2,
             textAlign: 'left'
           }}>
-            <h1 style={{ 
-              fontSize: 'clamp(40px, 7vw, 120px)', 
-              fontWeight: 300, 
-              letterSpacing: '0.015em', 
+            <h1 style={{
+              fontSize: 'clamp(40px, 7vw, 120px)',
+              fontWeight: 300,
+              letterSpacing: '0.015em',
               lineHeight: '1.1',
               color: 'var(--bone)',
               opacity: animated ? 1 : 0,
@@ -76,16 +83,16 @@ export default function SuccessPage() {
               transition: 'opacity 800ms cubic-bezier(.2,.6,.2,1), filter 900ms cubic-bezier(.2,.6,.2,1)',
               whiteSpace: 'nowrap'
             }}>
-              Vielen Dank,<br />
+              {language === 'de' ? 'Vielen Dank,' : 'Thank you,'}<br />
               {data.name}
             </h1>
           </div>
-          
+
           {/* Bottom Right Data */}
-          <div style={{ 
-            position: 'absolute', 
-            right: 'var(--page-pad)', 
-            bottom: 'var(--page-pad)', 
+          <div style={{
+            position: 'absolute',
+            right: 'var(--page-pad)',
+            bottom: 'var(--page-pad)',
             zIndex: 2,
             textAlign: 'right',
             color: 'var(--bone)',
@@ -96,14 +103,16 @@ export default function SuccessPage() {
             border: '1px solid var(--line)',
             maxWidth: '400px'
           }}>
-            <h2 style={{ fontSize: '12px', fontWeight: 500, marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--bone-dim)' }}>Eingegebene Daten</h2>
+            <h2 style={{ fontSize: '12px', fontWeight: 500, marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--bone-dim)' }}>
+              {language === 'de' ? 'Eingegebene Daten' : 'Submitted information'}
+            </h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '14px', color: 'var(--bone-dim)' }}>
-              <div>E-Mail: <span style={{ color: 'var(--bone)' }}>{data.email}</span></div>
-              <div>Telefon: <span style={{ color: 'var(--bone)' }}>{data.phone || 'Nicht angegeben'}</span></div>
-              <div>Anliegen: <span style={{ color: 'var(--bone)' }}>{data.topic || 'Nicht angegeben'}</span></div>
+              <div>{t.success.emailLabel} <span style={{ color: 'var(--bone)' }}>{data.email}</span></div>
+              <div>{t.success.phoneLabel} <span style={{ color: 'var(--bone)' }}>{data.phone || (language === 'de' ? 'Nicht angegeben' : 'Not provided')}</span></div>
+              <div>{t.success.topicLabel} <span style={{ color: 'var(--bone)' }}>{data.topic || (language === 'de' ? 'Nicht angegeben' : 'Not provided')}</span></div>
               {data.message && (
                 <div style={{ marginTop: '8px' }}>
-                  Nachricht:<br />
+                  {t.success.messageLabel}<br />
                   <span style={{ color: 'var(--bone)' }}>{data.message}</span>
                 </div>
               )}
@@ -111,14 +120,14 @@ export default function SuccessPage() {
           </div>
 
           {/* Bottom Left Button */}
-          <div style={{ 
-            position: 'absolute', 
-            left: 'var(--page-pad)', 
-            bottom: 'var(--page-pad)', 
-            zIndex: 3 
+          <div style={{
+            position: 'absolute',
+            left: 'var(--page-pad)',
+            bottom: 'var(--page-pad)',
+            zIndex: 3
           }}>
-            <button 
-              style={{ 
+            <button
+              style={{
                 fontSize: '14px',
                 color: 'var(--bone)',
                 textDecoration: 'none',
@@ -133,10 +142,11 @@ export default function SuccessPage() {
               }}
               onClick={() => {
                 sessionStorage.removeItem('contactData');
+                sessionStorage.removeItem('contactLanguage');
                 router.push('/');
               }}
             >
-              ← Zur Startseite
+              {t.success.backButton}
             </button>
           </div>
         </div>
