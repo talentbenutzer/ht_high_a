@@ -585,7 +585,7 @@
     width: 100%;
     height: auto;
     display: block;
-    animation: kenBurns 28s ease-in-out infinite alternate;
+    animation: kenBurns 36s ease-in-out infinite alternate;
     transform-origin: center center;
   }
 
@@ -993,7 +993,7 @@
     transition: filter 400ms ease;
   }
   .testi-card:hover .testi-avatar img {
-    filter: grayscale(0%);
+    filter: grayscale(100%);
   }
   .testi-company-badge {
     padding: 8px 16px;

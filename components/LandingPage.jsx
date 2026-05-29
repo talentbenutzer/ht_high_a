@@ -717,7 +717,7 @@ export default function LandingPage() {
               </ul>
             </div>
             <div className="foot-col">
-              <h5>PIECES</h5>
+              <h5>LIFELINE</h5>
               <ul>
                 <li><a href="https://hoellental.studio/de/produkte/high">High</a></li>
                 <li><a href="https://hoellental.studio/de/produkte/low">Low</a></li>
