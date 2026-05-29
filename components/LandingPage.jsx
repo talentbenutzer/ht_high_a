@@ -210,7 +210,7 @@ export default function LandingPage() {
         const nameEl = document.getElementById('colorReelName')
         if (!section || !v) return
 
-        const colors = ['Black', 'White', 'Grey', 'Walnut', 'Oak', 'Cherry', 'Natural wood']
+        const colors = ['Shadow', 'Chocolate', 'Earth', 'Ocean', 'Sand', 'Plant', 'Dust']
         let lastColorIdx = -1
 
         let targetTime = 0
@@ -695,7 +695,7 @@ export default function LandingPage() {
           </video>
           <div className="colorreel-caption">
             <h3>{language === 'de' ? 'Sieben Oberflächen. ' : 'Seven finishes. '}<span className="em">{language === 'de' ? 'Jede eine eigene Stimmung.' : 'Each with its own character.'}</span></h3>
-            <div className="colorreel-colorname" id="colorReelName">Black</div>
+            <div className="colorreel-colorname" id="colorReelName">Shadow</div>
           </div>
           <div className="colorreel-progress" id="colorReelProgress"></div>
         </div>
