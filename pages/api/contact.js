@@ -12,6 +12,11 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Internal server error' });
   }
 
+  if (!process.env.RESEND_FROM_EMAIL) {
+    console.error('Missing RESEND_FROM_EMAIL');
+    return res.status(500).json({ error: 'Server configuration error: Missing sender email' });
+  }
+
   const { name, email, phone, message, pageUrl, language, website, topic } = req.body;
 
   // Honeypot check
@@ -83,7 +88,7 @@ export default async function handler(req, res) {
     .map((email) => email.trim())
     .filter(Boolean);
 
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'Studio Höllental <noreply@mail.hoellental.studio>';
+  const fromEmail = process.env.RESEND_FROM_EMAIL;
 
   try {
     const data = await resend.emails.send({
