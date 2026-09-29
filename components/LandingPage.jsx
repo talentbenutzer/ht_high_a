@@ -1,8 +1,16 @@
-import { useEffect, useState } from 'react'
-import Script from 'next/script'
+import { Fragment, useEffect, useState } from 'react'
 import { translations } from '../lib/translations'
+import { product, isPlaceholder } from '../content/product'
 
-const LIFELINE_VIDEO_URL = '/videos/lifeline.mp4'
+// Animationsklassen für die Wörter des Claim-Banners (zyklisch vergeben)
+const CLAIM_WORD_ANIMS = ['qa-from-left', 'qa-fade', 'qa-scale']
+
+// Zusätzliche Klasse für sichtbar markierte Platzhaltertexte
+const ph = (value) => (isPlaceholder(value) ? ' is-placeholder' : '')
+
+// Hero-Medien: Scroll-Video nur, wenn im Content hinterlegt (hero.video)
+const heroVideo = product.hero.video
+const hasHeroVideo = Boolean(heroVideo)
 
 const getCurrentDateTime = () => {
   const now = new Date();
@@ -39,8 +47,9 @@ export default function LandingPage() {
     }
   }
 
-  // Get current translations
+  // Get current translations (generische UI) und Produktinhalte
   const t = translations[language]
+  const c = product[language]
 
   useEffect(() => {
     setIsVideoMounted(true)
@@ -59,7 +68,7 @@ export default function LandingPage() {
   // play/pause init for iOS — Video lädt, spielt kurz an, pausiert für Scroll-Scrubbing
   useEffect(() => {
     const v = document.getElementById('heroVideo');
-    if (v && !prefersReducedMotion) {
+    if (hasHeroVideo && v && !prefersReducedMotion) {
       setIsVideoLoaded(false);
       v.load();
       const playPromise = v.play();
@@ -76,7 +85,7 @@ export default function LandingPage() {
 
   useEffect(() => {
     let timeout;
-    if (!isVideoLoaded && !prefersReducedMotion) {
+    if (hasHeroVideo && !isVideoLoaded && !prefersReducedMotion) {
       timeout = setTimeout(() => {
         setIsVideoLoaded(true); // Fallback to hide loader after 5s
       }, 5000);
@@ -103,6 +112,10 @@ export default function LandingPage() {
   useEffect(() => {
     // Respect prefers-reduced-motion
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    // Beim Sprachwechsel laeuft der Effekt erneut: Listener, rAF-Schleifen und Timer sauber beenden
+    let alive = true
+    const cleanups = []
+    const cleanup = () => { alive = false; cleanups.forEach(fn => fn()) }
 
       // ── Hero video setup ──────────────────────────────────────────
       ; (function setupHeroVideo() {
@@ -142,7 +155,7 @@ export default function LandingPage() {
               try { v.currentTime = currentTime } catch (e) { }
             }
           }
-          requestAnimationFrame(renderHero)
+          if (alive) requestAnimationFrame(renderHero)
         }
         requestAnimationFrame(renderHero)
 
@@ -171,12 +184,14 @@ export default function LandingPage() {
         }
 
         let ticking = false
-        window.addEventListener('scroll', () => {
+        const handleScroll = () => {
           if (!ticking) {
             requestAnimationFrame(() => { onScroll(); ticking = false })
             ticking = true
           }
-        }, { passive: true })
+        }
+        window.addEventListener('scroll', handleScroll, { passive: true })
+        cleanups.push(() => window.removeEventListener('scroll', handleScroll))
         onScroll()
       })()
 
@@ -210,7 +225,7 @@ export default function LandingPage() {
         const nameEl = document.getElementById('colorReelName')
         if (!section || !v) return
 
-        const colors = ['Shadow', 'Chocolate', 'Earth', 'Ocean', 'Sand', 'Plant', 'Dust']
+        const colors = c.colorReel.colors
         let lastColorIdx = -1
 
         let targetTime = 0
@@ -230,7 +245,7 @@ export default function LandingPage() {
               try { v.currentTime = currentTime } catch (e) { }
             }
           }
-          requestAnimationFrame(renderColorReel)
+          if (alive) requestAnimationFrame(renderColorReel)
         }
         requestAnimationFrame(renderColorReel)
 
@@ -256,29 +271,32 @@ export default function LandingPage() {
         v.addEventListener('canplay', () => { try { v.pause() } catch (e) { } seek() }, { once: true })
 
         let ticking = false
-        window.addEventListener('scroll', () => {
+        const handleScroll = () => {
           if (!ticking) {
             requestAnimationFrame(() => { seek(); ticking = false })
             ticking = true
           }
-        }, { passive: true })
+        }
+        window.addEventListener('scroll', handleScroll, { passive: true })
+        cleanups.push(() => window.removeEventListener('scroll', handleScroll))
         seek()
       })()
 
-    if (prefersReducedMotion) return
+    if (prefersReducedMotion) return cleanup
 
       // ── Hero entrance: prefix fade-in + erstes Wort sichtbar ────
       ; (function heroEntrance() {
         const prefix = document.querySelector('.hero-prefix')
         const words = document.querySelectorAll('.hero-word')
         if (!prefix) return
-        setTimeout(() => { prefix.classList.add('is-visible') }, 200)
-        setTimeout(() => {
+        const t1 = setTimeout(() => { prefix.classList.add('is-visible') }, 200)
+        const t2 = setTimeout(() => {
           words.forEach((w, i) => {
             w.classList.toggle('is-active', i === 0)
             w.classList.remove('is-past')
           })
         }, 900)
+        cleanups.push(() => { clearTimeout(t1); clearTimeout(t2) })
       })()
 
       // ── Intro text fade-in ────────────────────────────────────────
@@ -291,6 +309,7 @@ export default function LandingPage() {
           })
         }, { threshold: 0.15 })
         els.forEach(el => obs.observe(el))
+        cleanups.push(() => obs.disconnect())
       })()
 
       // ── Quote banner word-by-word ─────────────────────────────────
@@ -314,10 +333,10 @@ export default function LandingPage() {
           })
         }, { threshold: 0.4 })
         obs.observe(section.closest('.quote-banner') || section)
+        cleanups.push(() => obs.disconnect())
       })()
 
-
-
+    return cleanup
   }, [language])
   useEffect(() => {
     const handleEscape = (e) => {
@@ -340,13 +359,13 @@ export default function LandingPage() {
     setSubmitError('');
 
     if (!formData.name.trim()) {
-      newErrors.name = language === 'de' ? 'Name erforderlich' : 'Name required'
+      newErrors.name = t.form.validationNameRequired
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = language === 'de' ? 'E-Mail erforderlich' : 'Email required'
+      newErrors.email = t.form.validationEmailRequired
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = language === 'de' ? 'Ungültige E-Mail' : 'Invalid email'
+      newErrors.email = t.form.validationEmailInvalid
     }
 
     setErrors(newErrors);
@@ -372,11 +391,11 @@ export default function LandingPage() {
           sessionStorage.setItem('contactLanguage', language);
           window.location.href = '/success';
         } else {
-          setSubmitError(data.error || (language === 'de' ? 'Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.' : 'The request could not be sent. Please try again later.'));
+          setSubmitError(data.error || t.form.submitError);
         }
       } catch (error) {
         console.error('Submit error:', error);
-        setSubmitError(language === 'de' ? 'Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.' : 'The request could not be sent. Please try again later.');
+        setSubmitError(t.form.submitError);
       } finally {
         setIsSending(false);
       }
@@ -384,9 +403,6 @@ export default function LandingPage() {
   };
   return (
     <>
-      {/* Load custom web component after page render */}
-      <Script src="/image-slot.js" strategy="afterInteractive" />
-
       {/* NAV */}
       <nav className="nav" aria-label={t.nav.ariaLabel}>
         <div className="left">
@@ -431,10 +447,10 @@ export default function LandingPage() {
       </nav>
 
       {/* HERO */}
-      <section className="hero" id="high" data-screen-label="01 Hero">
+      <section className={`hero${hasHeroVideo ? '' : ' hero--image'}`} id={product.id} data-screen-label="01 Hero">
         <div className="hero-stage">
           <div className="hero-right" aria-hidden="true">
-            {!prefersReducedMotion ? (
+            {hasHeroVideo && !prefersReducedMotion ? (
               <video
                 key={isVideoMounted ? (isMobileVideo ? 'mobile' : 'desktop') : 'ssr'}
                 className="hero-video"
@@ -443,27 +459,40 @@ export default function LandingPage() {
                 playsInline
                 autoPlay
                 preload="auto"
-                poster={isVideoMounted && isMobileVideo ? "/images/high-scroll-poster-mobile.jpg" : "/images/high-scroll-poster-desktop.jpg"}
+                poster={isVideoMounted && isMobileVideo ? heroVideo.mobile.poster : heroVideo.desktop.poster}
                 onLoadedMetadata={(e) => { e.target.pause(); setIsVideoLoaded(true); }}
                 onCanPlay={() => { setIsVideoLoaded(true); }}
               >
-                <source src={isVideoMounted && isMobileVideo ? "/videos/high-scroll-mobile.mp4" : "/videos/high-scroll-desktop.mp4"} type="video/mp4" />
+                <source src={isVideoMounted && isMobileVideo ? heroVideo.mobile.src : heroVideo.desktop.src} type="video/mp4" />
               </video>
-            ) : (
+            ) : hasHeroVideo ? (
               <img
-                src={isVideoMounted && isMobileVideo ? "/images/high-scroll-poster-mobile.jpg" : "/images/high-scroll-poster-desktop.jpg"}
-                alt="HIGH"
+                src={isVideoMounted && isMobileVideo ? heroVideo.mobile.poster : heroVideo.desktop.poster}
+                alt={c.hero.imageAlt}
                 className="hero-video"
                 style={{ objectFit: 'cover', width: '100%', height: '100%' }}
               />
+            ) : (
+              <picture className="hero-picture">
+                <source media="(max-width: 768px)" srcSet={product.hero.image.mobile} />
+                <img
+                  src={product.hero.image.desktop}
+                  alt={c.hero.imageAlt}
+                  className="hero-video hero-image"
+                  style={{
+                    '--hero-pos-desktop': product.hero.image.position.desktop,
+                    '--hero-pos-mobile': product.hero.image.position.mobile,
+                  }}
+                />
+              </picture>
             )}
 
             {/* Vignette-Verlauf hinter der Headline für Lesbarkeit auf mittleren Screens */}
             <div className="hero-vignette" aria-hidden="true"></div>
 
-            {!isVideoLoaded && !prefersReducedMotion && (
+            {hasHeroVideo && !isVideoLoaded && !prefersReducedMotion && (
                <div className="hero-loader" style={{ position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, color: 'var(--bone)', fontSize: '11px', letterSpacing: '0.1em', opacity: 0.6, textTransform: 'uppercase' }}>
-                 {language === 'de' ? 'HIGH wird geladen' : 'Loading HIGH'}
+                 {c.hero.loading}
                  <div style={{ width: '100%', height: '1px', background: 'rgba(255,255,255,0.2)', marginTop: '8px', position: 'relative', overflow: 'hidden' }}>
                    <div style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '30%', background: 'rgba(255,255,255,0.6)', animation: 'loaderSlide 1.5s infinite ease-in-out' }}></div>
                  </div>
@@ -481,105 +510,101 @@ export default function LandingPage() {
 
           <div className="hero-left">
             <div className="hero-meta-top">
-              <span className="meta">{t.hero.meta}</span>
+              <span className="meta">{c.hero.meta}</span>
               <span className="dotline"></span>
-              <span className="meta">{t.hero.productName}</span>
+              <span className="meta">{c.hero.productName}</span>
             </div>
 
             <div className="hero-reel" id="reel" aria-live="polite">
-              {t.hero.reel.map((word, i) => (
+              {c.hero.reel.map((word, i) => (
                 <div key={i} className="hero-word" data-i={i}>{word}</div>
               ))}
             </div>
 
             <div className="hero-subheadline">
-              {language === 'de'
-                ? 'HIGH-Board – Interior-Manufaktur für Räume, in denen entschieden wird.'
-                : 'HIGH-Board – Interior Manufactory for spaces where decisions are made.'
-              }
+              {c.hero.subheadline}
             </div>
           </div>
         </div>
       </section>
 
-      {/* QUOTE BANNER */}
+      {/* CLAIM-BANNER */}
       <section className="quote-banner">
         <div className="shell grid12">
           <div className="lhs"></div>
           <div className="body">
+            <span className="meta quote-kicker">{c.claim.kicker}</span>
             <h3 className="quote-animated">
-              {language === 'de' ? (
-                <>
-                  <span className="qa-word qa-from-left" data-qorder="0">Verantwortung</span>{' '}
-                  <span className="qa-word qa-fade" data-qorder="1">braucht</span>{' '}
-                  <span className="qa-word qa-scale" data-qorder="2">Raum.</span>
-                </>
-              ) : (
-                <>
-                  <span className="qa-word qa-from-left" data-qorder="0">Responsibility</span>{' '}
-                  <span className="qa-word qa-fade" data-qorder="1">demands</span>{' '}
-                  <span className="qa-word qa-scale" data-qorder="2">space.</span>
-                </>
-              )}
+              {c.claim.words.map((word, i) => (
+                <Fragment key={i}>
+                  {i > 0 && ' '}
+                  <span className={`qa-word ${CLAIM_WORD_ANIMS[i % CLAIM_WORD_ANIMS.length]}`} data-qorder={i}>{word}</span>
+                </Fragment>
+              ))}
             </h3>
           </div>
         </div>
       </section>
 
-      {/* INTRO */}
-      <section className="intro" id="system" data-screen-label="02 Intro" style={{ background: '#000', padding: '120px 0' }}>
+      {/* IM RAUM */}
+      <section className="intro" id="raum" data-screen-label="02 Im Raum" style={{ background: '#000', padding: '120px 0' }}>
         <div className="shell grid12" style={{ alignItems: 'start' }}>
 
           {/* Top Left Labels */}
           <div className="col-label label-stack intro-left" style={{ marginBottom: '60px' }}>
             <span className="meta signal intro-marginalia" style={{ color: 'var(--bone)', marginTop: '3px' }}>
-              {language === 'de'
-                ? <>Entstanden im Schwarzwald.<br />Entwickelt für Fokus.</>
-                : <>Created in the Black Forest.<br />Designed for Focus.</>
-              }
+              {c.raum.label}<br />{c.raum.series}
             </span>
           </div>
 
           {/* Top Right Headline */}
           <div className="intro-right" style={{ marginBottom: '60px' }}>
             <h2 className="intro-anim" style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 300, lineHeight: '1.2', color: 'var(--bone)', margin: 0, textWrap: 'balance' }}>
-              {language === 'de'
-                ? 'Zwischen Druck und Triumph – ein Möbelstück, das beides aushält.'
-                : 'Between pressure and triumph – a furniture piece that withstands both.'
-              }
+              {c.raum.headline}
             </h2>
           </div>
 
           {/* Text links */}
           <div className="intro-paragraphs">
             <p className="intro-anim" style={{ transitionDelay: '150ms' }}>
-              {language === 'de'
-                ? 'Das HIGH-Board ist kein Möbelstück wie jedes andere. Es ist ein Stück Kontrollierbarkeit – geboren aus der Überforderung von Räumen, die zu viel Unordnung ertragen, und zu wenig Struktur bieten.'
-                : 'The HIGH-Board is not just any furniture piece. It is a piece of controllability – born from the overwhelm of spaces that tolerate too much disorder and offer too little structure.'
-              }
-            </p>
-            <p className="intro-anim" style={{ transitionDelay: '225ms' }}>
-              {language === 'de'
-                ? 'HIGH-Board bringt Ruhe in die Unruhe. Es schafft sichtbare Ablagen für das, was sonst auf dem Schreibtisch endet. Es spaltet einen Arbeitsraum in Bereiche auf, die unterschiedliche Aufgaben erfüllen. Es definiert, wo Fokus stattfindet und wo nicht.'
-                : 'HIGH-Board brings calm into chaos. It creates visible surfaces for what would otherwise end up on your desk. It divides a work space into zones that serve different purposes. It defines where focus happens and where it does not.'
-              }
-            </p>
-            <p className="intro-anim" style={{ transitionDelay: '300ms' }}>
-              {language === 'de'
-                ? 'Die Manufaktur hat es zur Aufgabe gemacht, dieses Gefühl von „ich habe das im Griff" in ein Möbelstück zu übersetzen. Das gelingt nur mit Präzision. Mit Handarbeit. Mit Materialien, die das Versprechen halten.'
-                : 'Our manufactory has made it our mission to translate this feeling of "I have this under control" into a furniture piece. This is only possible with precision. With craftsmanship. With materials that keep the promise.'
-              }
+              {c.raum.text}
             </p>
           </div>
 
           {/* Bild rechts — komplett sichtbar */}
           <div className="intro-image">
-            <picture>
-              <source media="(max-width: 900px)" srcSet="/images/office_mob.jpg" />
-              <img src="/images/office.jpg" alt={language === 'de' ? 'Büro-Setting mit HIGH-Board' : 'Office setting with HIGH-Board'} />
-            </picture>
+            <img src={product.images.raum} alt={c.raum.imageAlt} />
           </div>
 
+        </div>
+      </section>
+
+      {/* BENEFITS */}
+      <section className="benefits" id="benefits" data-screen-label="03 Benefits">
+        <div className="shell">
+          <div className="benefits-head">
+            <span className="meta">{c.benefits.label}</span>
+            <h2 className="benefits-title">{c.benefits.headline}</h2>
+          </div>
+          <div className="benefits-grid">
+            {product.benefitsGrid.map((cell, i) => {
+              if (cell.type === 'image') {
+                return (
+                  <figure key={i} className={`benefit-media${cell.wide ? ' benefit-media--wide' : ''}`}>
+                    <img src={product.images[cell.key]} alt={c.benefits.imageAlts[cell.key]} loading="lazy" />
+                  </figure>
+                )
+              }
+              const item = c.benefits.items[cell.index]
+              return (
+                <article key={i} className="benefit-tile">
+                  <span className="benefit-num">{String(cell.index + 1).padStart(2, '0')}</span>
+                  <h3 className="benefit-title">{item.title}</h3>
+                  <p className="benefit-text">{item.text}</p>
+                </article>
+              )
+            })}
+          </div>
         </div>
       </section>
 
@@ -588,34 +613,30 @@ export default function LandingPage() {
         <div className="shell">
           <div className="testi-header-new">
             <div className="testi-title-wrap">
-              <h2 className="testi-title">
-                {language === 'de'
-                  ? <>Unternehmer,<br />die <span className="text-muted">Verantwortung</span> tragen.</>
-                  : <>Entrepreneurs<br />who take <span className="text-muted">responsibility</span>.</>
-                }
-              </h2>
+              <h2 className={`testi-title${ph(c.testimonials.title)}`}>{c.testimonials.title}</h2>
             </div>
           </div>
 
           <div className="testi-row">
-            {t.testimonials.items.map((item, idx) => (
+            {c.testimonials.items.map((item, idx) => (
               <article key={idx} className="testi-card">
                 <div className="testi-card-top">
                   <div className="testi-avatar">
-                    {idx === 0 && <img src="/images/hhf_gehring.jpg" alt={item.name} />}
-                    {idx === 1 && <img src="/images/timo_horl.png" alt={item.name} />}
-                    {idx === 2 && <img src="/images/christoph_ernst.png" alt={item.name} />}
+                    {item.avatar
+                      ? <img src={item.avatar} alt={item.name} />
+                      : <span className="testi-avatar-initials" aria-hidden="true">{item.initials}</span>
+                    }
                   </div>
                   <div className="testi-company-badge">
-                    <span className="badge-name">{idx === 0 ? 'Holzhaus Fabrik' : idx === 1 ? 'Horl 1993 GmbH' : 'Büba'}</span>
+                    <span className={`badge-name${ph(item.company)}`}>{item.company}</span>
                   </div>
                 </div>
                 <div className="testi-quote-icon">"</div>
-                <p className="testi-quote">{item.quote}</p>
+                <p className={`testi-quote${ph(item.quote)}`}>{item.quote}</p>
                 <div className="testi-meta">
-                  <span className="name">{item.name}</span>
-                  <span className="role">{item.role}</span>
-                  <span className="location">{item.location}</span>
+                  <span className={`name${ph(item.name)}`}>{item.name}</span>
+                  <span className={`role${ph(item.role)}`}>{item.role}</span>
+                  <span className={`location${ph(item.location)}`}>{item.location}</span>
                 </div>
               </article>
             ))}
@@ -627,75 +648,74 @@ export default function LandingPage() {
       <section className="trust" data-screen-label="Trust">
         <div className="shell">
           <div className="trust-grid">
-            <div className="trust-cell">
-              <div className="trust-value trust-value--num">{t.trust.hours}</div>
-              <div className="trust-label">{t.trust.hoursLabel}</div>
-            </div>
-            <div className="trust-cell">
-              <div className="trust-value trust-value--word">{t.trust.locationValue}</div>
-              <div className="trust-label">{t.trust.location}</div>
-            </div>
-            <div className="trust-cell">
-              <div className="trust-value trust-value--word">{t.trust.certValue}</div>
-              <div className="trust-label">{t.trust.cert}</div>
-            </div>
-            <div className="trust-cell">
-              <div className="trust-value trust-value--num">{t.trust.experienceValue}</div>
-              <div className="trust-label">{t.trust.experience}</div>
-            </div>
+            {c.trust.items.map((item, idx) => (
+              <div key={idx} className="trust-cell">
+                <div className={`trust-value trust-value--word${ph(item.value)}`}>{item.value}</div>
+                <div className={`trust-label${ph(item.label)}`}>{item.label}</div>
+              </div>
+            ))}
           </div>
           <div className="trust-price-row">
-            <p>{t.trust.priceText}</p>
+            <p className={ph(c.trust.priceText).trim() || undefined}>{c.trust.priceText}</p>
           </div>
         </div>
       </section>
 
-      {/* USP / MATERIAL — Waldvideo Fullscreen */}
+      {/* USP / MATERIAL — Fullscreen-Video (oder Platzhalterfläche) */}
       <section className="usp-wald" data-screen-label="Material">
-        {/* Background Video */}
-        <video
-          className="usp-wald-video"
-          src="/videos/heimisch_holz.mp4"
-          autoPlay
-          muted
-          playsInline
-          loop
-          preload="auto"
-        />
+        {product.materialVideo ? (
+          <video
+            className="usp-wald-video"
+            src={product.materialVideo}
+            autoPlay
+            muted
+            playsInline
+            loop
+            preload="auto"
+          />
+        ) : (
+          <div className="placeholder media-placeholder" aria-hidden="true">
+            <div className="frame"></div>
+            <span className="label-pl is-placeholder">{c.material.mediaNote}</span>
+          </div>
+        )}
         {/* Dark Overlay */}
         <div className="usp-wald-overlay" aria-hidden="true" />
 
         {/* Content */}
         <div className="usp-wald-content">
-          <h3 className="usp-wald-headline">{t.usp.headline}</h3>
-          <p className="usp-wald-sub">{t.usp.intro}</p>
+          <h3 className={`usp-wald-headline${ph(c.material.headline)}`}>{c.material.headline}</h3>
+          <p className={`usp-wald-sub${ph(c.material.intro)}`}>{c.material.intro}</p>
           <div className="usp-wald-body">
-            <p>{t.usp.description}</p>
-            <p>
-              {language === 'de'
-                ? <><strong>Regional zertifiziert.</strong> Kurze Transportwege. Geringer CO₂-Fußabdruck. Ein Versprechen, das wir einlösen, nicht nur aussprechen.</>
-                : <><strong>Regionally certified.</strong> Short transport routes. Low carbon footprint. A promise we keep, not just make.</>
-              }
-            </p>
+            {c.material.paragraphs.map((text, idx) => (
+              <p key={idx} className={ph(text).trim() || undefined}>{text}</p>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* COLORREEL */}
-      <section className="colorreel" id="kollektion" data-screen-label="04 Kollektion">
+      {/* COLORREEL — scroll-gesteuertes Farb-Video (oder Platzhalterfläche) */}
+      <section className={`colorreel${product.colorReelVideo ? '' : ' colorreel--placeholder'}`} id="kollektion" data-screen-label="04 Kollektion">
         <div className="colorreel-stage">
-          <video
-            className="colorreel-video"
-            id="colorReelVideo"
-            muted
-            playsInline
-            preload="auto"
-          >
-            <source src="/videos/color.mp4" type="video/mp4" />
-          </video>
+          {product.colorReelVideo ? (
+            <video
+              className="colorreel-video"
+              id="colorReelVideo"
+              muted
+              playsInline
+              preload="auto"
+            >
+              <source src={product.colorReelVideo} type="video/mp4" />
+            </video>
+          ) : (
+            <div className="placeholder media-placeholder" aria-hidden="true">
+              <div className="frame"></div>
+              <span className="label-pl is-placeholder">{c.colorReel.mediaNote}</span>
+            </div>
+          )}
           <div className="colorreel-caption">
-            <h3>{language === 'de' ? 'Sieben Oberflächen. ' : 'Seven finishes. '}<span className="em">{language === 'de' ? 'Jede eine eigene Stimmung.' : 'Each with its own character.'}</span></h3>
-            <div className="colorreel-colorname" id="colorReelName">Shadow</div>
+            <h3 className={ph(c.colorReel.headline).trim() || undefined}>{c.colorReel.headline}{' '}<span className="em">{c.colorReel.headlineEm}</span></h3>
+            <div className={`colorreel-colorname${ph(c.colorReel.colors[0])}`} id="colorReelName">{c.colorReel.colors[0]}</div>
           </div>
           <div className="colorreel-progress" id="colorReelProgress"></div>
         </div>
@@ -705,18 +725,12 @@ export default function LandingPage() {
       <section className="cta" id="kontakt" data-screen-label="06 CTA">
         <div className="shell grid12">
           <div className="body">
-            <h3>{t.cta.quote}</h3>
+            <h3>{c.cta.headline}</h3>
             <p style={{ marginBottom: '10px', fontWeight: '500' }}>
-              {language === 'de'
-                ? 'Wir analysieren ausgewählte CEO- und Unternehmerbüros auf Fokus, Klarheit und Wirkung.'
-                : 'We analyze selected CEO and entrepreneur offices for focus, clarity, and impact.'
-              }
+              {c.cta.text}
             </p>
             <p>
-              {language === 'de'
-                ? <>Eine Konfiguration von Studio höllental. beginnt mit einem persönlichen Analysetermin. Wir sehen, was Sie tun. Wir hören, was Sie brauchen.<br />Erst danach reden wir über Material und Maße.</>
-                : <>A configuration by Studio höllental. begins with a personal analysis call. We see what you do. We listen to what you need.<br />Only then do we talk about materials and dimensions.</>
-              }
+              {c.cta.emailLabel} <a className="cta-mail" href={`mailto:${product.contactEmail}`}>{product.contactEmail}</a>
             </p>
             <a href="#" className="cta-button" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
               {t.cta.button}
@@ -796,7 +810,7 @@ export default function LandingPage() {
                 <div className="modal-left">
                   <h3>{t.form.modalTitle}</h3>
                   <div style={{ margin: '20px 0' }}>
-                    <img src="/images/high_end.jpg" alt={t.form.modalTitle} className="modal-img" style={{ width: '100%', height: 'auto', display: 'block' }} />
+                    <img src={product.images.modal} alt={c.form.modalImageAlt} className="modal-img" style={{ width: '100%', height: 'auto', display: 'block' }} />
                   </div>
                 </div>
                 <div className="modal-right">
@@ -863,20 +877,20 @@ export default function LandingPage() {
                         disabled={isSending}
                         style={{ background: '#2a2a2a', border: '1px solid #404040', padding: '16px', color: 'var(--bone)', fontFamily: 'inherit', fontSize: '16px', width: '100%', height: '52px' }}
                       >
-                        <option value="">{language === 'de' ? 'Bitte wählen' : 'Please select'}</option>
-                        {t.form.topicOptions.map((opt) => (
+                        <option value="">{t.form.selectPlaceholder}</option>
+                        {c.form.topicOptions.map((opt) => (
                           <option key={opt} value={opt}>{opt}</option>
                         ))}
                       </select>
                       <p style={{ fontSize: '11px', color: 'var(--bone-dim)', marginTop: '4px' }}>
-                        {language === 'de' ? 'Optional, hilft uns bei der Vorbereitung.' : 'Optional, helps us prepare.'}
+                        {t.form.topicHint}
                       </p>
                     </div>
                     <div className="form-group">
                       <label htmlFor="message">{t.form.messageLabel}</label>
                       <textarea
                         id="message"
-                        placeholder={t.form.messagePlaceholder}
+                        placeholder={c.form.messagePlaceholder}
                         value={formData.message}
                         onChange={(e) => setFormData({...formData, message: e.target.value})}
                         style={{ minHeight: '90px', maxHeight: '110px', resize: 'vertical', background: '#2a2a2a', border: '1px solid #404040', padding: '16px', color: 'var(--bone)', fontFamily: 'inherit', fontSize: '16px' }}
@@ -903,7 +917,7 @@ export default function LandingPage() {
                   {t.form.successMessage}
                 </p>
                 <button className="cta-button" style={{ width: '100%', justifyContent: 'center' }} onClick={() => { setIsModalOpen(false); setIsSuccess(false); setFormData({name:'', email:'', phone:'', topic:'', message:'', website:''}); }}>
-                  {language === 'de' ? 'Schließen' : 'Close'}
+                  {t.form.close}
                 </button>
               </div>
             )}

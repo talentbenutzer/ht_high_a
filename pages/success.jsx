@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { translations } from '../lib/translations'
+import { product } from '../content/product'
 
 export default function SuccessPage() {
   const [data, setData] = useState(null)
@@ -34,7 +35,7 @@ export default function SuccessPage() {
       <Head>
         <title>{language === 'de' ? 'Vielen Dank – Studio Höllental' : 'Thank you – Studio Höllental'}</title>
         <meta name="robots" content="noindex, nofollow" />
-        <link rel="canonical" href={`https://hoellental.studio/${language === 'de' ? 'de' : 'en'}/produkte/high/success`} />
+        <link rel="canonical" href={`${product.site.url}success`} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -45,14 +46,11 @@ export default function SuccessPage() {
       <section className="hero" style={{ height: '100vh', overflow: 'hidden', position: 'relative' }}>
         <div className="hero-stage" style={{ height: '100%' }}>
           <div className="hero-right">
-            <video
+            <img
               className="hero-video"
-              src="/videos/33.mp4"
-              autoPlay
-              muted
-              playsInline
-              preload="auto"
-              loop={false}
+              src={product.images.success}
+              alt=""
+              style={{ objectFit: 'cover', objectPosition: product.hero.image.position.desktop, opacity: 0.55 }}
             />
           </div>
 

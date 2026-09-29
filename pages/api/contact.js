@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { product } from '../../content/product';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -45,10 +46,10 @@ export default async function handler(req, res) {
   if (message && message.length > 2000) return res.status(400).json({ error: 'Nachricht zu lang.' });
 
   // Topic validation
+  // Erlaubte Anliegen: Optionen aus content/product.js (DE + EN)
   const allowedTopics = [
-    'Neues Büro im Aufbau',
-    'Bestehendes Büro neu denken',
-    'Persönlicher Rückzugsraum'
+    ...product.de.form.topicOptions,
+    ...product.en.form.topicOptions,
   ];
   const validTopic = allowedTopics.includes(topic) ? topic : 'Nicht angegeben';
 
@@ -64,7 +65,7 @@ export default async function handler(req, res) {
   const referrer = req.headers['referer'];
 
   const mailContent = `
-    Neue Anfrage via Landingpage HIGH01
+    Neue Anfrage via ${product.mailTag}
 
     Vor- und Nachname: ${name}
     E-Mail-Adresse: ${email}
@@ -94,7 +95,7 @@ export default async function handler(req, res) {
     const data = await resend.emails.send({
       from: fromEmail,
       to: recipients,
-      subject: `Anfrage via Landingpage HIGH01 von "${name}"`,
+      subject: `Anfrage via ${product.mailTag} von "${name}"`,
       text: mailContent,
       replyTo: email,
     });

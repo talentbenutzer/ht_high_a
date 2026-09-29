@@ -1,4 +1,7 @@
+# brew.hoellental.studio ist bewusst nicht zur Indexierung freigegeben
+# (middleware.js setzt X-Robots-Tag noindex). Crawling bleibt erlaubt, damit
+# Suchmaschinen den noindex-Header lesen koennen. Zum Freischalten:
+# middleware.js anpassen und Sitemap-Zeile ergänzen
+# (Sitemap: https://brew.hoellental.studio/sitemap.xml).
 User-agent: *
 Allow: /
-
-Sitemap: https://hoellental.studio/sitemap.xml
